@@ -1,49 +1,41 @@
-{
-  "team": "Lakers U14 Boys Copper",
-  "season": "2025–26",
+<script>
+let GAMES = [];
 
-  "games": [
-    {
-      "id": "2025-12-13-chargers",
-      "date": "2025-12-13",
-      "opponent": "Carnegie Chargers U14 Boys Bears",
-      "venue": "Home",
-      "result": "L",
-      "score": { "us": 25, "them": 30 },
-      "halves": {
-        "us": [4, 21],
-        "them": [13, 17]
-      },
-      "players": [
-        { "name": "Archer Kenny", "pts": 4, "fouls": 0 },
-        { "name": "Thomas O'Sullivan", "pts": 11, "fouls": 2 },
-        { "name": "Jacob Nguyen", "pts": 0, "fouls": 0 },
-        { "name": "Tate Power", "pts": 0, "fouls": 1 },
-        { "name": "Ethan Poon", "pts": 4, "fouls": 2 },
-        { "name": "Lior Rizvash", "pts": 6, "fouls": 3 },
-        { "name": "Rodion Prystupa", "pts": 0, "fouls": 2 }
-      ]
-    },
+async function loadGames(){
+  try{
+    const res = await fetch("./data/season-2026.json");
+    if(!res.ok) throw new Error("Failed to load season-2026.json");
+    const data = await res.json();
 
-    {
-      "id": "2026-01-31-wolves",
-      "date": "2026-01-31",
-      "opponent": "Mountain Wolves U14 Boys",
-      "venue": "Away",
-      "result": "W",
-      "score": { "us": 29, "them": 25 },
-      "halves": {
-        "us": [9, 20],
-        "them": [7, 18]
-      },
-      "players": [
-        { "name": "Archer Kenny", "pts": 7, "fouls": 1 },
-        { "name": "Bill Pham", "pts": 4, "fouls": 3 },
-        { "name": "Thomas O'Sullivan", "pts": 12, "fouls": 0 },
-        { "name": "Tate Power", "pts": 3, "fouls": 4 },
-        { "name": "Lior Rizvash", "pts": 3, "fouls": 2 },
-        { "name": "Rodion Prystupa", "pts": 0, "fouls": 0 }
-      ]
+    if(!Array.isArray(data)){
+      throw new Error("season-2026.json must be an array");
     }
-  ]
+
+    // normalise + validate
+    const map = new Map();
+    for(const g of data){
+      if(!g.game) continue;
+
+      map.set(Number(g.game), {
+        game: Number(g.game),
+        opponent: g.opponent || g.oppTeam || "Unknown",
+        team: "Lakers U14 Boys Copper",
+        oppTeam: g.oppTeam || g.opponent || "Opponent",
+        teamScore: Number(g.teamScore) || 0,
+        oppScore: Number(g.oppScore) || 0,
+        halves: g.halves || {h1:{}, h2:{}},
+        players: Array.isArray(g.players) ? g.players : [],
+        note: g.note || ""
+      });
+    }
+
+    GAMES = Array.from(map.values()).sort((a,b)=>a.game-b.game);
+    render();
+
+  } catch(err){
+    alert("Game data failed to load:\n" + err.message);
+  }
 }
+
+loadGames();
+</script>
