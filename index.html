@@ -1085,15 +1085,23 @@ let GAMES = [];           // current (editable) state
 
 async function loadSeason(){
   try{
-    const res = await fetch("./data/season-2026.json", {cache:"no-store"});
-    if(!res.ok) throw new Error("Fetch failed: HTTP " + res.status);
-    const data = await res.json();
-    if(!Array.isArray(data)) throw new Error("season-2026.json must be an array.");
+    const DATA_URL = window.location.hostname.includes("github.io")
+      ? "/data/season-2026.json"
+      : "data/season-2026.json";
 
-    // normalize
-    const cleaned = normalizeGames(data);
-    INITIAL_GAMES = deepClone(cleaned);
-    GAMES = deepClone(cleaned);
+    const res = await fetch(DATA_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("Fetch failed");
+
+    const json = await res.json();
+    GAMES = normalizeGames(json);
+    INITIAL_GAMES = deepClone(GAMES);
+  }catch(e){
+    console.warn("Using fallback data", e);
+    GAMES = [];
+    INITIAL_GAMES = [];
+  }
+  render();
+}
 
     render();
   }catch(err){
