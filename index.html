@@ -2,1551 +2,250 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
 <title>U14 Season Analytics Dashboard</title>
 
-<style>
-  :root{
-    --bg0:#020617;
-    --bg1:#071229;
-    --card:#0b1932;
-    --card2:#0a1630;
-    --border:rgba(255,255,255,.10);
-    --text:#e8eefc;
-    --muted:#9fb0d0;
-    --muted2:#7f93ba;
+<!-- ===== Fonts ===== -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-    --accent:#6ee7ff;
-    --green:#2bd47d;
-    --amber:#ffd166;
-    --red:#ff5c7a;
-    --purple:#a78bfa;
-
-    --shadow:0 24px 60px rgba(0,0,0,.55);
-    --radius:22px;
-    --radius2:16px;
-    --font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-    --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  }
-
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:var(--font);
-    color:var(--text);
-    background:
-      radial-gradient(1200px 700px at 18% 8%, rgba(110,231,255,.16), transparent 58%),
-      radial-gradient(900px 600px at 85% 18%, rgba(167,139,250,.14), transparent 60%),
-      radial-gradient(900px 700px at 40% 95%, rgba(43,212,125,.10), transparent 55%),
-      linear-gradient(180deg, var(--bg1), var(--bg0));
-    min-height:100vh;
-  }
-
-  .app{
-    max-width:1180px;
-    margin:0 auto;
-    padding:22px 14px 60px;
-  }
-
-  /* ===========================
-     TOP BAR (mobile first)
-     =========================== */
-  .topbar{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    margin-bottom:14px;
-  }
-
-  .title{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
-  .title h1{
-    margin:0;
-    font-size:22px;
-    letter-spacing:.2px;
-  }
-  .title .sub{
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.35;
-  }
-
-  .controls{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
-  }
-
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:10px 12px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.05);
-    box-shadow:0 10px 28px rgba(0,0,0,.25) inset;
-    color:var(--text);
-    font-size:12px;
-    user-select:none;
-  }
-  .pill strong{font-weight:900}
-  .dot{width:8px;height:8px;border-radius:999px;background:var(--accent); box-shadow:0 0 0 4px rgba(110,231,255,.12)}
-  .dot.warn{background:var(--amber); box-shadow:0 0 0 4px rgba(255,209,102,.14)}
-  .dot.good{background:var(--green); box-shadow:0 0 0 4px rgba(43,212,125,.12)}
-  .dot.bad{background:var(--red); box-shadow:0 0 0 4px rgba(255,92,122,.14)}
-
-  .btn{
-    appearance:none;
-    border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.06);
-    color:var(--text);
-    padding:10px 12px;
-    border-radius:12px;
-    font-weight:900;
-    font-size:12px;
-    cursor:pointer;
-    min-height:44px;
-    transition:transform .06s ease, background .2s ease, border-color .2s ease;
-  }
-  .btn:hover{ background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.20) }
-  .btn:active{ transform:translateY(1px) }
-  .btn.primary{ border-color:rgba(110,231,255,.35); background:rgba(110,231,255,.10); }
-  .btn.danger{ border-color:rgba(255,92,122,.35); background:rgba(255,92,122,.10); }
-
-  /* ===========================
-     MOBILE / IPAD LAYOUT (NEW)
-     - Mobile: stacked storytelling
-     - iPad+: two-column dashboard
-     =========================== */
-  .layout{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:14px;
-  }
-  .left,.right{ display:flex; flex-direction:column; gap:14px; }
-
-  @media (min-width: 768px){
-    .topbar{
-      flex-direction:row;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:14px;
-    }
-    .controls{ justify-content:flex-end; }
-
-    .layout{
-      grid-template-columns: 380px 1fr;
-      align-items:start;
-      gap:16px;
-    }
-  }
-
-  /* ===========================
-     CARDS
-     =========================== */
-  .card{
-    border:1px solid rgba(255,255,255,.10);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    overflow:hidden;
-  }
-
-  .card .hd{
-    padding:14px 16px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    border-bottom:1px solid rgba(255,255,255,.08);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
-  }
-  .card .hd h2{
-    margin:0;
-    font-size:14px;
-    letter-spacing:.2px;
-  }
-  .card .hd .hint{
-    color:var(--muted);
-    font-size:12px;
-  }
-  .card .bd{ padding:14px 16px; }
-
-  /* ===========================
-     SNAPSHOT TILES (NEW BEHAVIOUR)
-     - Mobile: swipeable horizontal
-     - iPad+: grid
-     =========================== */
-  .snapshots{
-    display:flex;
-    gap:12px;
-    overflow-x:auto;
-    padding-bottom:6px;
-    scroll-snap-type:x mandatory;
-    -webkit-overflow-scrolling:touch;
-  }
-  .snapshots::-webkit-scrollbar{ height:8px; }
-  .snapshots::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08); border-radius:999px; }
-
-  .tile{
-    scroll-snap-align:start;
-    min-width:170px;
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:18px;
-    background:
-      radial-gradient(900px 150px at 20% 0%, rgba(110,231,255,.12), transparent 55%),
-      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-    padding:12px 12px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    min-height:86px;
-  }
-  .tile .k{ color:var(--muted); font-size:11px; letter-spacing:.3px; text-transform:uppercase }
-  .tile .v{ font-size:22px; font-weight:1000; letter-spacing:.2px }
-  .tile .s{ color:var(--muted2); font-size:12px }
-
-  @media (min-width: 768px){
-    .snapshots{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      overflow:visible;
-      padding-bottom:0;
-    }
-    .tile{ min-width:unset; }
-  }
-
-  /* ===========================
-     TABLES
-     =========================== */
-  table{
-    width:100%;
-    border-collapse:collapse;
-    overflow:hidden;
-    border-radius:14px;
-  }
-  thead th{
-    text-align:left;
-    font-size:11px;
-    color:var(--muted);
-    font-weight:1000;
-    letter-spacing:.3px;
-    text-transform:uppercase;
-    padding:10px 10px;
-    border-bottom:1px solid rgba(255,255,255,.08);
-  }
-  tbody td{
-    padding:10px 10px;
-    border-bottom:1px solid rgba(255,255,255,.07);
-    font-size:13px;
-  }
-  tbody tr:hover{ background:rgba(255,255,255,.04); }
-
-  .mono{ font-family:var(--mono); }
-  .rightTx{ text-align:right; }
-  .muted{ color:var(--muted); }
-
-  .badge{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:11px;
-    font-weight:1000;
-    letter-spacing:.2px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.06);
-  }
-  .b-good{ border-color:rgba(43,212,125,.30); background:rgba(43,212,125,.12); color:#bff6da; }
-  .b-bad{ border-color:rgba(255,92,122,.30); background:rgba(255,92,122,.12); color:#ffd0da; }
-  .b-mid{ border-color:rgba(255,209,102,.30); background:rgba(255,209,102,.12); color:#ffe9b4; }
-
-  .click{
-    cursor:pointer;
-    text-decoration:none;
-    color:var(--text);
-    min-height:44px;
-    display:inline-flex;
-    align-items:center;
-  }
-  .click:hover{ color:var(--accent); }
-
-  /* ===========================
-     CHARTS (NEW BEHAVIOUR)
-     - Mobile: swipe between charts (full width)
-     - iPad+: 2-up grid
-     =========================== */
-  .chartStack{
-    display:flex;
-    gap:12px;
-    overflow-x:auto;
-    scroll-snap-type:x mandatory;
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:6px;
-  }
-  .chartStack::-webkit-scrollbar{ height:8px; }
-  .chartStack::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08); border-radius:999px; }
-
-  .chartCard{
-    scroll-snap-align:start;
-    min-width:100%;
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:18px;
-    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-    padding:12px;
-    overflow:hidden;
-  }
-  .chartCard h3{
-    margin:0 0 8px 0;
-    font-size:12px;
-    color:var(--muted);
-    font-weight:1000;
-    letter-spacing:.2px;
-    text-transform:uppercase;
-  }
-  canvas{
-    width:100%;
-    height:240px;
-    border-radius:12px;
-    background:rgba(0,0,0,.18);
-    border:1px solid rgba(255,255,255,.06);
-  }
-
-  @media (min-width: 768px){
-    .chartStack{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      overflow:visible;
-      padding-bottom:0;
-      gap:12px;
-    }
-    .chartCard{ min-width:unset; }
-  }
-
-  /* ===========================
-     INSIGHT CARD (premium feel)
-     =========================== */
-  .insight{
-    border:1px solid rgba(255,255,255,.10);
-    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-    border-radius:18px;
-    padding:12px;
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-    line-height:1.35;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
-  }
-  .insight .icon{
-    width:26px;height:26px;border-radius:10px;
-    display:grid;place-items:center;
-    border:1px solid rgba(110,231,255,.22);
-    background:rgba(110,231,255,.10);
-  }
-  .insight b{ font-weight:1000; }
-
-  /* ===========================
-     MODALS
-     =========================== */
-  .backdrop{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-    z-index:50;
-  }
-  .modal{
-    width:min(940px, 100%);
-    max-height:86vh;
-    overflow:auto;
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:22px;
-    background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(2,6,23,.98));
-    box-shadow:0 40px 80px rgba(0,0,0,.65);
-  }
-  .modal .mh{
-    position:sticky;
-    top:0;
-    background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(10,22,48,.85));
-    padding:14px 16px;
-    border-bottom:1px solid rgba(255,255,255,.10);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-  }
-  .modal .mh h2{ margin:0; font-size:14px; }
-  .modal .mb{ padding:14px 16px; }
-  .closeX{
-    border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.06);
-    border-radius:12px;
-    padding:8px 10px;
-    cursor:pointer;
-    color:var(--text);
-    font-weight:1000;
-    min-height:44px;
-  }
-
-  /* ===========================
-     EDITOR
-     =========================== */
-  .editor{
-    display:grid;
-    grid-template-columns: 1fr;
-    gap:10px;
-  }
-  .ta{
-    width:100%;
-    min-height:220px;
-    resize:vertical;
-    border-radius:16px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(0,0,0,.22);
-    color:var(--text);
-    padding:12px 12px;
-    font-family:var(--mono);
-    font-size:12px;
-    line-height:1.45;
-    outline:none;
-  }
-  .ta:focus{ border-color:rgba(110,231,255,.35); box-shadow:0 0 0 4px rgba(110,231,255,.10) }
-  .row{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-  .row .pill{ padding:8px 10px }
-  .spacer{ height:8px }
-  .small{ font-size:12px; color:var(--muted); line-height:1.4 }
-</style>
-</head>
-
-<body>
-<div class="app">
-
-  <div class="topbar">
-    <div class="title">
-      <h1>U14 Season Analytics Dashboard</h1>
-      <div class="sub">
-        Season analytics for <strong>Lakers U14 Boys Copper</strong> (results, player scoring, fouls, trends).<br/>
-        Loads from <span class="mono">/data/season-2026.json</span> on GitHub Pages (with safe fallback).
-      </div>
-    </div>
-
-    <div class="controls">
-      <div class="pill" id="loadedPill">
-        <span class="dot warn" id="loadedDot"></span>
-        <strong id="loadedCount">0</strong> / <span id="targetCount">10</span> games loaded
-      </div>
-      <button class="btn primary" id="btnOpenEditor">Add / Edit Games</button>
-      <button class="btn" id="btnExport">Export CSV</button>
-      <button class="btn danger" id="btnReset">Reset to Uploaded Data</button>
-    </div>
-  </div>
-
-  <main class="layout">
-    <!-- LEFT COLUMN (iPad): snapshot + results. MOBILE: same order. -->
-    <section class="left">
-
-      <!-- Snapshot -->
-      <div class="card">
-        <div class="hd">
-          <h2>Season Snapshot</h2>
-          <div class="hint">Auto-calculated from loaded games</div>
-        </div>
-        <div class="bd">
-          <div class="snapshots" id="tiles"></div>
-        </div>
-      </div>
-
-      <!-- Results table -->
-      <div class="card">
-        <div class="hd">
-          <h2>Game Results</h2>
-          <div class="hint">Tap a game to open detail</div>
-        </div>
-        <div class="bd">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:70px;">Game</th>
-                <th>Opponent</th>
-                <th class="rightTx">Score</th>
-                <th class="rightTx">Margin</th>
-                <th style="width:130px;">Result</th>
-                <th class="rightTx">1H / 2H</th>
-              </tr>
-            </thead>
-            <tbody id="resultsBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- RIGHT COLUMN (iPad): charts + players -->
-    <section class="right">
-
-      <!-- Trends -->
-      <div class="card">
-        <div class="hd">
-          <h2>Trends</h2>
-          <div class="hint">Swipe on mobile, 2-up on iPad</div>
-        </div>
-        <div class="bd">
-          <div class="chartStack">
-            <div class="chartCard">
-              <h3>Team Points (For vs Against)</h3>
-              <canvas id="chartForAgainst" width="800" height="300"></canvas>
-            </div>
-            <div class="chartCard">
-              <h3>Margins</h3>
-              <canvas id="chartMargins" width="800" height="300"></canvas>
-            </div>
-          </div>
-
-          <div class="spacer"></div>
-          <div class="insight" id="insightCard">
-            <div class="icon">↗︎</div>
-            <div class="small">Loading insight…</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Player analytics -->
-      <div class="card">
-        <div class="hd">
-          <h2>Player Analytics</h2>
-          <div class="hint">Totals + per-game + fouls</div>
-        </div>
-        <div class="bd">
-          <table>
-            <thead>
-              <tr>
-                <th>Player</th>
-                <th class="rightTx">Games</th>
-                <th class="rightTx">PTS</th>
-                <th class="rightTx">PPG</th>
-                <th class="rightTx">1PT</th>
-                <th class="rightTx">2PT</th>
-                <th class="rightTx">3PT</th>
-                <th class="rightTx">Fouls</th>
-                <th class="rightTx">FPG</th>
-                <th class="rightTx">High</th>
-                <th class="rightTx">Low</th>
-                <th class="rightTx">% Team</th>
-              </tr>
-            </thead>
-            <tbody id="playersBody"></tbody>
-          </table>
-
-          <div class="spacer"></div>
-          <div class="small">
-            Tip: If a player’s totals look off, they may be missing from a game’s player list — edit that game in the editor and hit Apply.
-          </div>
-        </div>
-      </div>
-
-    </section>
-  </main>
-
-</div>
-
-<!-- Modal (Game Detail) -->
-<div class="backdrop" id="backdrop">
-  <div class="modal">
-    <div class="mh">
-      <h2 id="modalTitle">Game Detail</h2>
-      <button class="closeX" id="btnClose">Close</button>
-    </div>
-    <div class="mb" id="modalBody"></div>
-  </div>
-</div>
-
-<!-- Modal (Editor) -->
-<div class="backdrop" id="editorBackdrop">
-  <div class="modal">
-    <div class="mh">
-      <h2>Games Data Editor</h2>
-      <div class="row">
-        <span class="pill"><span class="dot"></span>Paste / edit JSON then <strong>Apply</strong></span>
-        <button class="btn primary" id="btnApply">Apply</button>
-        <button class="btn" id="btnCancelEditor">Cancel</button>
-      </div>
-    </div>
-    <div class="mb">
-      <div class="small">
-        You currently have <strong id="editorLoaded">0</strong> games loaded.
-        <br/>Format per game (full object supported):
-        <span class="mono">{ "game": 1, "opponent":"...", "teamScore":37, "oppScore":16, "halves":{"h1":{"team":13,"opp":7},"h2":{"team":24,"opp":9}}, "players":[{"name":"...", "pts":6, "ft":0, "two":3, "three":0, "fouls":2}] }</span>
-      </div>
-      <div class="spacer"></div>
-      <textarea class="ta" id="jsonEditor" spellcheck="false"></textarea>
-      <div class="spacer"></div>
-      <div class="row">
-        <button class="btn" id="btnFillTemplate">Insert Blank Game Template</button>
-        <button class="btn danger" id="btnClear">Clear</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ============================================================
-   DATA LOADING
-   - Primary: /data/season-2026.json
-   - Fallback: embedded INITIAL_GAMES (if fetch fails)
-   ============================================================ */
-
-const DATA_URL = "./data/season-2026.json";
-
-/* Fallback (keep light). Your real season data should live in season-2026.json */
-const INITIAL_GAMES = [
-  { game: 3, opponent:"Vampire Wolves U14 Boys", teamScore:30, oppScore:23, halves:{h1:{team:19,opp:7}, h2:{team:11,opp:16}}, players:[] },
-  { game: 4, opponent:"St Kilda Warriors BRAVE U14 Boys", teamScore:30, oppScore:17, halves:{h1:{team:14,opp:5}, h2:{team:16,opp:12}}, players:[] },
-  { game: 5, opponent:"Vampire Wolves U14 Boys", teamScore:14, oppScore:34, halves:{h1:{team:8,opp:12}, h2:{team:6,opp:22}}, players:[] },
-  { game: 6, opponent:"Lakers U14 Boys Flame", teamScore:26, oppScore:29, halves:{h1:{team:7,opp:15}, h2:{team:19,opp:14}}, players:[] },
-  { game: 7, opponent:"Dark Wolves U14 Boys", teamScore:26, oppScore:28, halves:{h1:{team:10,opp:16}, h2:{team:16,opp:12}}, players:[] },
-  { game: 8, opponent:"Raptors U14 Boys Orange", teamScore:28, oppScore:45, halves:{h1:{team:16,opp:16}, h2:{team:12,opp:29}}, players:[] },
-  { game: 9, opponent:"Carnegie Chargers U14 Boys Bears", teamScore:25, oppScore:30, halves:{h1:{team:4,opp:13}, h2:{team:21,opp:17}}, players:[] },
-];
-
-let TARGET_GAMES = 10;
-let GAMES = deepClone(INITIAL_GAMES);
-let RAW_UPLOADED = deepClone(INITIAL_GAMES);
-
-/* ============================================================
-   HELPERS
-   ============================================================ */
-function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
-function safeNum(n){ return (Number.isFinite(+n) ? +n : 0); }
-function round1(x){ x=safeNum(x); return Math.round(x*10)/10; }
-function sum(arr, fn){ let t=0; for(const a of arr){ t += safeNum(fn(a)); } return t; }
-function uniq(arr){ return Array.from(new Set(arr)); }
-function margin(g){ return safeNum(g.teamScore) - safeNum(g.oppScore); }
-function isWin(g){ return margin(g) > 0; }
-
-function escapeHtml(s){
-  return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-/* ============================================================
-   NORMALIZE (supports simple or full objects)
-   ============================================================ */
-function normalizeGames(arr){
-  const cleaned = arr.map(g=>{
-    const gg = deepClone(g || {});
-    gg.game = safeNum(gg.game);
-    gg.teamScore = safeNum(gg.teamScore);
-    gg.oppScore = safeNum(gg.oppScore);
-
-    gg.opponent = gg.opponent || gg.oppTeam || "Unknown";
-    gg.team = gg.team || "Lakers U14 Boys Copper";
-    gg.oppTeam = gg.oppTeam || gg.opponent || "Opponent";
-
-    gg.halves = gg.halves || {h1:{team:null,opp:null}, h2:{team:null,opp:null}};
-    if(!gg.halves.h1) gg.halves.h1 = {team:null,opp:null};
-    if(!gg.halves.h2) gg.halves.h2 = {team:null,opp:null};
-
-    gg.players = Array.isArray(gg.players) ? gg.players.map(p=>({
-      name: (p && p.name) ? p.name : "Unknown",
-      pts: safeNum(p && p.pts),
-      ft: safeNum(p && p.ft),
-      two: safeNum(p && p.two),
-      three: safeNum(p && p.three),
-      fouls: safeNum(p && p.fouls),
-    })) : [];
-
-    return gg;
-  }).filter(g => g.game !== 0);
-
-  // De-dup by game #
-  const map = new Map();
-  for(const g of cleaned){
-    map.set(g.game, g);
-  }
-  return Array.from(map.values()).sort((a,b)=>a.game-b.game);
-}
-
-/* ============================================================
-   LOAD season-2026.json
-   ============================================================ */
-async function loadSeason(){
-  try{
-    const res = await fetch(DATA_URL, { cache: "no-store" });
-    if(!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
-    if(!Array.isArray(data)) throw new Error("JSON root must be an array.");
-    const normalized = normalizeGames(data);
-
-    RAW_UPLOADED = deepClone(normalized);
-    GAMES = deepClone(normalized);
-
-    // If season JSON includes all games, set target accordingly
-    TARGET_GAMES = Math.max(10, normalized.length);
-    document.getElementById("targetCount").textContent = String(TARGET_GAMES);
-
-    render();
-  }catch(err){
-    console.warn("Failed to load season JSON, using fallback:", err);
-    RAW_UPLOADED = deepClone(INITIAL_GAMES);
-    GAMES = deepClone(INITIAL_GAMES);
-    document.getElementById("targetCount").textContent = String(TARGET_GAMES);
-    render();
-  }
-<!-- ===========================
-     PART 2 / 3  (approx lines 501–1000)
-     Paste this DIRECTLY after Part 1
-     =========================== -->
+<!-- ===== Chart.js ===== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-  /* ============================================================
-     MOBILE / iPAD “PRO” LAYOUT UPGRADES
-     - tighter spacing
-     - sticky action bar on mobile
-     - cards become full-width stack
-     - modal becomes full-screen sheet on mobile
-     ============================================================ */
+:root{
+  --bg:#0b1220;
+  --card:#0f1828;
+  --border:rgba(255,255,255,.08);
+  --text:#e7eefc;
+  --muted:#9fb0d0;
 
-  /* iPad/tablet sizing tweaks */
-  @media (max-width: 1024px){
-    .wrap{ max-width: 980px; padding:22px 14px 70px; }
-    .title h1{ font-size:20px; }
-    .title .sub{ font-size:12.5px; }
-    .card .hd{ padding:12px 14px; }
-    .card .bd{ padding:12px 14px; }
-  }
+  --blue:#6ee7ff;
+  --green:#2bd47d;
+  --red:#ff5c7a;
+  --amber:#ffd166;
 
-  /* Mobile layout: make topbar vertical + sticky actions */
-  @media (max-width: 720px){
-    .wrap{ padding:18px 12px 96px; }
+  --radius:22px;
+  --shadow:0 20px 45px rgba(0,0,0,.45);
+  --font:'Inter',system-ui,-apple-system;
+}
 
-    .topbar{
-      flex-direction:column;
-      align-items:stretch;
-      gap:12px;
-      margin-bottom:12px;
-    }
+*{box-sizing:border-box}
 
-    .controls{
-      justify-content:stretch;
-      gap:10px;
-    }
+body{
+  margin:0;
+  font-family:var(--font);
+  background:
+    radial-gradient(900px 500px at 15% -10%, #1b2b4a 0%, transparent 55%),
+    linear-gradient(180deg, #08101f, #040814);
+  color:var(--text);
+}
 
-    /* sticky action bar */
-    .controls{
-      position:sticky;
-      top:10px;
-      z-index:20;
-      padding:10px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg, rgba(2,6,23,.70), rgba(2,6,23,.45));
-      backdrop-filter: blur(10px);
-      box-shadow: 0 16px 40px rgba(0,0,0,.35);
-    }
+/* ===== Layout ===== */
+.wrap{
+  max-width:1100px;
+  margin:auto;
+  padding:22px;
+}
 
-    .pill{ width:100%; justify-content:center; }
-    .btn{ width:100%; padding:12px 12px; border-radius:14px; font-size:13px; }
+.card{
+  background:linear-gradient(180deg,#101b33,#0b1326);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+  margin-bottom:18px;
+}
 
-    /* tiles: 1 per row */
-    .tile{ grid-column: span 12 !important; }
-  }
+h1{font-size:22px;margin:0 0 6px}
+h2{font-size:16px;margin:0 0 10px;color:#cfe3ff}
+small{color:var(--muted)}
 
-  /* Tables on mobile -> horizontally scrollable with a “glass” frame */
-  .tableWrap{
-    width:100%;
-    overflow:auto;
-    border-radius:16px;
-    border:1px solid rgba(255,255,255,.08);
-    background:rgba(0,0,0,.14);
-  }
-  .tableWrap table{ min-width: 760px; }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:14px;
+}
 
-  @media (max-width: 720px){
-    .tableWrap{ -webkit-overflow-scrolling: touch; }
-    thead th{ position:sticky; top:0; background:rgba(2,6,23,.85); backdrop-filter: blur(8px); }
-  }
+.stat{
+  background:linear-gradient(180deg,#121f3c,#0c162e);
+  border-radius:18px;
+  padding:14px;
+  border:1px solid var(--border);
+}
 
-  /* Chart “pro” frame */
-  .chartCard{
-    position:relative;
-  }
-  .chartMeta{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin:0 0 10px 0;
-  }
-  .chartMeta .left{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-  }
-  .chartMeta .left .t{
-    font-size:12px;
-    color:var(--muted);
-    font-weight:900;
-    letter-spacing:.25px;
-    text-transform:uppercase;
-    margin:0;
-  }
-  .chartMeta .left .d{
-    font-size:12px;
-    color:rgba(255,255,255,.78);
-  }
-  .legend{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
-  .lg{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:6px 10px;
-    border-radius:999px;
-    font-size:11px;
-    font-weight:900;
-    border:1px solid rgba(255,255,255,.10);
-    background:rgba(255,255,255,.05);
-    color:rgba(255,255,255,.82);
-  }
-  .swatch{
-    width:14px;
-    height:6px;
-    border-radius:999px;
-    display:inline-block;
-  }
+.stat .label{color:var(--muted);font-size:12px}
+.stat .value{font-size:26px;font-weight:700;margin-top:4px}
 
-  /* Tooltip for charts */
-  .tip{
-    position:absolute;
-    pointer-events:none;
-    transform: translate(-50%, -110%);
-    padding:8px 10px;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,.14);
-    background:linear-gradient(180deg, rgba(10,22,48,.95), rgba(2,6,23,.95));
-    box-shadow:0 18px 40px rgba(0,0,0,.45);
-    font-size:12px;
-    color:rgba(255,255,255,.92);
-    opacity:0;
-    transition:opacity .12s ease;
-    white-space:nowrap;
-  }
-  .tip strong{ font-weight:900; }
-  .tip .muted{ color:rgba(255,255,255,.65); }
+/* ===== Table ===== */
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
 
-  /* Full-screen sheet modal on mobile */
-  @media (max-width: 720px){
-    .modal{
-      width:100%;
-      max-height:92vh;
-      border-radius:20px;
-    }
-    .modal .mh{
-      padding:12px 12px;
-      border-top-left-radius:20px;
-      border-top-right-radius:20px;
-    }
-    .closeX{ padding:10px 12px; }
-    .ta{ min-height: 260px; font-size:12px; }
-  }
+th,td{
+  padding:10px 8px;
+  border-bottom:1px solid var(--border);
+}
+
+th{
+  text-align:left;
+  color:var(--muted);
+  font-weight:600;
+}
+
+.win{color:var(--green)}
+.loss{color:var(--red)}
+
+/* ===== Mobile tweaks ===== */
+@media (max-width:700px){
+  h1{font-size:18px}
+}
 </style>
 </head>
 
 <body>
 <div class="wrap">
-  <div class="topbar">
-    <div class="title">
-      <h1>U14 Season Analytics Dashboard</h1>
-      <div class="sub">
-        Season analytics for <strong>Lakers U14 Boys Copper</strong> (results, player scoring, fouls, trends).<br/>
-        Loads from <span class="mono">/data/season-2026.json</span> and supports paste-to-edit + CSV export.
-      </div>
-    </div>
 
-    <div class="controls">
-      <div class="pill" id="loadedPill">
-        <span class="dot warn" id="loadedDot"></span>
-        <strong id="loadedCount">0</strong> / <span id="targetCount">10</span> games loaded
-      </div>
-      <button class="btn primary" id="btnOpenEditor">Add / Edit Games</button>
-      <button class="btn" id="btnExport">Export CSV</button>
-      <button class="btn danger" id="btnReset">Reset to Uploaded Data</button>
-    </div>
-  </div>
-
-  <!-- Snapshot -->
+  <!-- ===== HEADER ===== -->
   <div class="card">
-    <div class="hd">
-      <h2>Season Snapshot</h2>
-      <div class="hint">Auto-calculated from loaded games</div>
-    </div>
-    <div class="bd">
-      <div class="tiles" id="tiles"></div>
-    </div>
+    <h1>U14 Season Analytics Dashboard</h1>
+    <small>Lakers U14 Boys Copper • Auto-loaded from <code>/data/season-2026.json</code></small>
   </div>
 
-  <!-- Charts -->
-  <div class="card" style="margin-top:14px;">
-    <div class="hd">
-      <h2>Trends</h2>
-      <div class="hint">Points for/against and margins over time</div>
-    </div>
-    <div class="bd">
-      <div class="chartWrap">
-        <div class="chartCard" id="chartCardFA">
-          <div class="chartMeta">
-            <div class="left">
-              <div class="t">Team Points (For vs Against)</div>
-              <div class="d">Hover / tap to see exact values</div>
-            </div>
-            <div class="legend">
-              <span class="lg"><span class="swatch" style="background:rgba(110,231,255,.95)"></span>For</span>
-              <span class="lg"><span class="swatch" style="background:rgba(255,92,122,.85)"></span>Against</span>
-            </div>
-          </div>
-          <div class="tip" id="tipFA"></div>
-          <canvas id="chartForAgainst" width="800" height="300"></canvas>
-        </div>
-
-        <div class="chartCard" id="chartCardM">
-          <div class="chartMeta">
-            <div class="left">
-              <div class="t">Margins</div>
-              <div class="d">Positive = win, Negative = loss</div>
-            </div>
-            <div class="legend">
-              <span class="lg"><span class="swatch" style="background:rgba(43,212,125,.90)"></span>Margin</span>
-            </div>
-          </div>
-          <div class="tip" id="tipM"></div>
-          <canvas id="chartMargins" width="800" height="300"></canvas>
-        </div>
+  <!-- ===== SNAPSHOT ===== -->
+  <div class="card">
+    <h2>Season Snapshot</h2>
+    <div class="grid">
+      <div class="stat">
+        <div class="label">Record</div>
+        <div class="value" id="record">–</div>
+      </div>
+      <div class="stat">
+        <div class="label">Avg Points For</div>
+        <div class="value" id="avgFor">–</div>
+      </div>
+      <div class="stat">
+        <div class="label">Avg Points Against</div>
+        <div class="value" id="avgAgainst">–</div>
+      </div>
+      <div class="stat">
+        <div class="label">Avg Margin</div>
+        <div class="value" id="avgMargin">–</div>
       </div>
     </div>
   </div>
 
-  <!-- Results table -->
-  <div class="card" style="margin-top:14px;">
-    <div class="hd">
-      <h2>Game Results</h2>
-      <div class="hint">Tap a game to open detail modal</div>
-    </div>
-    <div class="bd">
-      <div class="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:70px;">Game</th>
-              <th>Opponent</th>
-              <th class="right">Score</th>
-              <th class="right">Margin</th>
-              <th style="width:130px;">Result</th>
-              <th class="right">1H / 2H</th>
-            </tr>
-          </thead>
-          <tbody id="resultsBody"></tbody>
-        </table>
-      </div>
-    </div>
+  <!-- ===== RESULTS TABLE ===== -->
+  <div class="card">
+    <h2>Game Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Opponent</th>
+          <th>Score</th>
+          <th>Margin</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
   </div>
 
-  <!-- Player leaderboards -->
-  <div class="card" style="margin-top:14px;">
-    <div class="hd">
-      <h2>Player Analytics</h2>
-      <div class="hint">Totals + per-game + splits (1PT/2PT/3PT) + fouls</div>
-    </div>
-    <div class="bd">
-      <div class="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th class="right">Games</th>
-              <th class="right">PTS</th>
-              <th class="right">PPG</th>
-              <th class="right">1PT</th>
-              <th class="right">2PT</th>
-              <th class="right">3PT</th>
-              <th class="right">Fouls</th>
-              <th class="right">FPG</th>
-              <th class="right">High</th>
-              <th class="right">Low</th>
-              <th class="right">% Team Pts</th>
-            </tr>
-          </thead>
-          <tbody id="playersBody"></tbody>
-        </table>
-      </div>
-
-      <div class="spacer"></div>
-      <div class="small">
-        Tip: If a player’s totals look low, check if they’re missing from a game’s player list — you can add them in the editor and analytics will recalc instantly.
-      </div>
-    </div>
+  <!-- ===== CHART ===== -->
+  <div class="card">
+    <h2>Points For vs Against</h2>
+    <canvas id="pointsChart" height="140"></canvas>
   </div>
-</div>
 
-<!-- Modal (Game Detail) -->
-<div class="backdrop" id="backdrop">
-  <div class="modal">
-    <div class="mh">
-      <h2 id="modalTitle">Game Detail</h2>
-      <button class="closeX" id="btnClose">Close</button>
-    </div>
-    <div class="mb" id="modalBody"></div>
-  </div>
-</div>
-
-<!-- Modal (Editor) -->
-<div class="backdrop" id="editorBackdrop">
-  <div class="modal">
-    <div class="mh">
-      <h2>Games Data Editor</h2>
-      <div class="row">
-        <span class="pill"><span class="dot"></span>Paste / edit JSON then click <strong>Apply</strong></span>
-        <button class="btn primary" id="btnApply">Apply</button>
-        <button class="btn" id="btnCancelEditor">Cancel</button>
-      </div>
-    </div>
-    <div class="mb">
-      <div class="small">
-        You currently have <strong id="editorLoaded">0</strong> games loaded.
-        <br/>Format per game:
-        <span class="mono">{ "game": 1, "opponent":"Immortal Warriors U14 Boys", "team":"Lakers U14 Boys Copper", "teamScore":37, "oppScore":16, "halves":{"h1":{"team":13,"opp":7},"h2":{"team":24,"opp":9}}, "players":[{"name":"...", "pts":6, "ft":0, "two":3, "three":0, "fouls":2}] }</span>
-      </div>
-      <div class="spacer"></div>
-      <textarea class="ta" id="jsonEditor" spellcheck="false"></textarea>
-      <div class="spacer"></div>
-      <div class="row">
-        <button class="btn" id="btnFillTemplate">Insert Blank Game Template</button>
-        <button class="btn danger" id="btnClear">Clear</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
-/* ============================================================
-   PART 2 continues the JS:
-   - fetch JSON from /data/season-2026.json
-   - improved charts (fills, tooltips, tap support)
-   ============================================================ */
+/* ==============================
+   DATA + LOGIC
+============================== */
 
-const TARGET_GAMES = 10;
-document.getElementById("targetCount").textContent = String(TARGET_GAMES);
-
-function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
-function safeNum(n){ return (Number.isFinite(+n) ? +n : 0); }
-function round1(x){ x = safeNum(x); return Math.round(x*10)/10; }
-function sum(arr, fn){ let t=0; for(const a of arr) t += safeNum(fn(a)); return t; }
-function uniq(arr){ return Array.from(new Set(arr)); }
-function byNameAsc(a,b){ return a.name.localeCompare(b.name); }
-function margin(g){ return safeNum(g.teamScore) - safeNum(g.oppScore); }
-function isWin(g){ return margin(g) > 0; }
-
-function escapeHtml(s){
-  return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-/* ============================================================
-   LOAD from /data/season-2026.json
-   ============================================================ */
-let INITIAL_GAMES = [];   // what we fetched (for Reset)
-let GAMES = [];           // current (editable) state
+const DATA_URL = "./data/season-2026.json";
+let games = [];
 
 async function loadSeason(){
-  try{
-    const DATA_URL = window.location.hostname.includes("github.io")
-      ? "/data/season-2026.json"
-      : "data/season-2026.json";
-
-    const res = await fetch(DATA_URL, { cache: "no-store" });
-    if(!res.ok) throw new Error("Fetch failed");
-
-    const json = await res.json();
-    GAMES = normalizeGames(json);
-    INITIAL_GAMES = deepClone(GAMES);
-  }catch(e){
-    console.warn("Using fallback data", e);
-    GAMES = [];
-    INITIAL_GAMES = [];
-  }
+  const res = await fetch(DATA_URL,{cache:"no-store"});
+  games = await res.json();
   render();
 }
 
-    render();
-  }catch(err){
-    console.error(err);
-    // fallback to empty but still render shell
-    INITIAL_GAMES = [];
-    GAMES = [];
-    render();
-    alert("Could not load ./data/season-2026.json\n\n" + (err?.message || String(err)));
-  }
+function render(){
+  const totalGames = games.length;
+
+  let wins = 0;
+  let pf = 0;
+  let pa = 0;
+
+  const tbody = document.getElementById("resultsBody");
+  tbody.innerHTML = "";
+
+  games.forEach(g=>{
+    pf += g.teamScore;
+    pa += g.oppScore;
+
+    const margin = g.teamScore - g.oppScore;
+    const win = margin > 0;
+    if(win) wins++;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${g.game}</td>
+      <td>${g.opponent}</td>
+      <td>${g.teamScore}–${g.oppScore}</td>
+      <td class="${win?"win":"loss"}">${margin}</td>
+      <td class="${win?"win":"loss"}">${win?"W":"L"}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("record").textContent = `${wins}-${totalGames-wins}`;
+  document.getElementById("avgFor").textContent = (pf/totalGames).toFixed(1);
+  document.getElementById("avgAgainst").textContent = (pa/totalGames).toFixed(1);
+  document.getElementById("avgMargin").textContent = ((pf-pa)/totalGames).toFixed(1);
+
+  drawChart();
 }
 
-function normalizeGames(arr){
-  const cleaned = arr.map(g=>{
-    const gg = deepClone(g);
-    gg.game = safeNum(gg.game);
-    gg.opponent = gg.opponent || gg.oppTeam || "Unknown";
-    gg.team = gg.team || "Lakers U14 Boys Copper";
-    gg.oppTeam = gg.oppTeam || gg.opponent || "Opponent";
-    gg.teamScore = safeNum(gg.teamScore);
-    gg.oppScore  = safeNum(gg.oppScore);
-    gg.halves = gg.halves || {h1:{team:null,opp:null}, h2:{team:null,opp:null}};
-    gg.players = Array.isArray(gg.players) ? gg.players.map(p=>({
-      name: p.name || "Unknown",
-      pts: safeNum(p.pts),
-      ft: safeNum(p.ft),
-      two: safeNum(p.two),
-      three: safeNum(p.three),
-      fouls: safeNum(p.fouls),
-    })) : [];
-    return gg;
-  }).filter(g=>g.game !== 0);
+function drawChart(){
+  const ctx = document.getElementById("pointsChart");
 
-  // de-dupe by game #
-  const map = new Map();
-  for(const g of cleaned) map.set(g.game, g);
-  return Array.from(map.values()).sort((a,b)=>a.game-b.game);
-}
-
-/* ============================================================
-   ANALYTICS
-   ============================================================ */
-function buildAnalytics(games){
-  const gp = games.length;
-  const wins = games.filter(isWin).length;
-  const losses = gp - wins;
-
-  const pf = sum(games, g=>g.teamScore);
-  const pa = sum(games, g=>g.oppScore);
-
-  const avgPF = gp ? pf/gp : 0;
-  const avgPA = gp ? pa/gp : 0;
-
-  const margins = games.map(g=>margin(g));
-  const avgMargin = gp ? sum(margins, x=>x)/gp : 0;
-
-  const closeGames = games.filter(g=>Math.abs(margin(g)) <= 5).length;
-
-  const bestWin = games.filter(isWin).sort((a,b)=>margin(b)-margin(a))[0] || null;
-  const worstLoss = games.filter(g=>!isWin(g)).sort((a,b)=>margin(a)-margin(b))[0] || null;
-
-  const h1For = sum(games, g=>g?.halves?.h1?.team ?? 0);
-  const h1Against = sum(games, g=>g?.halves?.h1?.opp ?? 0);
-  const h2For = sum(games, g=>g?.halves?.h2?.team ?? 0);
-  const h2Against = sum(games, g=>g?.halves?.h2?.opp ?? 0);
-
-  const scores = games.map(g=>safeNum(g.teamScore));
-  const mean = gp ? sum(scores, x=>x)/gp : 0;
-  const variance = gp ? sum(scores, x=>(x-mean)*(x-mean))/gp : 0;
-  const sd = Math.sqrt(variance);
-
-  const allPlayers = uniq(games.flatMap(g=>(g.players||[]).map(p=>p.name))).filter(Boolean);
-
-  const players = allPlayers.map(name=>{
-    const rows = [];
-    for(const g of games){
-      const p = (g.players||[]).find(x=>x.name===name);
-      if(p){
-        rows.push({ game:g.game, pts:safeNum(p.pts), ft:safeNum(p.ft), two:safeNum(p.two), three:safeNum(p.three), fouls:safeNum(p.fouls) });
+  new Chart(ctx,{
+    type:"line",
+    data:{
+      labels:games.map(g=>"G"+g.game),
+      datasets:[
+        {
+          label:"Points For",
+          data:games.map(g=>g.teamScore),
+          borderColor:"#6ee7ff",
+          tension:.35
+        },
+        {
+          label:"Points Against",
+          data:games.map(g=>g.oppScore),
+          borderColor:"#ff5c7a",
+          tension:.35
+        }
+      ]
+    },
+    options:{
+      plugins:{legend:{labels:{color:"#cfe3ff"}}},
+      scales:{
+        x:{ticks:{color:"#9fb0d0"},grid:{color:"rgba(255,255,255,.05)"}},
+        y:{ticks:{color:"#9fb0d0"},grid:{color:"rgba(255,255,255,.05)"}}
       }
     }
-    const gamesPlayed = rows.length;
-    const pts = sum(rows,r=>r.pts);
-    const ft = sum(rows,r=>r.ft);
-    const two = sum(rows,r=>r.two);
-    const three = sum(rows,r=>r.three);
-    const fouls = sum(rows,r=>r.fouls);
-    const ppg = gamesPlayed ? pts/gamesPlayed : 0;
-    const fpg = gamesPlayed ? fouls/gamesPlayed : 0;
-    const high = gamesPlayed ? Math.max(...rows.map(r=>r.pts)) : 0;
-    const low  = gamesPlayed ? Math.min(...rows.map(r=>r.pts)) : 0;
-    const teamShare = pf ? (pts/pf)*100 : 0;
-
-    return { name, gamesPlayed, pts, ppg, ft, two, three, fouls, fpg, high, low, teamShare };
-  }).sort((a,b)=>b.pts-a.pts || a.name.localeCompare(b.name));
-
-  return { gp,wins,losses,pf,pa,avgPF,avgPA,avgMargin,closeGames,bestWin,worstLoss,h1For,h1Against,h2For,h2Against,sd,margins,players };
-}
-
-/* ============================================================
-   RENDER UI
-   ============================================================ */
-function render(){
-  const A = buildAnalytics(GAMES);
-
-  // loaded indicator
-  const loadedDot = document.getElementById("loadedDot");
-  document.getElementById("loadedCount").textContent = String(A.gp);
-  document.getElementById("editorLoaded").textContent = String(A.gp);
-
-  if(A.gp >= TARGET_GAMES) loadedDot.className = "dot good";
-  else if(A.gp >= Math.ceil(TARGET_GAMES*0.7)) loadedDot.className = "dot warn";
-  else loadedDot.className = "dot bad";
-
-  // tiles
-  const tiles = document.getElementById("tiles");
-  tiles.innerHTML = "";
-  const winPct = A.gp ? (A.wins/A.gp)*100 : 0;
-
-  const badge = (()=> {
-    if(A.gp===0) return {label:"No data", cls:"b-mid"};
-    if(A.avgMargin >= 5) return {label:"Dominant", cls:"b-good"};
-    if(A.avgMargin >= 0) return {label:"Competitive", cls:"b-good"};
-    if(A.avgMargin > -5) return {label:"Close but learning", cls:"b-mid"};
-    return {label:"Developing", cls:"b-bad"};
-  })();
-
-  const tileData = [
-    {k:"Games", v:A.gp, s:`Target: ${TARGET_GAMES}`},
-    {k:"Record", v:`${A.wins}-${A.losses}`, s:`Win%: ${round1(winPct)}%`},
-    {k:"Avg Points For", v:round1(A.avgPF), s:`Total PF: ${A.pf}`},
-    {k:"Avg Points Against", v:round1(A.avgPA), s:`Total PA: ${A.pa}`},
-    {k:"Avg Margin", v:round1(A.avgMargin), s:`Close games (≤5): ${A.closeGames}`},
-    {k:"Consistency (SD)", v:round1(A.sd), s:`Lower = more consistent`},
-    {k:"1H vs 2H (For)", v:`${A.h1For} / ${A.h2For}`, s:`1H & 2H points scored`},
-    {k:"Season Label", v:badge.label, s:`Heuristic based on margin`},
-  ];
-
-  for(const t of tileData){
-    const div = document.createElement("div");
-    div.className = "tile";
-    div.innerHTML = `<div class="k">${escapeHtml(t.k)}</div>
-                     <div class="v">${escapeHtml(String(t.v))}</div>
-                     <div class="s">${escapeHtml(String(t.s))}</div>`;
-    tiles.appendChild(div);
-  }
-
-  // results table
-  const resultsBody = document.getElementById("resultsBody");
-  resultsBody.innerHTML = "";
-  const gamesSorted = [...GAMES].sort((a,b)=>safeNum(a.game)-safeNum(b.game));
-
-  for(const g of gamesSorted){
-    const m = margin(g);
-    const res = m>0 ? {txt:"WIN", cls:"b-good"} : (m<0 ? {txt:"LOSS", cls:"b-bad"} : {txt:"DRAW", cls:"b-mid"});
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="mono"><a class="click" data-game="${g.game}">#${escapeHtml(String(g.game))}</a></td>
-      <td><a class="click" data-game="${g.game}">${escapeHtml(g.opponent||"Unknown")}</a></td>
-      <td class="right mono">${escapeHtml(`${g.teamScore}-${g.oppScore}`)}</td>
-      <td class="right mono">${m>0?"+":""}${escapeHtml(String(m))}</td>
-      <td><span class="badge ${res.cls}">${res.txt}</span></td>
-      <td class="right mono muted">${escapeHtml(`${g?.halves?.h1?.team ?? "?"}-${g?.halves?.h1?.opp ?? "?"} / ${g?.halves?.h2?.team ?? "?"}-${g?.halves?.h2?.opp ?? "?"}`)}</td>
-    `;
-    resultsBody.appendChild(tr);
-  }
-
-  resultsBody.querySelectorAll("[data-game]").forEach(a=>{
-    a.addEventListener("click", (e)=>{
-      e.preventDefault();
-      openGameModal(safeNum(a.getAttribute("data-game")));
-    });
   });
-
-  // players table
-  const playersBody = document.getElementById("playersBody");
-  playersBody.innerHTML = "";
-  for(const p of A.players){
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${escapeHtml(p.name)}</td>
-      <td class="right mono">${p.gamesPlayed}</td>
-      <td class="right mono"><strong>${p.pts}</strong></td>
-      <td class="right mono">${round1(p.ppg)}</td>
-      <td class="right mono">${p.ft}</td>
-      <td class="right mono">${p.two}</td>
-      <td class="right mono">${p.three}</td>
-      <td class="right mono">${p.fouls}</td>
-      <td class="right mono">${round1(p.fpg)}</td>
-      <td class="right mono">${p.high}</td>
-      <td class="right mono">${p.low}</td>
-      <td class="right mono">${round1(p.teamShare)}%</td>
-    `;
-    playersBody.appendChild(tr);
-  }
-
-  // charts with pro tooltips
-  drawForAgainstChartPro("chartForAgainst", "chartCardFA", "tipFA", gamesSorted);
-  drawMarginsChartPro("chartMargins", "chartCardM", "tipM", gamesSorted);
-<!-- ===========================
-     PART 3 / 3  (final)
-     - chart drawing (pro)
-     - tooltips (touch + mouse)
-     - modals
-     - editor logic
-     - CSV export
-     - reset
-     - init
-     =========================== -->
-
-<script>
-/* ============================================================
-   CANVAS HELPERS (RETINA SAFE)
-   ============================================================ */
-function getCanvas(id){
-  const c = document.getElementById(id);
-  const ctx = c.getContext("2d");
-  const dpr = window.devicePixelRatio || 1;
-  const cssW = c.clientWidth || 800;
-  const cssH = c.clientHeight || 260;
-  c.width = Math.floor(cssW * dpr);
-  c.height = Math.floor(cssH * dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  return {ctx, w:cssW, h:cssH};
 }
 
-function drawAxes(ctx,w,h,pad){
-  ctx.strokeStyle="rgba(255,255,255,.12)";
-  ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(pad,h-pad); ctx.lineTo(w-pad,h-pad); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(pad,pad); ctx.lineTo(pad,h-pad); ctx.stroke();
-
-  ctx.strokeStyle="rgba(255,255,255,.07)";
-  for(let i=1;i<=4;i++){
-    const y = pad + (h-2*pad)*(i/4);
-    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke();
-  }
-}
-
-function mapY(v,min,max,h,pad){
-  if(max===min) return h/2;
-  const t=(v-min)/(max-min);
-  return (h-pad)-t*(h-2*pad);
-}
-
-/* ============================================================
-   CHART: FOR vs AGAINST (PRO)
-   ============================================================ */
-function drawForAgainstChartPro(canvasId, cardId, tipId, games){
-  const {ctx,w,h}=getCanvas(canvasId);
-  ctx.clearRect(0,0,w,h);
-  const pad=28;
-
-  drawAxes(ctx,w,h,pad);
-
-  const values = games.flatMap(g=>[g.teamScore,g.oppScore]);
-  const min = Math.min(0,...values);
-  const max = Math.max(10,...values);
-
-  const ptsFor=[], ptsAg=[];
-  games.forEach((g,i)=>{
-    const x = pad + (w-2*pad)*(games.length===1?0.5:i/(games.length-1));
-    ptsFor.push({x,y:mapY(g.teamScore,min,max,h,pad),g});
-    ptsAg.push({x,y:mapY(g.oppScore,min,max,h,pad),g});
-  });
-
-  // gradient stroke
-  const grad = ctx.createLinearGradient(0,0,w,0);
-  grad.addColorStop(0,"rgba(110,231,255,.2)");
-  grad.addColorStop(.5,"rgba(110,231,255,.95)");
-  grad.addColorStop(1,"rgba(110,231,255,.2)");
-
-  ctx.lineWidth=2.5;
-  ctx.strokeStyle=grad;
-  ctx.beginPath();
-  ptsFor.forEach((p,i)=> i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
-  ctx.stroke();
-
-  ctx.strokeStyle="rgba(255,92,122,.85)";
-  ctx.beginPath();
-  ptsAg.forEach((p,i)=> i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
-  ctx.stroke();
-
-  bindTooltip(cardId, tipId, ptsFor, ptsAg, "forAgainst");
-}
-
-/* ============================================================
-   CHART: MARGINS (PRO)
-   ============================================================ */
-function drawMarginsChartPro(canvasId, cardId, tipId, games){
-  const {ctx,w,h}=getCanvas(canvasId);
-  ctx.clearRect(0,0,w,h);
-  const pad=28;
-
-  drawAxes(ctx,w,h,pad);
-
-  const margins = games.map(g=>g.teamScore-g.oppScore);
-  const min = Math.min(-10,...margins);
-  const max = Math.max(10,...margins);
-
-  const pts=[];
-  games.forEach((g,i)=>{
-    const x = pad + (w-2*pad)*(games.length===1?0.5:i/(games.length-1));
-    pts.push({x,y:mapY(g.teamScore-g.oppScore,min,max,h,pad),g});
-  });
-
-  const y0 = mapY(0,min,max,h,pad);
-  ctx.setLineDash([4,4]);
-  ctx.strokeStyle="rgba(255,255,255,.18)";
-  ctx.beginPath(); ctx.moveTo(pad,y0); ctx.lineTo(w-pad,y0); ctx.stroke();
-  ctx.setLineDash([]);
-
-  ctx.strokeStyle="rgba(43,212,125,.95)";
-  ctx.lineWidth=2.5;
-  ctx.beginPath();
-  pts.forEach((p,i)=> i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
-  ctx.stroke();
-
-  bindTooltip(cardId, tipId, pts, null, "margin");
-}
-
-/* ============================================================
-   TOOLTIP (mouse + touch)
-   ============================================================ */
-function bindTooltip(cardId, tipId, ptsA, ptsB, mode){
-  const card=document.getElementById(cardId);
-  const tip=document.getElementById(tipId);
-
-  function show(e){
-    const r=card.getBoundingClientRect();
-    const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
-    let best=null, d=1e9;
-    ptsA.forEach(p=>{
-      const dx=Math.abs(p.x-x);
-      if(dx<d){ d=dx; best=p; }
-    });
-    if(!best) return;
-
-    let html=`<strong>Game ${best.g.game}</strong><br/>`;
-    if(mode==="forAgainst"){
-      html+=`For: ${best.g.teamScore}<br/>Against: ${best.g.oppScore}`;
-    }else{
-      const m=best.g.teamScore-best.g.oppScore;
-      html+=`Margin: ${m>0?"+":""}${m}`;
-    }
-    tip.innerHTML=html;
-    tip.style.left=best.x+"px";
-    tip.style.top=best.y+"px";
-    tip.style.opacity=1;
-  }
-
-  function hide(){ tip.style.opacity=0; }
-
-  card.addEventListener("mousemove",show);
-  card.addEventListener("touchstart",show,{passive:true});
-  card.addEventListener("touchmove",show,{passive:true});
-  card.addEventListener("mouseleave",hide);
-  card.addEventListener("touchend",hide);
-}
-
-/* ============================================================
-   GAME DETAIL MODAL
-   ============================================================ */
-const backdrop=document.getElementById("backdrop");
-const modalTitle=document.getElementById("modalTitle");
-const modalBody=document.getElementById("modalBody");
-
-function openGameModal(gameNo){
-  const g=GAMES.find(x=>x.game===gameNo);
-  if(!g) return;
-  const m=g.teamScore-g.oppScore;
-  modalTitle.textContent=`Game ${g.game} vs ${g.opponent}`;
-  modalBody.innerHTML=`
-    <div class="pill"><strong>${g.teamScore}-${g.oppScore}</strong> (${m>0?"+":""}${m})</div>
-    <div class="spacer"></div>
-    <table>
-      <thead><tr><th>Player</th><th class="right">PTS</th><th class="right">F</th></tr></thead>
-      <tbody>
-        ${(g.players||[]).map(p=>`
-          <tr><td>${p.name}</td><td class="right">${p.pts}</td><td class="right">${p.fouls}</td></tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
-  backdrop.style.display="flex";
-}
-
-document.getElementById("btnClose").onclick=()=>backdrop.style.display="none";
-backdrop.onclick=e=>{ if(e.target===backdrop) backdrop.style.display="none"; };
-
-/* ============================================================
-   EDITOR
-   ============================================================ */
-const editorBackdrop=document.getElementById("editorBackdrop");
-const jsonEditor=document.getElementById("jsonEditor");
-
-document.getElementById("btnOpenEditor").onclick=()=>{
-  jsonEditor.value=JSON.stringify(GAMES,null,2);
-  editorBackdrop.style.display="flex";
-};
-document.getElementById("btnCancelEditor").onclick=()=>editorBackdrop.style.display="none";
-
-document.getElementById("btnApply").onclick=()=>{
-  try{
-    const parsed=JSON.parse(jsonEditor.value);
-    GAMES=normalizeGames(parsed);
-    editorBackdrop.style.display="none";
-    render();
-  }catch(e){
-    alert("Invalid JSON");
-  }
-};
-
-document.getElementById("btnClear").onclick=()=>jsonEditor.value="";
-
-/* ============================================================
-   EXPORT CSV
-   ============================================================ */
-document.getElementById("btnExport").onclick=()=>{
-  const A=buildAnalytics(GAMES);
-  let csv="Player,Games,PTS,PPG\n";
-  A.players.forEach(p=>{
-    csv+=`${p.name},${p.gamesPlayed},${p.pts},${round1(p.ppg)}\n`;
-  });
-  const blob=new Blob([csv],{type:"text/csv"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="u14_player_stats.csv";
-  a.click();
-};
-
-/* ============================================================
-   RESET
-   ============================================================ */
-document.getElementById("btnReset").onclick=()=>{
-  if(confirm("Reset to loaded data?")){
-    GAMES=deepClone(INITIAL_GAMES);
-    render();
-  }
-};
-
-/* ============================================================
-   INIT
-   ============================================================ */
 loadSeason();
-window.addEventListener("resize",()=>render());
 </script>
-
+</body>
+</html>
