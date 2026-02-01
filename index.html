@@ -1,1690 +1,693 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>U14 Season Analytics Dashboard</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>U14 Season Analytics Dashboard</title>
 
-<style>
-  :root{
-    --bg0:#020617;
-    --bg1:#071229;
-    --card:#0b1932;
-    --card2:#0a1630;
-    --border:rgba(255,255,255,.10);
-    --text:#e8eefc;
-    --muted:#9fb0d0;
-    --muted2:#7f93ba;
+  <style>
+    :root{
+      /* Base palette (premium navy, not pure black) */
+      --bg0:#050b18;
+      --bg1:#06122a;
+      --bg2:#071a3a;
 
-    --accent:#6ee7ff;
-    --accent2:#a78bfa;
-    --green:#2bd47d;
-    --amber:#ffd166;
-    --red:#ff5c7a;
+      --card0:rgba(255,255,255,.06);
+      --card1:rgba(255,255,255,.04);
+      --border:rgba(255,255,255,.10);
 
-    --shadow:0 24px 60px rgba(0,0,0,.55);
-    --radius:22px;
-    --radius2:16px;
+      --text:#eaf0ff;
+      --muted:#a7b6d6;
+      --muted2:#7f93ba;
 
-    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-  }
+      --accent:#6ee7ff;
+      --green:#2bd47d;
+      --amber:#ffd166;
+      --red:#ff5c7a;
+      --purple:#a78bfa;
 
-  *{ box-sizing:border-box }
-  html,body{ height:100% }
-  body{
-    margin:0;
-    font-family:var(--font);
-    color:var(--text);
-    background:
-      radial-gradient(1200px 700px at 18% 8%, rgba(110,231,255,.16), transparent 58%),
-      radial-gradient(900px 600px at 85% 18%, rgba(167,139,250,.14), transparent 60%),
-      radial-gradient(900px 700px at 40% 95%, rgba(43,212,125,.10), transparent 55%),
-      linear-gradient(180deg, var(--bg1), var(--bg0));
-    min-height:100vh;
-    -webkit-font-smoothing:antialiased;
-    text-rendering:optimizeLegibility;
-  }
+      --shadow:0 24px 60px rgba(0,0,0,.55);
+      --radius:22px;
+      --radius2:16px;
 
-  .wrap{
-    max-width:1180px;
-    margin:0 auto;
-    padding:22px 14px 84px;
-  }
-
-  /* ===========================
-     TOP BAR
-     =========================== */
-  .topbar{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:14px;
-    margin-bottom:14px;
-  }
-
-  .title{
-    display:flex;
-    flex-direction:column;
-    gap:7px;
-    min-width:280px;
-  }
-  .title h1{
-    margin:0;
-    font-size:22px;
-    letter-spacing:.2px;
-  }
-  .title .sub{
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.35;
-  }
-  .mono{ font-family:var(--mono); }
-
-  .controls{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
-
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:10px 12px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.05);
-    box-shadow:0 10px 28px rgba(0,0,0,.25) inset;
-    color:var(--text);
-    font-size:12px;
-    user-select:none;
-    min-height:44px;
-  }
-  .pill strong{ font-weight:950 }
-
-  .dot{
-    width:8px;height:8px;border-radius:999px;
-    background:var(--accent);
-    box-shadow:0 0 0 4px rgba(110,231,255,.12);
-  }
-  .dot.warn{ background:var(--amber); box-shadow:0 0 0 4px rgba(255,209,102,.14) }
-  .dot.good{ background:var(--green); box-shadow:0 0 0 4px rgba(43,212,125,.12) }
-  .dot.bad{ background:var(--red); box-shadow:0 0 0 4px rgba(255,92,122,.14) }
-
-  .btn{
-    appearance:none;
-    border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.06);
-    color:var(--text);
-    padding:10px 12px;
-    border-radius:14px;
-    font-weight:900;
-    font-size:12px;
-    cursor:pointer;
-    min-height:44px;
-    transition:transform .06s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
-  }
-  .btn:hover{
-    background:rgba(255,255,255,.09);
-    border-color:rgba(255,255,255,.20);
-    box-shadow:0 14px 28px rgba(0,0,0,.18);
-  }
-  .btn:active{ transform:translateY(1px) }
-  .btn.primary{
-    border-color:rgba(110,231,255,.35);
-    background:rgba(110,231,255,.10);
-  }
-  .btn.danger{
-    border-color:rgba(255,92,122,.35);
-    background:rgba(255,92,122,.10);
-  }
-  .btn.ghost{
-    border-color:rgba(167,139,250,.28);
-    background:rgba(167,139,250,.08);
-  }
-
-  /* ===========================
-     LAYOUT: mobile stack / iPad 2-column
-     =========================== */
-  .layout{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:14px;
-  }
-  .left, .right{
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-  }
-
-  @media (min-width: 860px){
-    .layout{
-      grid-template-columns: 400px 1fr;
-      align-items:start;
-      gap:16px;
+      --font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
     }
-  }
 
-  /* ===========================
-     CARD
-     =========================== */
-  .card{
-    border:1px solid rgba(255,255,255,.10);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    overflow:hidden;
-  }
-
-  .card .hd{
-    padding:14px 16px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    border-bottom:1px solid rgba(255,255,255,.08);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
-  }
-  .card .hd h2{
-    margin:0;
-    font-size:13px;
-    letter-spacing:.25px;
-  }
-  .card .hd .hint{
-    color:var(--muted);
-    font-size:12px;
-    text-align:right;
-  }
-  .card .bd{ padding:14px 16px; }
-
-  /* ===========================
-     SNAPSHOT TILES
-     - mobile: swipe
-     - iPad: grid
-     =========================== */
-  .snapshots{
-    display:flex;
-    gap:12px;
-    overflow-x:auto;
-    padding-bottom:6px;
-    scroll-snap-type:x mandatory;
-    -webkit-overflow-scrolling:touch;
-  }
-  .snapshots::-webkit-scrollbar{ height:8px; }
-  .snapshots::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08); border-radius:999px; }
-
-  .tile{
-    scroll-snap-align:start;
-    min-width:175px;
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:18px;
-    background:
-      radial-gradient(900px 150px at 20% 0%, rgba(110,231,255,.12), transparent 55%),
-      radial-gradient(700px 140px at 90% 20%, rgba(167,139,250,.10), transparent 60%),
-      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-    padding:12px 12px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    min-height:90px;
-  }
-  .tile .k{ color:var(--muted); font-size:11px; letter-spacing:.3px; text-transform:uppercase }
-  .tile .v{ font-size:22px; font-weight:1000; letter-spacing:.2px }
-  .tile .s{ color:var(--muted2); font-size:12px }
-
-  @media (min-width: 860px){
-    .snapshots{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      overflow:visible;
-      padding-bottom:0;
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 680px at 16% 6%, rgba(110,231,255,.14), transparent 58%),
+        radial-gradient(900px 600px at 86% 14%, rgba(167,139,250,.12), transparent 60%),
+        radial-gradient(900px 700px at 46% 96%, rgba(43,212,125,.10), transparent 55%),
+        linear-gradient(180deg, var(--bg2), var(--bg0));
+      min-height:100%;
     }
-    .tile{ min-width:unset; }
-  }
 
-  /* ===========================
-     TABLES (pro)
-     =========================== */
-  .tableWrap{
-    width:100%;
-    overflow:auto;
-    border-radius:16px;
-    border:1px solid rgba(255,255,255,.08);
-    background:rgba(0,0,0,.14);
-  }
-  table{
-    width:100%;
-    border-collapse:collapse;
-    overflow:hidden;
-    border-radius:14px;
-    min-width: 780px;
-  }
-  thead th{
-    text-align:left;
-    font-size:11px;
-    color:var(--muted);
-    font-weight:1000;
-    letter-spacing:.35px;
-    text-transform:uppercase;
-    padding:10px 10px;
-    border-bottom:1px solid rgba(255,255,255,.08);
-    background:rgba(2,6,23,.35);
-    backdrop-filter: blur(8px);
-    position:sticky;
-    top:0;
-    z-index:1;
-  }
-  tbody td{
-    padding:10px 10px;
-    border-bottom:1px solid rgba(255,255,255,.07);
-    font-size:13px;
-    white-space:nowrap;
-  }
-  tbody tr:hover{ background:rgba(255,255,255,.04); }
-
-  .rightTx{ text-align:right; }
-  .muted{ color:var(--muted); }
-
-  .badge{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:11px;
-    font-weight:1000;
-    letter-spacing:.2px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.06);
-  }
-  .b-good{ border-color:rgba(43,212,125,.30); background:rgba(43,212,125,.12); color:#bff6da; }
-  .b-bad{ border-color:rgba(255,92,122,.30); background:rgba(255,92,122,.12); color:#ffd0da; }
-  .b-mid{ border-color:rgba(255,209,102,.30); background:rgba(255,209,102,.12); color:#ffe9b4; }
-
-  a.click{
-    cursor:pointer;
-    text-decoration:none;
-    color:var(--text);
-    min-height:44px;
-    display:inline-flex;
-    align-items:center;
-  }
-  a.click:hover{ color:var(--accent); }
-
-  /* ===========================
-     CHARTS
-     =========================== */
-  .chartGrid{
-    display:flex;
-    gap:12px;
-    overflow-x:auto;
-    scroll-snap-type:x mandatory;
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:6px;
-  }
-  .chartGrid::-webkit-scrollbar{ height:8px; }
-  .chartGrid::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08); border-radius:999px; }
-
-  .chartCard{
-    scroll-snap-align:start;
-    min-width:100%;
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:18px;
-    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-    padding:12px;
-    overflow:hidden;
-    position:relative;
-  }
-  @media (min-width: 860px){
-    .chartGrid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      overflow:visible;
-      padding-bottom:0;
-      gap:12px;
+    /* App container */
+    .app{
+      max-width:1180px;
+      margin:0 auto;
+      padding:18px 14px 72px;
     }
-    .chartCard{ min-width:unset; }
-  }
 
-  .chartMeta{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:12px;
-    margin:0 0 10px 0;
-  }
-  .chartMeta .left{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-  }
-  .chartMeta .t{
-    font-size:12px;
-    color:var(--muted);
-    font-weight:1000;
-    letter-spacing:.25px;
-    text-transform:uppercase;
-  }
-  .chartMeta .d{
-    font-size:12px;
-    color:rgba(255,255,255,.78);
-  }
-  .legend{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
-  .lg{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:6px 10px;
-    border-radius:999px;
-    font-size:11px;
-    font-weight:1000;
-    border:1px solid rgba(255,255,255,.10);
-    background:rgba(255,255,255,.05);
-    color:rgba(255,255,255,.82);
-  }
-  .swatch{
-    width:14px;
-    height:6px;
-    border-radius:999px;
-    display:inline-block;
-  }
-
-  canvas{
-    width:100%;
-    height:240px;
-    border-radius:12px;
-    background:rgba(0,0,0,.18);
-    border:1px solid rgba(255,255,255,.06);
-  }
-
-  .tip{
-    position:absolute;
-    pointer-events:none;
-    transform: translate(-50%, -115%);
-    padding:8px 10px;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,.14);
-    background:linear-gradient(180deg, rgba(10,22,48,.95), rgba(2,6,23,.95));
-    box-shadow:0 18px 40px rgba(0,0,0,.45);
-    font-size:12px;
-    color:rgba(255,255,255,.92);
-    opacity:0;
-    transition:opacity .12s ease;
-    white-space:nowrap;
-    z-index:2;
-  }
-  .tip strong{ font-weight:1000; }
-
-  /* ===========================
-     INSIGHT / DIAGNOSTICS
-     =========================== */
-  .insight{
-    border:1px solid rgba(255,255,255,.10);
-    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-    border-radius:18px;
-    padding:12px;
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-    line-height:1.35;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
-  }
-  .insight .icon{
-    width:26px;height:26px;border-radius:10px;
-    display:grid;place-items:center;
-    border:1px solid rgba(110,231,255,.22);
-    background:rgba(110,231,255,.10);
-  }
-  .small{ font-size:12px; color:var(--muted); line-height:1.4 }
-  .spacer{ height:10px }
-
-  .diag{
-    display:none;
-    border:1px solid rgba(255,92,122,.25);
-    background:rgba(255,92,122,.10);
-    border-radius:16px;
-    padding:10px 12px;
-    color:#ffd0da;
-  }
-  .diag b{ font-weight:1000 }
-  .diag .mono{ opacity:.95 }
-
-  /* ===========================
-     MOBILE polish: sticky action bar
-     =========================== */
-  @media (max-width: 720px){
-    .wrap{ padding:18px 12px 104px; }
-
+    /* Top bar */
     .topbar{
+      display:flex;
       flex-direction:column;
-      align-items:stretch;
       gap:12px;
-      margin-bottom:12px;
+      margin-bottom:14px;
     }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .title h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:.2px;
+    }
+    .title .sub{
+      font-size:13px;
+      line-height:1.35;
+      color:var(--muted);
+    }
+    .mono{ font-family:var(--mono); }
+    .muted{ color:var(--muted); }
+    .muted2{ color:var(--muted2); }
+
+    /* Controls (mobile: sticky action bar feel) */
     .controls{
-      justify-content:stretch;
+      display:flex;
       gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(2,6,23,.64), rgba(2,6,23,.36));
+      backdrop-filter: blur(10px);
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      border-radius:18px;
+      padding:10px;
       position:sticky;
       top:10px;
       z-index:20;
-      padding:10px;
-      border-radius:18px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      box-shadow:0 10px 28px rgba(0,0,0,.25) inset;
+      color:var(--text);
+      font-size:12px;
+      user-select:none;
+      min-height:44px;
+      flex:1 1 220px;
+    }
+    .pill strong{ font-weight:900; }
+
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent); box-shadow:0 0 0 4px rgba(110,231,255,.12)}
+    .dot.warn{background:var(--amber); box-shadow:0 0 0 4px rgba(255,209,102,.14)}
+    .dot.good{background:var(--green); box-shadow:0 0 0 4px rgba(43,212,125,.12)}
+    .dot.bad{background:var(--red); box-shadow:0 0 0 4px rgba(255,92,122,.14)}
+
+    .btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:900;
+      font-size:13px;
+      cursor:pointer;
+      min-height:44px;
+      transition:transform .06s ease, background .2s ease, border-color .2s ease;
+      flex: 1 1 160px;
+    }
+    .btn:hover{ background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.20) }
+    .btn:active{ transform:translateY(1px) }
+    .btn.primary{ border-color:rgba(110,231,255,.35); background:rgba(110,231,255,.10); }
+    .btn.danger{ border-color:rgba(255,92,122,.35); background:rgba(255,92,122,.10); }
+
+    /* Layout */
+    .layout{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+    .col{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    @media (min-width: 820px){
+      .controls{
+        position:relative;
+        top:auto;
+      }
+      .topbar{
+        flex-direction:row;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:14px;
+      }
+      .layout{
+        grid-template-columns: 390px 1fr;
+        align-items:start;
+        gap:16px;
+      }
+      .title h1{ font-size:24px; }
+    }
+
+    /* Cards */
+    .card{
       border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg, rgba(2,6,23,.70), rgba(2,6,23,.45));
-      backdrop-filter: blur(10px);
-      box-shadow: 0 16px 40px rgba(0,0,0,.35);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
     }
-    .pill{ width:100%; justify-content:center; }
-    .btn{ width:100%; padding:12px 12px; border-radius:14px; font-size:13px; }
-  }
+    .card .hd{
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+    }
+    .card .hd h2{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .card .hd .hint{
+      color:var(--muted);
+      font-size:12px;
+    }
+    .card .bd{ padding:14px 16px; }
 
-  /* ===========================
-     MODALS
-     =========================== */
-  .backdrop{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-    z-index:50;
-  }
-  .modal{
-    width:min(980px, 100%);
-    max-height:86vh;
-    overflow:auto;
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:22px;
-    background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(2,6,23,.98));
-    box-shadow:0 40px 80px rgba(0,0,0,.65);
-  }
-  .modal .mh{
-    position:sticky;
-    top:0;
-    background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(10,22,48,.85));
-    padding:14px 16px;
-    border-bottom:1px solid rgba(255,255,255,.10);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-  }
-  .modal .mh h3{ margin:0; font-size:14px; letter-spacing:.2px; }
-  .modal .mb{ padding:14px 16px; }
+    /* Snapshot tiles (mobile swipe, iPad grid) */
+    .tiles{
+      display:flex;
+      gap:12px;
+      overflow-x:auto;
+      padding-bottom:6px;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+    }
+    .tiles::-webkit-scrollbar{ height:8px; }
+    .tiles::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08); border-radius:999px; }
 
-  .closeX{
-    border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.06);
-    border-radius:12px;
-    padding:8px 10px;
-    cursor:pointer;
-    color:var(--text);
-    font-weight:1000;
-    min-height:44px;
-  }
+    .tile{
+      scroll-snap-align:start;
+      min-width:170px;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      background:
+        radial-gradient(900px 150px at 20% 0%, rgba(110,231,255,.12), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      padding:12px 12px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:86px;
+    }
+    .tile .k{ color:var(--muted); font-size:11px; letter-spacing:.3px; text-transform:uppercase }
+    .tile .v{ font-size:22px; font-weight:1000; letter-spacing:.2px }
+    .tile .s{ color:var(--muted2); font-size:12px }
 
-  @media (max-width: 720px){
-    .modal{
+    @media (min-width: 820px){
+      .tiles{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:12px;
+        overflow:visible;
+        padding-bottom:0;
+      }
+      .tile{ min-width:unset; }
+    }
+
+    /* Tables */
+    .tableWrap{
       width:100%;
-      max-height:92vh;
-      border-radius:20px;
+      overflow:auto;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.14);
     }
-    .modal .mh{ padding:12px 12px; }
-    .closeX{ padding:10px 12px; }
-  }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius:14px;
+      min-width: 760px;
+    }
+    thead th{
+      text-align:left;
+      font-size:11px;
+      color:var(--muted);
+      font-weight:1000;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+      padding:10px 10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      position:sticky;
+      top:0;
+      background:rgba(2,6,23,.82);
+      backdrop-filter: blur(8px);
+      z-index:2;
+    }
+    tbody td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      font-size:13px;
+      white-space:nowrap;
+    }
+    tbody tr:hover{ background:rgba(255,255,255,.04); }
 
-  /* ===========================
-     EDITOR
-     =========================== */
-  .row{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-  textarea.ta{
-    width:100%;
-    min-height:260px;
-    resize:vertical;
-    border-radius:16px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(0,0,0,.22);
-    color:var(--text);
-    padding:12px 12px;
-    font-family:var(--mono);
-    font-size:12px;
-    line-height:1.45;
-    outline:none;
-  }
-  textarea.ta:focus{
-    border-color:rgba(110,231,255,.35);
-    box-shadow:0 0 0 4px rgba(110,231,255,.10);
-  }
-</style>
+    .rightTx{ text-align:right; }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+    }
+    .b-good{ border-color:rgba(43,212,125,.30); background:rgba(43,212,125,.12); color:#bff6da; }
+    .b-bad{ border-color:rgba(255,92,122,.30); background:rgba(255,92,122,.12); color:#ffd0da; }
+    .b-mid{ border-color:rgba(255,209,102,.30); background:rgba(255,209,102,.12); color:#ffe9b4; }
+
+    /* Charts (mobile swipe, iPad 2-up) */
+    .chartStack{
+      display:flex;
+      gap:12px;
+      overflow-x:auto;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:6px;
+    }
+    .chartStack::-webkit-scrollbar{ height:8px; }
+    .chartStack::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08); border-radius:999px; }
+
+    .chartCard{
+      scroll-snap-align:start;
+      min-width:100%;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      padding:12px;
+      overflow:hidden;
+      position:relative;
+    }
+    .chartCard h3{
+      margin:0 0 8px 0;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:1000;
+      letter-spacing:.2px;
+      text-transform:uppercase;
+    }
+    canvas{
+      width:100%;
+      height:240px;
+      border-radius:12px;
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.06);
+      display:block;
+    }
+    @media (min-width: 820px){
+      .chartStack{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        overflow:visible;
+        padding-bottom:0;
+        gap:12px;
+      }
+      .chartCard{ min-width:unset; }
+    }
+
+    /* Insight card */
+    .insight{
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border-radius:18px;
+      padding:12px;
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      line-height:1.35;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+    }
+    .insight .icon{
+      width:26px;height:26px;border-radius:10px;
+      display:grid;place-items:center;
+      border:1px solid rgba(110,231,255,.22);
+      background:rgba(110,231,255,.10);
+      flex:0 0 auto;
+    }
+    .small{ font-size:12px; color:var(--muted); line-height:1.4 }
+
+    /* Modals (shared) */
+    .backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:50;
+    }
+    .modal{
+      width:min(940px, 100%);
+      max-height:86vh;
+      overflow:auto;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(2,6,23,.98));
+      box-shadow:0 40px 80px rgba(0,0,0,.65);
+    }
+    .modal .mh{
+      position:sticky;
+      top:0;
+      background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(10,22,48,.85));
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      z-index:2;
+    }
+    .modal .mh h2{ margin:0; font-size:14px; }
+    .modal .mb{ padding:14px 16px; }
+    .closeX{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      color:var(--text);
+      font-weight:1000;
+      min-height:44px;
+    }
+    @media (max-width: 720px){
+      .modal{ width:100%; max-height:92vh; border-radius:20px; }
+      .modal .mh{ padding:12px; }
+    }
+
+    /* Editor textarea */
+    .ta{
+      width:100%;
+      min-height:240px;
+      resize:vertical;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      color:var(--text);
+      padding:12px 12px;
+      font-family:var(--mono);
+      font-size:12px;
+      line-height:1.45;
+      outline:none;
+    }
+    .ta:focus{ border-color:rgba(110,231,255,.35); box-shadow:0 0 0 4px rgba(110,231,255,.10) }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .spacer{ height:8px; }
+    a.click{
+      cursor:pointer;
+      text-decoration:none;
+      color:var(--text);
+      min-height:44px;
+      display:inline-flex;
+      align-items:center;
+    }
+    a.click:hover{ color:var(--accent); }
+  </style>
 </head>
 
 <body>
-<div class="wrap">
+  <div class="app">
 
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="title">
-      <h1>U14 Season Analytics Dashboard</h1>
-      <div class="sub">
-        Season analytics for <strong>Lakers U14 Boys Copper</strong> (results, player scoring, fouls, trends).<br/>
-        Loads from <span class="mono">./data/season-2026.json</span> (GitHub Pages safe).
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="title">
+        <h1>U14 Season Analytics Dashboard</h1>
+        <div class="sub">
+          Season analytics for <strong>Lakers U14 Boys Copper</strong> (results, player scoring, fouls, trends).<br/>
+          Loads from <span class="mono">/data/season-2026.json</span> on GitHub Pages.
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="pill" id="loadedPill" title="How many games were loaded successfully">
+          <span class="dot warn" id="loadedDot"></span>
+          <strong id="loadedCount">0</strong> / <span id="targetCount">10</span> games loaded
+        </div>
+
+        <button class="btn primary" id="btnOpenEditor">Add / Edit Games</button>
+        <button class="btn" id="btnExport">Export CSV</button>
+        <button class="btn danger" id="btnReset">Reset to Uploaded Data</button>
       </div>
     </div>
 
-    <div class="controls">
-      <div class="pill" id="loadedPill">
-        <span class="dot warn" id="loadedDot"></span>
-        <strong id="loadedCount">0</strong> / <span id="targetCount">10</span> games loaded
-      </div>
+    <!-- LAYOUT -->
+    <main class="layout">
+      <!-- LEFT -->
+      <section class="col">
 
-      <button class="btn primary" id="btnOpenEditor">Add / Edit Games</button>
-      <button class="btn" id="btnExport">Export CSV</button>
-      <button class="btn danger" id="btnReset">Reset</button>
-      <button class="btn ghost" id="btnClearDraft">Clear Draft</button>
+        <!-- Snapshot -->
+        <div class="card">
+          <div class="hd">
+            <h2>Season Snapshot</h2>
+            <div class="hint">Auto-calculated from loaded games</div>
+          </div>
+          <div class="bd">
+            <div class="tiles" id="tiles">
+              <!-- Part 2 will populate -->
+              <div class="tile">
+                <div class="k">Status</div>
+                <div class="v">Waiting</div>
+                <div class="s">Data not loaded yet</div>
+              </div>
+              <div class="tile">
+                <div class="k">Tip</div>
+                <div class="v">Part 2</div>
+                <div class="s">Adds loader + analytics</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game Results -->
+        <div class="card">
+          <div class="hd">
+            <h2>Game Results</h2>
+            <div class="hint">Tap a game to open detail</div>
+          </div>
+          <div class="bd">
+            <div class="tableWrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:70px;">Round</th>
+                    <th>Opponent</th>
+                    <th class="rightTx">Score</th>
+                    <th class="rightTx">Margin</th>
+                    <th style="width:130px;">Result</th>
+                    <th class="rightTx">1H / 2H</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsBody">
+                  <tr>
+                    <td class="mono muted2">—</td>
+                    <td class="muted2">Waiting for season data…</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td><span class="badge b-mid">Pending</span></td>
+                    <td class="rightTx mono muted2">—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="spacer"></div>
+            <div class="small" id="loadHelp">
+              If this stays blank after Part 2+3: confirm the file exists at
+              <span class="mono">/data/season-2026.json</span> in your GitHub Pages build.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT -->
+      <section class="col">
+
+        <!-- Trends -->
+        <div class="card">
+          <div class="hd">
+            <h2>Trends</h2>
+            <div class="hint">Swipe on mobile, 2-up on iPad</div>
+          </div>
+          <div class="bd">
+            <div class="chartStack">
+              <div class="chartCard">
+                <h3>Team Points (For vs Against)</h3>
+                <canvas id="chartForAgainst" width="800" height="300"></canvas>
+              </div>
+              <div class="chartCard">
+                <h3>Margins</h3>
+                <canvas id="chartMargins" width="800" height="300"></canvas>
+              </div>
+            </div>
+
+            <div class="spacer"></div>
+            <div class="insight" id="insightCard">
+              <div class="icon">↗︎</div>
+              <div class="small">Waiting for data… (Part 2 will generate the insight card)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Player Analytics -->
+        <div class="card">
+          <div class="hd">
+            <h2>Player Analytics</h2>
+            <div class="hint">Totals + per-game + fouls</div>
+          </div>
+          <div class="bd">
+            <div class="tableWrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th class="rightTx">Games</th>
+                    <th class="rightTx">PTS</th>
+                    <th class="rightTx">PPG</th>
+                    <th class="rightTx">1PT</th>
+                    <th class="rightTx">2PT</th>
+                    <th class="rightTx">3PT</th>
+                    <th class="rightTx">Fouls</th>
+                    <th class="rightTx">FPG</th>
+                    <th class="rightTx">High</th>
+                    <th class="rightTx">Low</th>
+                    <th class="rightTx">% Team</th>
+                  </tr>
+                </thead>
+                <tbody id="playersBody">
+                  <tr>
+                    <td class="muted2">Waiting for player data…</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                    <td class="rightTx mono muted2">—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="spacer"></div>
+            <div class="small">
+              Part 2 adds data loading + calculations. Part 3 adds sorting + modals + export.
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+  </div>
+
+  <!-- MODAL: Game Detail -->
+  <div class="backdrop" id="backdrop">
+    <div class="modal">
+      <div class="mh">
+        <h2 id="modalTitle">Game Detail</h2>
+        <button class="closeX" id="btnClose">Close</button>
+      </div>
+      <div class="mb" id="modalBody"></div>
     </div>
   </div>
 
-  <div class="diag" id="diagBox"></div>
-
-  <!-- LAYOUT -->
-  <main class="layout">
-
-    <!-- LEFT -->
-    <section class="left">
-
-      <div class="card">
-        <div class="hd">
-          <h2>Season Snapshot</h2>
-          <div class="hint">Auto-calculated from loaded games</div>
-        </div>
-        <div class="bd">
-          <div class="snapshots" id="tiles"></div>
+  <!-- MODAL: Editor -->
+  <div class="backdrop" id="editorBackdrop">
+    <div class="modal">
+      <div class="mh">
+        <h2>Games Data Editor</h2>
+        <div class="row">
+          <button class="btn primary" id="btnApply">Apply</button>
+          <button class="btn" id="btnCancelEditor">Cancel</button>
         </div>
       </div>
-
-      <div class="card">
-        <div class="hd">
-          <h2>Game Results</h2>
-          <div class="hint">Tap a game for detail</div>
+      <div class="mb">
+        <div class="small">
+          Paste your <strong>JSON array of games</strong> here. Format per game:
+          <span class="mono">{ "game": 1, "opponent":"...", "teamScore":37, "oppScore":16, "halves":{"h1":{"team":13,"opp":7},"h2":{"team":24,"opp":9}}, "players":[{"name":"...", "pts":6, "ft":0, "two":3, "three":0, "fouls":2}] }</span>
         </div>
-        <div class="bd">
-          <div class="tableWrap">
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:70px;">Game</th>
-                  <th>Opponent</th>
-                  <th class="rightTx">Score</th>
-                  <th class="rightTx">Margin</th>
-                  <th style="width:130px;">Result</th>
-                  <th class="rightTx">1H / 2H</th>
-                </tr>
-              </thead>
-              <tbody id="resultsBody"></tbody>
-            </table>
-          </div>
-
-          <div class="spacer"></div>
-          <div class="small" id="emptyResultsHint"></div>
-        </div>
-      </div>
-
-    </section>
-
-    <!-- RIGHT -->
-    <section class="right">
-
-      <div class="card">
-        <div class="hd">
-          <h2>Trends</h2>
-          <div class="hint">Swipe on mobile • 2-up on iPad</div>
-        </div>
-        <div class="bd">
-
-          <div class="chartGrid">
-            <div class="chartCard" id="cardFA">
-              <div class="chartMeta">
-                <div class="left">
-                  <div class="t">Points For vs Against</div>
-                  <div class="d">Hover / tap for exact game values</div>
-                </div>
-                <div class="legend">
-                  <span class="lg"><span class="swatch" style="background:rgba(110,231,255,.95)"></span>For</span>
-                  <span class="lg"><span class="swatch" style="background:rgba(255,92,122,.85)"></span>Against</span>
-                </div>
-              </div>
-              <div class="tip" id="tipFA"></div>
-              <canvas id="chartForAgainst"></canvas>
-            </div>
-
-            <div class="chartCard" id="cardM">
-              <div class="chartMeta">
-                <div class="left">
-                  <div class="t">Margins</div>
-                  <div class="d">Positive = win • Negative = loss</div>
-                </div>
-                <div class="legend">
-                  <span class="lg"><span class="swatch" style="background:rgba(43,212,125,.92)"></span>Margin</span>
-                </div>
-              </div>
-              <div class="tip" id="tipM"></div>
-              <canvas id="chartMargins"></canvas>
-            </div>
-          </div>
-
-          <div class="spacer"></div>
-
-          <div class="insight" id="insightCard">
-            <div class="icon">↗︎</div>
-            <div class="small">Loading insight…</div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="hd">
-          <h2>Player Analytics</h2>
-          <div class="hint">Totals • PPG • splits • fouls</div>
-        </div>
-        <div class="bd">
-          <div class="tableWrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Player</th>
-                  <th class="rightTx">Games</th>
-                  <th class="rightTx">PTS</th>
-                  <th class="rightTx">PPG</th>
-                  <th class="rightTx">1PT</th>
-                  <th class="rightTx">2PT</th>
-                  <th class="rightTx">3PT</th>
-                  <th class="rightTx">Fouls</th>
-                  <th class="rightTx">FPG</th>
-                  <th class="rightTx">High</th>
-                  <th class="rightTx">Low</th>
-                  <th class="rightTx">% Team</th>
-                </tr>
-              </thead>
-              <tbody id="playersBody"></tbody>
-            </table>
-          </div>
-
-          <div class="spacer"></div>
-          <div class="small" id="emptyPlayersHint"></div>
-        </div>
-      </div>
-
-    </section>
-  </main>
-
-</div>
-
-<!-- GAME DETAIL MODAL -->
-<div class="backdrop" id="gameBackdrop">
-  <div class="modal">
-    <div class="mh">
-      <h3 id="gameTitle">Game Detail</h3>
-      <button class="closeX" id="btnGameClose">Close</button>
-    </div>
-    <div class="mb" id="gameBody"></div>
-  </div>
-</div>
-
-<!-- EDITOR MODAL -->
-<div class="backdrop" id="editorBackdrop">
-  <div class="modal">
-    <div class="mh">
-      <h3>Games Data Editor</h3>
-      <div class="row">
-        <button class="btn primary" id="btnApply">Apply</button>
-        <button class="btn" id="btnCancelEditor">Cancel</button>
-      </div>
-    </div>
-    <div class="mb">
-      <div class="small">
-        Paste an <b>array of games</b>. Example:
         <div class="spacer"></div>
-        <div class="mono">
-          [{ "game": 6, "opponent":"Lakers U14 Boys Flame", "teamScore":26, "oppScore":29,
-          "halves":{"h1":{"team":7,"opp":15},"h2":{"team":19,"opp":14}},
-          "players":[{"name":"Thomas O'Sullivan","pts":17,"ft":3,"two":7,"three":0,"fouls":1}] }]
-        </div>
-      </div>
-
-      <div class="spacer"></div>
-      <textarea class="ta" id="jsonEditor" spellcheck="false"></textarea>
-
-      <div class="spacer"></div>
-      <div class="row">
-        <button class="btn" id="btnInsertTemplate">Insert Blank Template</button>
-        <button class="btn danger" id="btnClearEditor">Clear</button>
-      </div>
-
-      <div class="spacer"></div>
-      <div class="small">
-        Notes:
-        <ul>
-          <li>Edits are saved to a <b>local draft</b> (so your changes persist).</li>
-          <li><b>Reset</b> returns to the uploaded JSON file.</li>
-          <li>Make sure your <span class="mono">season-2026.json</span> root is an <b>array</b>.</li>
-        </ul>
+        <textarea class="ta" id="jsonEditor" spellcheck="false"></textarea>
       </div>
     </div>
   </div>
-</div>
 
-<!-- PART 2 starts below -->
-<!-- =========================================================
-  PART 2 / 3  (paste directly AFTER Part 1)
-  - Main dashboard layout (cards, tables, charts)
-  - Modals (Game detail + Editor)
-  - JS: state, helpers, normalization, analytics, render (no init yet)
-========================================================= -->
-
-<main class="grid">
-  <!-- LEFT COLUMN -->
-  <section class="col">
-
-    <!-- Season Snapshot -->
-    <section class="card">
-      <header class="card-hd">
-        <div>
-          <h2>Season Snapshot</h2>
-          <div class="hint">Auto-calculated from loaded games</div>
-        </div>
-        <div class="chip" id="seasonLabelChip">
-          <span class="chip-dot"></span>
-          <span id="seasonLabelText">Loading…</span>
-        </div>
-      </header>
-
-      <div class="card-bd">
-        <div class="tiles" id="tiles"></div>
-
-        <div class="mini-row">
-          <div class="mini">
-            <div class="mini-k">Best win</div>
-            <div class="mini-v" id="bestWin">—</div>
-          </div>
-          <div class="mini">
-            <div class="mini-k">Toughest loss</div>
-            <div class="mini-v" id="worstLoss">—</div>
-          </div>
-          <div class="mini">
-            <div class="mini-k">Close games (≤5)</div>
-            <div class="mini-v" id="closeGames">—</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Game Results -->
-    <section class="card">
-      <header class="card-hd">
-        <div>
-          <h2>Game Results</h2>
-          <div class="hint">Tap a game row to open details</div>
-        </div>
-
-        <div class="seg" role="tablist" aria-label="Results filters">
-          <button class="seg-btn is-on" id="filterAll" type="button">All</button>
-          <button class="seg-btn" id="filterWins" type="button">Wins</button>
-          <button class="seg-btn" id="filterLosses" type="button">Losses</button>
-        </div>
-      </header>
-
-      <div class="card-bd">
-        <div class="table-wrap">
-          <table class="tbl">
-            <thead>
-              <tr>
-                <th style="width:74px;">Round</th>
-                <th>Opponent</th>
-                <th class="r">Score</th>
-                <th class="r">Margin</th>
-                <th style="width:110px;">Result</th>
-                <th class="r">H1 / H2</th>
-              </tr>
-            </thead>
-            <tbody id="resultsBody"></tbody>
-          </table>
-        </div>
-
-        <div class="footnote">
-          Pro tip: if the table is empty on iPhone/iPad, open Safari’s console and look for a JSON load error.
-          Usually it’s the file path: <span class="mono">/data/season-2026.json</span> must exist on GitHub Pages.
-        </div>
-      </div>
-    </section>
-  </section>
-
-  <!-- RIGHT COLUMN -->
-  <section class="col">
-
-    <!-- Trends -->
-    <section class="card">
-      <header class="card-hd">
-        <div>
-          <h2>Trends</h2>
-          <div class="hint">Swipe charts on mobile • 2-up on iPad+</div>
-        </div>
-
-        <div class="chip">
-          <span class="chip-dot chip-dot--a"></span>
-          <span class="mono">For</span>
-          <span class="sep">·</span>
-          <span class="chip-dot chip-dot--b"></span>
-          <span class="mono">Against</span>
-        </div>
-      </header>
-
-      <div class="card-bd">
-        <div class="chart-grid">
-          <div class="chart-card" id="cardForAgainst">
-            <div class="chart-hd">
-              <div>
-                <div class="chart-title">Points For vs Against</div>
-                <div class="chart-sub">Tap/hover for exact values</div>
-              </div>
-              <div class="badge badge-soft">Line</div>
-            </div>
-            <div class="chart-tip" id="tipForAgainst"></div>
-            <canvas id="chartForAgainst"></canvas>
-          </div>
-
-          <div class="chart-card" id="cardMargins">
-            <div class="chart-hd">
-              <div>
-                <div class="chart-title">Margins</div>
-                <div class="chart-sub">Above 0 = win</div>
-              </div>
-              <div class="badge badge-soft">Line</div>
-            </div>
-            <div class="chart-tip" id="tipMargins"></div>
-            <canvas id="chartMargins"></canvas>
-          </div>
-        </div>
-
-        <div class="insight" id="insightCard">
-          <div class="insight-ic">↗</div>
-          <div class="insight-txt">
-            <div class="insight-title">Insight</div>
-            <div class="insight-body" id="insightText">Loading insight…</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Player Analytics -->
-    <section class="card">
-      <header class="card-hd">
-        <div>
-          <h2>Player Analytics</h2>
-          <div class="hint">Totals, per-game, scoring splits, fouls</div>
-        </div>
-        <button class="btn btn-ghost" id="btnSortPlayers" type="button">Sort: PTS ▾</button>
-      </header>
-
-      <div class="card-bd">
-        <div class="table-wrap">
-          <table class="tbl">
-            <thead>
-              <tr>
-                <th>Player</th>
-                <th class="r">Games</th>
-                <th class="r">PTS</th>
-                <th class="r">PPG</th>
-                <th class="r">1PT</th>
-                <th class="r">2PT</th>
-                <th class="r">3PT</th>
-                <th class="r">Fouls</th>
-                <th class="r">FPG</th>
-                <th class="r">High</th>
-                <th class="r">Low</th>
-                <th class="r">% Team</th>
-              </tr>
-            </thead>
-            <tbody id="playersBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </section>
-</main>
-
-<!-- =======================
-     MODAL: Game Detail
-======================= -->
-<div class="overlay" id="gameOverlay" aria-hidden="true">
-  <div class="sheet">
-    <header class="sheet-hd">
-      <div class="sheet-title">
-        <div class="kicker" id="gameKicker">Round</div>
-        <h3 id="gameTitle">Game detail</h3>
-      </div>
-      <button class="btn btn-ghost" id="btnCloseGame" type="button">Close</button>
-    </header>
-
-    <div class="sheet-bd" id="gameBody">
-      <!-- injected -->
-    </div>
-  </div>
-</div>
-
-<!-- =======================
-     MODAL: Editor
-======================= -->
-<div class="overlay" id="editorOverlay" aria-hidden="true">
-  <div class="sheet sheet-wide">
-    <header class="sheet-hd">
-      <div class="sheet-title">
-        <div class="kicker">Data</div>
-        <h3>Games Editor</h3>
-        <div class="hint">Paste JSON array of games, then Apply</div>
-      </div>
-
-      <div class="sheet-actions">
-        <button class="btn btn-primary" id="btnApply" type="button">Apply</button>
-        <button class="btn btn-ghost" id="btnCancelEditor" type="button">Cancel</button>
-      </div>
-    </header>
-
-    <div class="sheet-bd">
-      <div class="editor-help">
-        <div class="pill">
-          <span class="dot" id="editorDot"></span>
-          <strong id="editorLoaded">0</strong> games currently loaded
-        </div>
-        <div class="editor-sample">
-          Example:
-          <span class="mono">
-            {"game":1,"opponent":"Immortal Warriors U14 Boys","teamScore":37,"oppScore":16,"halves":{"h1":{"team":13,"opp":7},"h2":{"team":24,"opp":9}},"players":[{"name":"Thomas O'Sullivan","pts":17,"ft":3,"two":7,"three":0,"fouls":1}]}
-          </span>
-        </div>
-      </div>
-
-      <textarea class="ta" id="jsonEditor" spellcheck="false"></textarea>
-
-      <div class="editor-row">
-        <button class="btn" id="btnInsertTemplate" type="button">Insert blank template</button>
-        <button class="btn btn-danger" id="btnClearEditor" type="button">Clear</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-/* =========================================================
-   STATE + CONFIG
-========================================================= */
-const TEAM_NAME = "Lakers U14 Boys Copper";
-const DATA_URL = "./data/season-2026.json"; // relative to index.html
-
-let RAW_UPLOADED = [];  // "Reset to uploaded data" source
-let GAMES = [];         // current working dataset
-let TARGET_GAMES = 10;  // display target
-
-let RESULTS_FILTER = "all"; // all|wins|losses
-let PLAYER_SORT = "pts";    // pts|ppg|fouls|fpg|name
-
-/* =========================================================
-   HELPERS
-========================================================= */
-function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
-function safeNum(n){ const v = +n; return Number.isFinite(v) ? v : 0; }
-function round1(x){ x = safeNum(x); return Math.round(x*10)/10; }
-function sum(arr, fn){ let t=0; for(const a of arr) t += safeNum(fn(a)); return t; }
-function margin(g){ return safeNum(g.teamScore) - safeNum(g.oppScore); }
-function isWin(g){ return margin(g) > 0; }
-
-function escapeHtml(s){
-  return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
-function setSeg(onId){
-  document.querySelectorAll(".seg-btn").forEach(b=>b.classList.remove("is-on"));
-  const el = document.getElementById(onId);
-  if(el) el.classList.add("is-on");
-}
-
-/* =========================================================
-   NORMALIZE DATA
-   Supports:
-   - game (number)
-   - opponent (string)
-   - teamScore / oppScore
-   - halves: {h1:{team,opp}, h2:{team,opp}}
-   - players: [{name,pts,ft,two,three,fouls}]
-========================================================= */
-function normalizeGames(arr){
-  if(!Array.isArray(arr)) return [];
-  const cleaned = arr.map((g)=>{
-    const gg = deepClone(g || {});
-    gg.game = safeNum(gg.game);
-    gg.opponent = gg.opponent || gg.oppTeam || "Unknown";
-    gg.team = gg.team || TEAM_NAME;
-
-    gg.teamScore = safeNum(gg.teamScore);
-    gg.oppScore  = safeNum(gg.oppScore);
-
-    gg.halves = gg.halves || { h1:{team:null,opp:null}, h2:{team:null,opp:null} };
-    if(!gg.halves.h1) gg.halves.h1 = {team:null,opp:null};
-    if(!gg.halves.h2) gg.halves.h2 = {team:null,opp:null};
-
-    gg.halves.h1.team = (gg.halves.h1.team===null || gg.halves.h1.team===undefined) ? null : safeNum(gg.halves.h1.team);
-    gg.halves.h1.opp  = (gg.halves.h1.opp===null  || gg.halves.h1.opp===undefined)  ? null : safeNum(gg.halves.h1.opp);
-    gg.halves.h2.team = (gg.halves.h2.team===null || gg.halves.h2.team===undefined) ? null : safeNum(gg.halves.h2.team);
-    gg.halves.h2.opp  = (gg.halves.h2.opp===null  || gg.halves.h2.opp===undefined)  ? null : safeNum(gg.halves.h2.opp);
-
-    gg.players = Array.isArray(gg.players) ? gg.players.map((p)=>({
-      name: (p && p.name) ? String(p.name) : "Unknown",
-      pts: safeNum(p && p.pts),
-      ft: safeNum(p && p.ft),
-      two: safeNum(p && p.two),
-      three: safeNum(p && p.three),
-      fouls: safeNum(p && p.fouls),
-    })) : [];
-
-    return gg;
-  }).filter(g=>g.game !== 0);
-
-  // De-dup by game #
-  const map = new Map();
-  for(const g of cleaned) map.set(g.game, g);
-  return Array.from(map.values()).sort((a,b)=>a.game-b.game);
-}
-
-/* =========================================================
-   ANALYTICS
-========================================================= */
-function buildAnalytics(games){
-  const gp = games.length;
-  const wins = games.filter(isWin).length;
-  const losses = gp - wins;
-
-  const pf = sum(games, g=>g.teamScore);
-  const pa = sum(games, g=>g.oppScore);
-
-  const avgPF = gp ? pf/gp : 0;
-  const avgPA = gp ? pa/gp : 0;
-
-  const margins = games.map(g=>margin(g));
-  const avgMargin = gp ? sum(margins, x=>x)/gp : 0;
-
-  const closeGames = games.filter(g=>Math.abs(margin(g)) <= 5).length;
-
-  const bestWin = games.filter(isWin).sort((a,b)=>margin(b)-margin(a))[0] || null;
-  const worstLoss = games.filter(g=>!isWin(g)).sort((a,b)=>margin(a)-margin(b))[0] || null;
-
-  const h1For = sum(games, g => (g?.halves?.h1?.team ?? 0));
-  const h1Against = sum(games, g => (g?.halves?.h1?.opp ?? 0));
-  const h2For = sum(games, g => (g?.halves?.h2?.team ?? 0));
-  const h2Against = sum(games, g => (g?.halves?.h2?.opp ?? 0));
-
-  // Consistency (SD of points scored)
-  const scores = games.map(g=>safeNum(g.teamScore));
-  const mean = gp ? sum(scores, x=>x)/gp : 0;
-  const variance = gp ? sum(scores, x=>(x-mean)*(x-mean))/gp : 0;
-  const sd = Math.sqrt(variance);
-
-  // Players aggregate
-  const names = Array.from(new Set(games.flatMap(g => (g.players||[]).map(p=>p.name)).filter(Boolean)));
-
-  const players = names.map(name=>{
-    const rows = [];
-    for(const g of games){
-      const p = (g.players||[]).find(x=>x.name===name);
-      if(p) rows.push({ game:g.game, ...p });
-    }
-    const gamesPlayed = rows.length;
-    const pts = sum(rows, r=>r.pts);
-    const ft = sum(rows, r=>r.ft);
-    const two = sum(rows, r=>r.two);
-    const three = sum(rows, r=>r.three);
-    const fouls = sum(rows, r=>r.fouls);
-    const ppg = gamesPlayed ? pts/gamesPlayed : 0;
-    const fpg = gamesPlayed ? fouls/gamesPlayed : 0;
-    const high = gamesPlayed ? Math.max(...rows.map(r=>r.pts)) : 0;
-    const low  = gamesPlayed ? Math.min(...rows.map(r=>r.pts)) : 0;
-    const teamShare = pf ? (pts/pf)*100 : 0;
-    return { name, gamesPlayed, pts, ppg, ft, two, three, fouls, fpg, high, low, teamShare };
-  });
-
-  return { gp,wins,losses,pf,pa,avgPF,avgPA,avgMargin,closeGames,bestWin,worstLoss,h1For,h1Against,h2For,h2Against,sd,margins,players };
-}
-
-/* =========================================================
-   “SEASON LABEL” (like your wealth app vibe)
-========================================================= */
-function seasonLabel(avgMargin){
-  if(avgMargin >= 8)  return { label:"Flying", tone:"good" };
-  if(avgMargin >= 2)  return { label:"Strong", tone:"good" };
-  if(avgMargin >= -2) return { label:"Competitive", tone:"mid" };
-  if(avgMargin >= -7) return { label:"Learning", tone:"mid" };
-  return { label:"Building", tone:"bad" };
-}
-
-/* =========================================================
-   RENDER
-========================================================= */
-function render(){
-  const A = buildAnalytics(GAMES);
-
-  // Top status pill
-  const loadedCount = document.getElementById("loadedCount");
-  const targetCount = document.getElementById("targetCount");
-  const loadedDot = document.getElementById("loadedDot");
-
-  loadedCount.textContent = String(A.gp);
-  targetCount.textContent = String(TARGET_GAMES);
-
-  // dot state
-  loadedDot.classList.remove("dot--good","dot--warn","dot--bad");
-  if(A.gp >= TARGET_GAMES) loadedDot.classList.add("dot--good");
-  else if(A.gp >= Math.ceil(TARGET_GAMES*0.7)) loadedDot.classList.add("dot--warn");
-  else loadedDot.classList.add("dot--bad");
-
-  // Editor counters
-  document.getElementById("editorLoaded").textContent = String(A.gp);
-
-  // Season label chip
-  const lab = seasonLabel(A.avgMargin);
-  const chip = document.getElementById("seasonLabelChip");
-  const chipText = document.getElementById("seasonLabelText");
-  chip.classList.remove("chip--good","chip--mid","chip--bad");
-  chip.classList.add(lab.tone==="good" ? "chip--good" : lab.tone==="mid" ? "chip--mid" : "chip--bad");
-  chipText.textContent = lab.label;
-
-  // Mini row
-  document.getElementById("bestWin").textContent =
-    A.bestWin ? `R${A.bestWin.game} vs ${A.bestWin.opponent} (+${margin(A.bestWin)})` : "—";
-  document.getElementById("worstLoss").textContent =
-    A.worstLoss ? `R${A.worstLoss.game} vs ${A.worstLoss.opponent} (${margin(A.worstLoss)})` : "—";
-  document.getElementById("closeGames").textContent = String(A.closeGames);
-
-  // Snapshot tiles
-  const tiles = document.getElementById("tiles");
-  tiles.innerHTML = "";
-  const winPct = A.gp ? (A.wins/A.gp)*100 : 0;
-
-  const tileData = [
-    { k:"Record", v:`${A.wins}-${A.losses}`, s:`Win%: ${round1(winPct)}%` },
-    { k:"Avg For", v:`${round1(A.avgPF)}`, s:`Total: ${A.pf}` },
-    { k:"Avg Against", v:`${round1(A.avgPA)}`, s:`Total: ${A.pa}` },
-    { k:"Avg Margin", v:`${round1(A.avgMargin)}`, s:`Close ≤5: ${A.closeGames}` },
-    { k:"1H / 2H For", v:`${A.h1For} / ${A.h2For}`, s:`Scoring by half` },
-    { k:"Consistency (SD)", v:`${round1(A.sd)}`, s:`Lower = steadier` },
-  ];
-
-  for(const t of tileData){
-    const el = document.createElement("div");
-    el.className = "tile";
-    el.innerHTML = `
-      <div class="tile-k">${escapeHtml(t.k)}</div>
-      <div class="tile-v">${escapeHtml(String(t.v))}</div>
-      <div class="tile-s">${escapeHtml(String(t.s))}</div>
-    `;
-    tiles.appendChild(el);
-  }
-
-  // Results table (with filter)
-  const body = document.getElementById("resultsBody");
-  body.innerHTML = "";
-
-  const gamesSorted = [...GAMES].sort((a,b)=>safeNum(a.game)-safeNum(b.game));
-  const filtered = gamesSorted.filter(g=>{
-    if(RESULTS_FILTER==="wins") return isWin(g);
-    if(RESULTS_FILTER==="losses") return !isWin(g);
-    return true;
-  });
-
-  for(const g of filtered){
-    const m = margin(g);
-    const res = m>0 ? {txt:"WIN", cls:"badge-win"} : (m<0 ? {txt:"LOSS", cls:"badge-loss"} : {txt:"DRAW", cls:"badge-mid"});
-    const h1t = (g?.halves?.h1?.team ?? "?");
-    const h1o = (g?.halves?.h1?.opp ?? "?");
-    const h2t = (g?.halves?.h2?.team ?? "?");
-    const h2o = (g?.halves?.h2?.opp ?? "?");
-
-    const tr = document.createElement("tr");
-    tr.className = "rowlink";
-    tr.setAttribute("data-game", String(g.game));
-    tr.innerHTML = `
-      <td class="mono">R${escapeHtml(String(g.game))}</td>
-      <td>${escapeHtml(g.opponent||"Unknown")}</td>
-      <td class="r mono">${escapeHtml(`${g.teamScore}-${g.oppScore}`)}</td>
-      <td class="r mono">${m>0?"+":""}${escapeHtml(String(m))}</td>
-      <td><span class="badge ${res.cls}">${res.txt}</span></td>
-      <td class="r mono muted">${escapeHtml(`${h1t}-${h1o} / ${h2t}-${h2o}`)}</td>
-    `;
-    body.appendChild(tr);
-  }
-
-  // Click rows -> modal
-  body.querySelectorAll("tr[data-game]").forEach(tr=>{
-    tr.addEventListener("click", ()=> openGameModal(safeNum(tr.getAttribute("data-game"))) );
-  });
-
-  // Player sort
-  const players = [...A.players];
-  players.sort((a,b)=>{
-    if(PLAYER_SORT==="name") return a.name.localeCompare(b.name);
-    if(PLAYER_SORT==="ppg") return (b.ppg-a.ppg) || (b.pts-a.pts) || a.name.localeCompare(b.name);
-    if(PLAYER_SORT==="fouls") return (b.fouls-a.fouls) || a.name.localeCompare(b.name);
-    if(PLAYER_SORT==="fpg") return (b.fpg-a.fpg) || a.name.localeCompare(b.name);
-    return (b.pts-a.pts) || a.name.localeCompare(b.name); // default pts
-  });
-
-  // Players table
-  const pb = document.getElementById("playersBody");
-  pb.innerHTML = "";
-  for(const p of players){
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${escapeHtml(p.name)}</td>
-      <td class="r mono">${p.gamesPlayed}</td>
-      <td class="r mono"><strong>${p.pts}</strong></td>
-      <td class="r mono">${round1(p.ppg)}</td>
-      <td class="r mono">${p.ft}</td>
-      <td class="r mono">${p.two}</td>
-      <td class="r mono">${p.three}</td>
-      <td class="r mono">${p.fouls}</td>
-      <td class="r mono">${round1(p.fpg)}</td>
-      <td class="r mono">${p.high}</td>
-      <td class="r mono">${p.low}</td>
-      <td class="r mono">${round1(p.teamShare)}%</td>
-    `;
-    pb.appendChild(tr);
-  }
-
-  // Insight text
-  const insight = buildInsight(A, gamesSorted);
-  document.getElementById("insightText").textContent = insight;
-
-  // Draw charts (functions come in Part 3)
-  drawForAgainst("chartForAgainst", "cardForAgainst", "tipForAgainst", gamesSorted);
-  drawMargins("chartMargins", "cardMargins", "tipMargins", gamesSorted);
-}
-
-/* =========================================================
-   INSIGHT GENERATOR (simple + useful)
-========================================================= */
-function buildInsight(A, gamesSorted){
-  if(A.gp===0) return "No games loaded yet — add your season JSON and the dashboard will populate instantly.";
-
-  // last 3 trend
-  const last = gamesSorted.slice(-3);
-  const lastAvgM = last.length ? sum(last, g=>margin(g))/last.length : 0;
-
-  const halfDelta = (A.h2For - A.h1For) - (A.h2Against - A.h1Against);
-
-  const parts = [];
-  parts.push(`You’re averaging ${round1(A.avgPF)} points for and ${round1(A.avgPA)} against (avg margin ${round1(A.avgMargin)}).`);
-  if(last.length>=2) parts.push(`Last ${last.length} games average margin: ${round1(lastAvgM)}.`);
-  if(Math.abs(halfDelta) >= 6){
-    parts.push(halfDelta>0
-      ? "Second halves have been a strength — you’re finishing better than opponents."
-      : "Second halves are costing you — consider a tighter 3rd/4th quarter rotation and simpler sets.");
-  }else{
-    parts.push("Halves are fairly even — focus on reducing easy points against (transition + box-outs).");
-  }
-
-  // close games callout
-  if(A.closeGames >= 3) parts.push("You’ve been in a lot of close games — one extra scoring run or defensive stop per game flips results.");
-  return parts.join(" ");
-}
-
-/* =========================================================
-   MODALS + UI WIRING (actions in Part 3 will call these too)
-========================================================= */
-const gameOverlay = document.getElementById("gameOverlay");
-const editorOverlay = document.getElementById("editorOverlay");
-
-function openOverlay(el){
-  el.style.display = "flex";
-  el.setAttribute("aria-hidden","false");
-  document.body.classList.add("no-scroll");
-}
-function closeOverlay(el){
-  el.style.display = "none";
-  el.setAttribute("aria-hidden","true");
-  document.body.classList.remove("no-scroll");
-}
-
-function openGameModal(gameNo){
-  const g = GAMES.find(x=>x.game===gameNo);
-  if(!g) return;
-
-  document.getElementById("gameKicker").textContent = `Round ${g.game}`;
-  document.getElementById("gameTitle").textContent = `${g.opponent}`;
-
-  const m = margin(g);
-  const res = m>0 ? "WIN" : (m<0 ? "LOSS" : "DRAW");
-  const h1 = `${g?.halves?.h1?.team ?? "?"}-${g?.halves?.h1?.opp ?? "?"}`;
-  const h2 = `${g?.halves?.h2?.team ?? "?"}-${g?.halves?.h2?.opp ?? "?"}`;
-
-  const players = (g.players||[]).slice().sort((a,b)=>safeNum(b.pts)-safeNum(a.pts) || a.name.localeCompare(b.name));
-  const rows = players.map(p=>`
-    <tr>
-      <td>${escapeHtml(p.name)}</td>
-      <td class="r mono"><strong>${p.pts}</strong></td>
-      <td class="r mono">${p.ft}</td>
-      <td class="r mono">${p.two}</td>
-      <td class="r mono">${p.three}</td>
-      <td class="r mono">${p.fouls}</td>
-    </tr>
-  `).join("");
-
-  document.getElementById("gameBody").innerHTML = `
-    <div class="gameHero">
-      <div class="gameScore mono"><span>${g.teamScore}</span><span class="muted">–</span><span>${g.oppScore}</span></div>
-      <div class="gameMeta">
-        <span class="badge ${m>0?"badge-win":m<0?"badge-loss":"badge-mid"}">${res}</span>
-        <span class="muted">Margin:</span> <span class="mono">${m>0?"+":""}${m}</span>
-        <span class="sep">·</span>
-        <span class="muted">Halves:</span> <span class="mono">${h1} / ${h2}</span>
-      </div>
-    </div>
-
-    <div class="sheet-section">
-      <div class="sheet-section-hd">
-        <h4>Players</h4>
-        <div class="hint">Sorted by points</div>
-      </div>
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th class="r">PTS</th>
-              <th class="r">1PT</th>
-              <th class="r">2PT</th>
-              <th class="r">3PT</th>
-              <th class="r">F</th>
-            </tr>
-          </thead>
-          <tbody>${rows || `<tr><td colspan="6" class="muted">No player data for this game yet.</td></tr>`}</tbody>
-        </table>
-      </div>
-    </div>
-  `;
-
-  openOverlay(gameOverlay);
-}
-
-/* Buttons (basic wiring; more in Part 3) */
-document.getElementById("btnCloseGame").addEventListener("click", ()=>closeOverlay(gameOverlay));
-gameOverlay.addEventListener("click", (e)=>{ if(e.target===gameOverlay) closeOverlay(gameOverlay); });
-
-document.getElementById("btnOpenEditor").addEventListener("click", ()=>{
-  document.getElementById("jsonEditor").value = JSON.stringify(GAMES, null, 2);
-  openOverlay(editorOverlay);
-});
-document.getElementById("btnCancelEditor").addEventListener("click", ()=>closeOverlay(editorOverlay));
-editorOverlay.addEventListener("click", (e)=>{ if(e.target===editorOverlay) closeOverlay(editorOverlay); });
-
-/* Filters */
-document.getElementById("filterAll").addEventListener("click", ()=>{ RESULTS_FILTER="all"; setSeg("filterAll"); render(); });
-document.getElementById("filterWins").addEventListener("click", ()=>{ RESULTS_FILTER="wins"; setSeg("filterWins"); render(); });
-document.getElementById("filterLosses").addEventListener("click", ()=>{ RESULTS_FILTER="losses"; setSeg("filterLosses"); render(); });
-
-/* Player sort */
-document.getElementById("btnSortPlayers").addEventListener("click", ()=>{
-  const order = ["pts","ppg","fouls","fpg","name"];
-  const idx = order.indexOf(PLAYER_SORT);
-  PLAYER_SORT = order[(idx+1) % order.length];
-
-  const label = PLAYER_SORT==="pts" ? "PTS"
-    : PLAYER_SORT==="ppg" ? "PPG"
-    : PLAYER_SORT==="fouls" ? "Fouls"
-    : PLAYER_SORT==="fpg" ? "FPG"
-    : "Name";
-
-  document.getElementById("btnSortPlayers").textContent = `Sort: ${label} ▾`;
-  render();
-});
-
-/* Editor helpers */
-document.getElementById("btnClearEditor").addEventListener("click", ()=>{
-  document.getElementById("jsonEditor").value = "";
-});
-document.getElementById("btnInsertTemplate").addEventListener("click", ()=>{
-  const tpl = {
-    game: 1,
-    opponent: "Immortal Warriors U14 Boys",
-    teamScore: 0,
-    oppScore: 0,
-    halves: { h1:{team:null,opp:null}, h2:{team:null,opp:null} },
-    players: [
-      { name:"Player Name", pts:0, ft:0, two:0, three:0, fouls:0 }
-    ]
-  };
-  const ta = document.getElementById("jsonEditor");
-  const add = JSON.stringify([tpl], null, 2);
-  ta.value = ta.value.trim() ? (ta.value.trim() + "\n\n" + add) : add;
-});
-
-/* NOTE:
-   - loadSeason(), CSV export, reset, apply editor, chart drawing, init + resize
-   are in PART 3 / 3
-*/<!-- =========================================================
-  PART 3 / 3  (FINAL)
-  - Data loading + fallback
-  - CSV export
-  - Apply / Reset editor
-  - Charts (canvas, mobile friendly)
-  - App init + resize handling
-========================================================= -->
-
-<script>
-/* =========================================================
-   LOAD DATA (GitHub Pages safe)
-========================================================= */
-async function loadSeason(){
-  try{
-    const res = await fetch(DATA_URL, { cache: "no-store" });
-    if(!res.ok) throw new Error("HTTP " + res.status);
-    const json = await res.json();
-    RAW_UPLOADED = normalizeGames(json);
-    GAMES = deepClone(RAW_UPLOADED);
-  }catch(err){
-    console.warn("⚠️ Failed to load JSON, using local fallback", err);
-    RAW_UPLOADED = [];
-    GAMES = [];
-  }
-}
-
-/* =========================================================
-   CSV EXPORT
-========================================================= */
-function exportCSV(){
-  if(!GAMES.length) return;
-
-  const headers = [
-    "Round","Opponent","Team Score","Opp Score","Margin",
-    "H1 Team","H1 Opp","H2 Team","H2 Opp"
-  ];
-
-  const rows = GAMES.map(g=>[
-    g.game,
-    g.opponent,
-    g.teamScore,
-    g.oppScore,
-    margin(g),
-    g?.halves?.h1?.team ?? "",
-    g?.halves?.h1?.opp ?? "",
-    g?.halves?.h2?.team ?? "",
-    g?.halves?.h2?.opp ?? ""
-  ]);
-
-  const csv = [
-    headers.join(","),
-    ...rows.map(r=>r.join(","))
-  ].join("\n");
-
-  const blob = new Blob([csv], { type:"text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "u14-season.csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-/* =========================================================
-   APPLY / RESET EDITOR
-========================================================= */
-document.getElementById("btnApply").addEventListener("click", ()=>{
-  try{
-    const raw = JSON.parse(document.getElementById("jsonEditor").value);
-    GAMES = normalizeGames(raw);
-    closeOverlay(editorOverlay);
-    render();
-  }catch(e){
-    alert("Invalid JSON — please check formatting.");
-  }
-});
-
-document.getElementById("btnReset").addEventListener("click", ()=>{
-  GAMES = deepClone(RAW_UPLOADED);
-  render();
-});
-
-/* =========================================================
-   SIMPLE CHART ENGINE (NO LIBRARIES)
-========================================================= */
-function drawForAgainst(canvasId, cardId, tipId, games){
-  const canvas = document.getElementById(canvasId);
-  if(!canvas || !games.length) return;
-
-  const ctx = canvas.getContext("2d");
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.clientWidth;
-  const h = 220;
-
-  canvas.width = w * dpr;
-  canvas.height = h * dpr;
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0,0,w,h);
-
-  const padding = 28;
-  const maxY = Math.max(
-    ...games.map(g=>Math.max(g.teamScore, g.oppScore))
-  ) + 5;
-
-  function y(v){ return h - padding - (v/maxY)*(h-2*padding); }
-  function x(i){ return padding + (i/(games.length-1||1))*(w-2*padding); }
-
-  // grid
-  ctx.strokeStyle = "rgba(255,255,255,.08)";
-  ctx.lineWidth = 1;
-  for(let i=0;i<=4;i++){
-    const yy = padding + i*(h-2*padding)/4;
-    ctx.beginPath();
-    ctx.moveTo(padding, yy);
-    ctx.lineTo(w-padding, yy);
-    ctx.stroke();
-  }
-
-  // line helper
-  function line(vals, color){
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    vals.forEach((v,i)=>{
-      const xx = x(i);
-      const yy = y(v);
-      if(i===0) ctx.moveTo(xx,yy);
-      else ctx.lineTo(xx,yy);
-    });
-    ctx.stroke();
-  }
-
-  line(games.map(g=>g.teamScore), "#6ee7ff");
-  line(games.map(g=>g.oppScore), "#ff5c7a");
-}
-
-function drawMargins(canvasId, cardId, tipId, games){
-  const canvas = document.getElementById(canvasId);
-  if(!canvas || !games.length) return;
-
-  const ctx = canvas.getContext("2d");
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.clientWidth;
-  const h = 220;
-
-  canvas.width = w * dpr;
-  canvas.height = h * dpr;
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0,0,w,h);
-
-  const padding = 28;
-  const margins = games.map(g=>margin(g));
-  const max = Math.max(...margins.map(Math.abs)) + 2;
-
-  function y(v){ return h/2 - (v/max)*(h/2-padding); }
-  function x(i){ return padding + (i/(games.length-1||1))*(w-2*padding); }
-
-  // mid line
-  ctx.strokeStyle = "rgba(255,255,255,.15)";
-  ctx.beginPath();
-  ctx.moveTo(padding, h/2);
-  ctx.lineTo(w-padding, h/2);
-  ctx.stroke();
-
-  // line
-  ctx.strokeStyle = "#22c55e";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  margins.forEach((m,i)=>{
-    const xx = x(i);
-    const yy = y(m);
-    if(i===0) ctx.moveTo(xx,yy);
-    else ctx.lineTo(xx,yy);
-  });
-  ctx.stroke();
-}
-
-/* =========================================================
-   INIT
-========================================================= */
-async function init(){
-  await loadSeason();
-  render();
-}
-
-window.addEventListener("resize", ()=>{
-  render();
-});
-
-document.getElementById("btnExport").addEventListener("click", exportCSV);
-
-init();
-</script>
+  <!-- PART 1 JS: minimal shell wiring only (no data yet) -->
+  <script>
+    // Part 1 intentionally does NOT load data.
+    // It only wires basic modal open/close so the UI feels alive.
+
+    const backdrop = document.getElementById("backdrop");
+    const editorBackdrop = document.getElementById("editorBackdrop");
+
+    document.getElementById("btnClose").onclick = ()=> backdrop.style.display = "none";
+    backdrop.onclick = (e)=> { if(e.target === backdrop) backdrop.style.display = "none"; };
+
+    document.getElementById("btnOpenEditor").onclick = ()=> {
+      editorBackdrop.style.display = "flex";
+    };
+    document.getElementById("btnCancelEditor").onclick = ()=> {
+      editorBackdrop.style.display = "none";
+    };
+
+    // Buttons are placeholders until Part 2/3
+    document.getElementById("btnExport").onclick = ()=> alert("Export comes in Part 3.");
+    document.getElementById("btnReset").onclick  = ()=> alert("Reset comes in Part 2.");
+    document.getElementById("btnApply").onclick  = ()=> alert("Apply/validation comes in Part 3.");
+  </script>
+</body>
 </html>
