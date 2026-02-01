@@ -1,72 +1,55 @@
 [
   {
-  {
-  "game": 1,
-  "opponent": "Immortal Warriors U14 Boys",
-  "team": "Lakers U14 Boys Copper",
-  "oppTeam": "Immortal Warriors U14 Boys",
-  "teamScore": 37,
-  "oppScore": 16,
-  "halves": {
-    "h1": { "team": 13, "opp": 7 },
-    "h2": { "team": 24, "opp": 9 }
-  },
-  "players": [
-    { "name": "Archer Kenny", "pts": 3,  "ft": 1, "two": 1, "three": 0, "fouls": 0 },
-    { "name": "Thomas O'Sullivan", "pts": 17, "ft": 3, "two": 7, "three": 0, "fouls": 1 },
-    { "name": "Jacob Nguyen", "pts": 4, "ft": 0, "two": 2, "three": 0, "fouls": 0 },
-    { "name": "Tate Power", "pts": 10, "ft": 2, "two": 4, "three": 0, "fouls": 1 },
-    { "name": "Ethan Poon", "pts": 3, "ft": 1, "two": 1, "three": 0, "fouls": 1 },
-    { "name": "Rodion Prystupa", "pts": 0, "ft": 0, "two": 0, "three": 0, "fouls": 2 }
-  ],
-  "note": "Season opener vs Immortal Warriors. Strong second half (+15)."
-}
+    "game": 1,
+    "opponent": "Immortal Warriors U14 Boys",
+    "teamScore": 37,
+    "oppScore": 16
   },
   {
     "game": 2,
+    "opponent": "Bentleigh Lakers Flame",
+    "teamScore": 29,
+    "oppScore": 26
+  },
+  {
+    "game": 3,
     "opponent": "Dark Wolves U14 Boys",
     "teamScore": 26,
     "oppScore": 28
   },
   {
-    "game": 3,
+    "game": 4,
     "opponent": "Raptors U14 Boys Orange",
     "teamScore": 28,
     "oppScore": 45
   },
   {
-    "game": 4,
+    "game": 5,
     "opponent": "Carnegie Chargers U14 Bears",
     "teamScore": 25,
     "oppScore": 30
   },
   {
-    "game": 5,
+    "game": 6,
     "opponent": "Bentleigh Lakers Copper",
     "teamScore": 26,
     "oppScore": 29
   },
   {
-    "game": 6,
+    "game": 7,
     "opponent": "Dark Wolves U14 Boys",
     "teamScore": 26,
     "oppScore": 28
   },
   {
-    "game": 7,
+    "game": 8,
     "opponent": "Raptors U14 Boys Orange",
     "teamScore": 28,
     "oppScore": 45
   },
   {
-    "game": 8,
-    "opponent": "Carnegie Chargers U14 Bears",
-    "teamScore": 25,
-    "oppScore": 30
-  },
-  {
     "game": 9,
-    "opponent": "Bentleigh Lakers Flame",
+    "opponent": "Carnegie Chargers U14 Bears",
     "teamScore": 25,
     "oppScore": 30
   },
