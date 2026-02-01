@@ -1,1484 +1,547 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>U14 Season Analytics Dashboard</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>U14 Season Analytics Dashboard</title>
 
-  <style>
-    :root{
-      /* Base palette (premium navy, not pure black) */
-      --bg0:#050b18;
-      --bg1:#06122a;
-      --bg2:#071a3a;
+<style>
+/* =========================================================
+   WEALTH-STYLE DESIGN SYSTEM
+   ========================================================= */
+:root{
+  --bg0:#020617;
+  --bg1:#071229;
+  --card:#0b1932;
+  --cardSoft:rgba(255,255,255,.04);
+  --border:rgba(255,255,255,.10);
+  --text:#e8eefc;
+  --muted:#9fb0d0;
 
-      --card0:rgba(255,255,255,.06);
-      --card1:rgba(255,255,255,.04);
-      --border:rgba(255,255,255,.10);
+  --accent:#6ee7ff;
+  --green:#2bd47d;
+  --amber:#ffd166;
+  --red:#ff5c7a;
 
-      --text:#eaf0ff;
-      --muted:#a7b6d6;
-      --muted2:#7f93ba;
+  --radius:22px;
+  --radiusSm:14px;
+  --shadow:0 24px 60px rgba(0,0,0,.55);
+  --font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+}
 
-      --accent:#6ee7ff;
-      --green:#2bd47d;
-      --amber:#ffd166;
-      --red:#ff5c7a;
-      --purple:#a78bfa;
+*{ box-sizing:border-box }
 
-      --shadow:0 24px 60px rgba(0,0,0,.55);
-      --radius:22px;
-      --radius2:16px;
+body{
+  margin:0;
+  font-family:var(--font);
+  color:var(--text);
+  background:
+    radial-gradient(1200px 600px at 20% 0%, rgba(110,231,255,.14), transparent 60%),
+    radial-gradient(900px 600px at 80% 10%, rgba(43,212,125,.12), transparent 55%),
+    linear-gradient(180deg, var(--bg1), var(--bg0));
+  min-height:100vh;
+}
 
-      --font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-      --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-    }
+/* =========================================================
+   APP SHELL
+   ========================================================= */
+#app-shell{
+  max-width:1200px;
+  margin:0 auto;
+  padding:20px 14px 80px;
+}
 
-    *{ box-sizing:border-box }
-    html,body{ height:100% }
-    body{
-      margin:0;
-      font-family:var(--font);
-      color:var(--text);
-      background:
-        radial-gradient(1200px 680px at 16% 6%, rgba(110,231,255,.14), transparent 58%),
-        radial-gradient(900px 600px at 86% 14%, rgba(167,139,250,.12), transparent 60%),
-        radial-gradient(900px 700px at 46% 96%, rgba(43,212,125,.10), transparent 55%),
-        linear-gradient(180deg, var(--bg2), var(--bg0));
-      min-height:100%;
-    }
+/* =========================================================
+   TOP CONTROLS (WEALTH-APP STYLE)
+   ========================================================= */
+#top-controls{
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  box-shadow:var(--shadow);
+  margin-bottom:18px;
+}
 
-    /* App container */
-    .app{
-      max-width:1180px;
-      margin:0 auto;
-      padding:18px 14px 72px;
-    }
+.header-title{
+  font-size:22px;
+  font-weight:900;
+  margin:0 0 6px 0;
+}
 
-    /* Top bar */
-    .topbar{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      margin-bottom:14px;
-    }
+.header-sub{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.4;
+}
 
-    .title{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .title h1{
-      margin:0;
-      font-size:22px;
-      letter-spacing:.2px;
-    }
-    .title .sub{
-      font-size:13px;
-      line-height:1.35;
-      color:var(--muted);
-    }
-    .mono{ font-family:var(--mono); }
-    .muted{ color:var(--muted); }
-    .muted2{ color:var(--muted2); }
+.control-stack{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin-top:14px;
+}
 
-    /* Controls (mobile: sticky action bar feel) */
-    .controls{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
+.button{
+  appearance:none;
+  border:1px solid var(--border);
+  background:var(--cardSoft);
+  color:var(--text);
+  padding:14px;
+  border-radius:var(--radiusSm);
+  font-weight:900;
+  cursor:pointer;
+}
 
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg, rgba(2,6,23,.64), rgba(2,6,23,.36));
-      backdrop-filter: blur(10px);
-      box-shadow:0 16px 40px rgba(0,0,0,.35);
-      border-radius:18px;
-      padding:10px;
-      position:sticky;
-      top:10px;
-      z-index:20;
-    }
+.button.primary{
+  background:linear-gradient(90deg, #2bd47d, #6ee7ff);
+  color:#021018;
+  border:none;
+}
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.05);
-      box-shadow:0 10px 28px rgba(0,0,0,.25) inset;
-      color:var(--text);
-      font-size:12px;
-      user-select:none;
-      min-height:44px;
-      flex:1 1 220px;
-    }
-    .pill strong{ font-weight:900; }
+.button.danger{
+  background:linear-gradient(90deg, #ff5c7a, #ffd166);
+  color:#22080f;
+  border:none;
+}
 
-    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent); box-shadow:0 0 0 4px rgba(110,231,255,.12)}
-    .dot.warn{background:var(--amber); box-shadow:0 0 0 4px rgba(255,209,102,.14)}
-    .dot.good{background:var(--green); box-shadow:0 0 0 4px rgba(43,212,125,.12)}
-    .dot.bad{background:var(--red); box-shadow:0 0 0 4px rgba(255,92,122,.14)}
+/* =========================================================
+   STORY LAYOUT
+   ========================================================= */
+#story-layout{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:18px;
+}
 
-    .btn{
-      appearance:none;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:14px;
-      font-weight:900;
-      font-size:13px;
-      cursor:pointer;
-      min-height:44px;
-      transition:transform .06s ease, background .2s ease, border-color .2s ease;
-      flex: 1 1 160px;
-    }
-    .btn:hover{ background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.20) }
-    .btn:active{ transform:translateY(1px) }
-    .btn.primary{ border-color:rgba(110,231,255,.35); background:rgba(110,231,255,.10); }
-    .btn.danger{ border-color:rgba(255,92,122,.35); background:rgba(255,92,122,.10); }
+/* =========================================================
+   CARDS
+   ========================================================= */
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:16px;
+}
 
-    /* Layout */
-    .layout{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:14px;
-      margin-top:14px;
-    }
-    .col{
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
+.card h2{
+  margin:0 0 6px 0;
+  font-size:16px;
+}
 
-    @media (min-width: 820px){
-      .controls{
-        position:relative;
-        top:auto;
-      }
-      .topbar{
-        flex-direction:row;
-        align-items:flex-start;
-        justify-content:space-between;
-        gap:14px;
-      }
-      .layout{
-        grid-template-columns: 390px 1fr;
-        align-items:start;
-        gap:16px;
-      }
-      .title h1{ font-size:24px; }
-    }
+.card .hint{
+  color:var(--muted);
+  font-size:12px;
+}
 
-    /* Cards */
-    .card{
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .card .hd{
-      padding:14px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
-    }
-    .card .hd h2{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-    .card .hd .hint{
-      color:var(--muted);
-      font-size:12px;
-    }
-    .card .bd{ padding:14px 16px; }
+/* =========================================================
+   HERO CHART PLACEHOLDER
+   ========================================================= */
+.hero-card{
+  padding:18px;
+}
 
-    /* Snapshot tiles (mobile swipe, iPad grid) */
-    .tiles{
-      display:flex;
-      gap:12px;
-      overflow-x:auto;
-      padding-bottom:6px;
-      scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling:touch;
-    }
-    .tiles::-webkit-scrollbar{ height:8px; }
-    .tiles::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08); border-radius:999px; }
+.hero-placeholder{
+  height:280px;
+  border-radius:18px;
+  border:1px dashed rgba(255,255,255,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  font-size:14px;
+}
 
-    .tile{
-      scroll-snap-align:start;
-      min-width:170px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      background:
-        radial-gradient(900px 150px at 20% 0%, rgba(110,231,255,.12), transparent 55%),
-        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      padding:12px 12px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      min-height:86px;
-    }
-    .tile .k{ color:var(--muted); font-size:11px; letter-spacing:.3px; text-transform:uppercase }
-    .tile .v{ font-size:22px; font-weight:1000; letter-spacing:.2px }
-    .tile .s{ color:var(--muted2); font-size:12px }
+/* =========================================================
+   SNAPSHOT TILES
+   ========================================================= */
+.snapshot-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
 
-    @media (min-width: 820px){
-      .tiles{
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap:12px;
-        overflow:visible;
-        padding-bottom:0;
-      }
-      .tile{ min-width:unset; }
-    }
+.snapshot{
+  background:rgba(0,0,0,.25);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+}
 
-    /* Tables */
-    .tableWrap{
-      width:100%;
-      overflow:auto;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(0,0,0,.14);
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      overflow:hidden;
-      border-radius:14px;
-      min-width: 760px;
-    }
-    thead th{
-      text-align:left;
-      font-size:11px;
-      color:var(--muted);
-      font-weight:1000;
-      letter-spacing:.3px;
-      text-transform:uppercase;
-      padding:10px 10px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      position:sticky;
-      top:0;
-      background:rgba(2,6,23,.82);
-      backdrop-filter: blur(8px);
-      z-index:2;
-    }
-    tbody td{
-      padding:10px 10px;
-      border-bottom:1px solid rgba(255,255,255,.07);
-      font-size:13px;
-      white-space:nowrap;
-    }
-    tbody tr:hover{ background:rgba(255,255,255,.04); }
+.snapshot .label{
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+}
 
-    .rightTx{ text-align:right; }
+.snapshot .value{
+  font-size:22px;
+  font-weight:900;
+  margin-top:4px;
+}
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:5px 10px;
-      border-radius:999px;
-      font-size:11px;
-      font-weight:1000;
-      letter-spacing:.2px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-    }
-    .b-good{ border-color:rgba(43,212,125,.30); background:rgba(43,212,125,.12); color:#bff6da; }
-    .b-bad{ border-color:rgba(255,92,122,.30); background:rgba(255,92,122,.12); color:#ffd0da; }
-    .b-mid{ border-color:rgba(255,209,102,.30); background:rgba(255,209,102,.12); color:#ffe9b4; }
+/* =========================================================
+   TABLE PLACEHOLDERS
+   ========================================================= */
+.table-placeholder{
+  height:180px;
+  border-radius:16px;
+  border:1px dashed rgba(255,255,255,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+}
 
-    /* Charts (mobile swipe, iPad 2-up) */
-    .chartStack{
-      display:flex;
-      gap:12px;
-      overflow-x:auto;
-      scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling:touch;
-      padding-bottom:6px;
-    }
-    .chartStack::-webkit-scrollbar{ height:8px; }
-    .chartStack::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08); border-radius:999px; }
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (min-width:768px){
+  #story-layout{
+    grid-template-columns:1.3fr .7fr;
+    grid-template-areas:
+      "hero insight"
+      "hero snapshot"
+      "details details";
+  }
+  #hero-section{ grid-area:hero }
+  #insight-section{ grid-area:insight }
+  #snapshot-section{ grid-area:snapshot }
+  #detail-section{ grid-area:details }
 
-    .chartCard{
-      scroll-snap-align:start;
-      min-width:100%;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-      padding:12px;
-      overflow:hidden;
-      position:relative;
-    }
-    .chartCard h3{
-      margin:0 0 8px 0;
-      font-size:12px;
-      color:var(--muted);
-      font-weight:1000;
-      letter-spacing:.2px;
-      text-transform:uppercase;
-    }
-    canvas{
-      width:100%;
-      height:240px;
-      border-radius:12px;
-      background:rgba(0,0,0,.18);
-      border:1px solid rgba(255,255,255,.06);
-      display:block;
-    }
-    @media (min-width: 820px){
-      .chartStack{
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        overflow:visible;
-        padding-bottom:0;
-        gap:12px;
-      }
-      .chartCard{ min-width:unset; }
-    }
-
-    /* Insight card */
-    .insight{
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      border-radius:18px;
-      padding:12px;
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      line-height:1.35;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
-    }
-    .insight .icon{
-      width:26px;height:26px;border-radius:10px;
-      display:grid;place-items:center;
-      border:1px solid rgba(110,231,255,.22);
-      background:rgba(110,231,255,.10);
-      flex:0 0 auto;
-    }
-    .small{ font-size:12px; color:var(--muted); line-height:1.4 }
-
-    /* Modals (shared) */
-    .backdrop{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:50;
-    }
-    .modal{
-      width:min(940px, 100%);
-      max-height:86vh;
-      overflow:auto;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:22px;
-      background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(2,6,23,.98));
-      box-shadow:0 40px 80px rgba(0,0,0,.65);
-    }
-    .modal .mh{
-      position:sticky;
-      top:0;
-      background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(10,22,48,.85));
-      padding:14px 16px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      z-index:2;
-    }
-    .modal .mh h2{ margin:0; font-size:14px; }
-    .modal .mb{ padding:14px 16px; }
-    .closeX{
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      border-radius:12px;
-      padding:10px 12px;
-      cursor:pointer;
-      color:var(--text);
-      font-weight:1000;
-      min-height:44px;
-    }
-    @media (max-width: 720px){
-      .modal{ width:100%; max-height:92vh; border-radius:20px; }
-      .modal .mh{ padding:12px; }
-    }
-
-    /* Editor textarea */
-    .ta{
-      width:100%;
-      min-height:240px;
-      resize:vertical;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);
-      color:var(--text);
-      padding:12px 12px;
-      font-family:var(--mono);
-      font-size:12px;
-      line-height:1.45;
-      outline:none;
-    }
-    .ta:focus{ border-color:rgba(110,231,255,.35); box-shadow:0 0 0 4px rgba(110,231,255,.10) }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .spacer{ height:8px; }
-    a.click{
-      cursor:pointer;
-      text-decoration:none;
-      color:var(--text);
-      min-height:44px;
-      display:inline-flex;
-      align-items:center;
-    }
-    a.click:hover{ color:var(--accent); }
-  </style>
+  .snapshot-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
 
 <body>
-  <div class="app">
 
-    <!-- TOPBAR -->
-    <div class="topbar">
-      <div class="title">
-        <h1>U14 Season Analytics Dashboard</h1>
-        <div class="sub">
-          Season analytics for <strong>Lakers U14 Boys Copper</strong> (results, player scoring, fouls, trends).<br/>
-          Loads from <span class="mono">/data/season-2026.json</span> on GitHub Pages.
-        </div>
-      </div>
+<div id="app-shell">
 
-      <div class="controls">
-        <div class="pill" id="loadedPill" title="How many games were loaded successfully">
-          <span class="dot warn" id="loadedDot"></span>
-          <strong id="loadedCount">0</strong> / <span id="targetCount">10</span> games loaded
-        </div>
-
-        <button class="btn primary" id="btnOpenEditor">Add / Edit Games</button>
-        <button class="btn" id="btnExport">Export CSV</button>
-        <button class="btn danger" id="btnReset">Reset to Uploaded Data</button>
-      </div>
+  <!-- =========================
+       TOP CONTROLS
+       ========================= -->
+  <section id="top-controls">
+    <div class="header-title">U14 Season Analytics Dashboard</div>
+    <div class="header-sub">
+      Lakers U14 Boys Copper · Results · Trends · Player Analytics
     </div>
 
-    <!-- LAYOUT -->
-    <main class="layout">
-      <!-- LEFT -->
-      <section class="col">
-
-        <!-- Snapshot -->
-        <div class="card">
-          <div class="hd">
-            <h2>Season Snapshot</h2>
-            <div class="hint">Auto-calculated from loaded games</div>
-          </div>
-          <div class="bd">
-            <div class="tiles" id="tiles">
-              <!-- Part 2 will populate -->
-              <div class="tile">
-                <div class="k">Status</div>
-                <div class="v">Waiting</div>
-                <div class="s">Data not loaded yet</div>
-              </div>
-              <div class="tile">
-                <div class="k">Tip</div>
-                <div class="v">Part 2</div>
-                <div class="s">Adds loader + analytics</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Game Results -->
-        <div class="card">
-          <div class="hd">
-            <h2>Game Results</h2>
-            <div class="hint">Tap a game to open detail</div>
-          </div>
-          <div class="bd">
-            <div class="tableWrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width:70px;">Round</th>
-                    <th>Opponent</th>
-                    <th class="rightTx">Score</th>
-                    <th class="rightTx">Margin</th>
-                    <th style="width:130px;">Result</th>
-                    <th class="rightTx">1H / 2H</th>
-                  </tr>
-                </thead>
-                <tbody id="resultsBody">
-                  <tr>
-                    <td class="mono muted2">—</td>
-                    <td class="muted2">Waiting for season data…</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td><span class="badge b-mid">Pending</span></td>
-                    <td class="rightTx mono muted2">—</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="spacer"></div>
-            <div class="small" id="loadHelp">
-              If this stays blank after Part 2+3: confirm the file exists at
-              <span class="mono">/data/season-2026.json</span> in your GitHub Pages build.
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- RIGHT -->
-      <section class="col">
-
-        <!-- Trends -->
-        <div class="card">
-          <div class="hd">
-            <h2>Trends</h2>
-            <div class="hint">Swipe on mobile, 2-up on iPad</div>
-          </div>
-          <div class="bd">
-            <div class="chartStack">
-              <div class="chartCard">
-                <h3>Team Points (For vs Against)</h3>
-                <canvas id="chartForAgainst" width="800" height="300"></canvas>
-              </div>
-              <div class="chartCard">
-                <h3>Margins</h3>
-                <canvas id="chartMargins" width="800" height="300"></canvas>
-              </div>
-            </div>
-
-            <div class="spacer"></div>
-            <div class="insight" id="insightCard">
-              <div class="icon">↗︎</div>
-              <div class="small">Waiting for data… (Part 2 will generate the insight card)</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Player Analytics -->
-        <div class="card">
-          <div class="hd">
-            <h2>Player Analytics</h2>
-            <div class="hint">Totals + per-game + fouls</div>
-          </div>
-          <div class="bd">
-            <div class="tableWrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Player</th>
-                    <th class="rightTx">Games</th>
-                    <th class="rightTx">PTS</th>
-                    <th class="rightTx">PPG</th>
-                    <th class="rightTx">1PT</th>
-                    <th class="rightTx">2PT</th>
-                    <th class="rightTx">3PT</th>
-                    <th class="rightTx">Fouls</th>
-                    <th class="rightTx">FPG</th>
-                    <th class="rightTx">High</th>
-                    <th class="rightTx">Low</th>
-                    <th class="rightTx">% Team</th>
-                  </tr>
-                </thead>
-                <tbody id="playersBody">
-                  <tr>
-                    <td class="muted2">Waiting for player data…</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                    <td class="rightTx mono muted2">—</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="spacer"></div>
-            <div class="small">
-              Part 2 adds data loading + calculations. Part 3 adds sorting + modals + export.
-            </div>
-          </div>
-        </div>
-
-      </section>
-    </main>
-
-  </div>
-
-  <!-- MODAL: Game Detail -->
-  <div class="backdrop" id="backdrop">
-    <div class="modal">
-      <div class="mh">
-        <h2 id="modalTitle">Game Detail</h2>
-        <button class="closeX" id="btnClose">Close</button>
-      </div>
-      <div class="mb" id="modalBody"></div>
+    <div class="control-stack">
+      <button class="button primary">Add / Edit Games</button>
+      <button class="button">Export CSV</button>
+      <button class="button danger">Reset Data</button>
     </div>
-  </div>
+  </section>
 
-  <!-- MODAL: Editor -->
-  <div class="backdrop" id="editorBackdrop">
-    <div class="modal">
-      <div class="mh">
-        <h2>Games Data Editor</h2>
-        <div class="row">
-          <button class="btn primary" id="btnApply">Apply</button>
-          <button class="btn" id="btnCancelEditor">Cancel</button>
+  <!-- =========================
+       STORY SECTIONS
+       ========================= -->
+  <main id="story-layout">
+
+    <!-- HERO -->
+    <section id="hero-section" class="card hero-card">
+      <h2>Season Trend</h2>
+      <div class="hint">Points for vs against · Tap for values</div>
+      <div class="hero-placeholder">
+        Chart loads in Part 2
+      </div>
+    </section>
+
+    <!-- INSIGHT -->
+    <section id="insight-section" class="card">
+      <h2>Insight</h2>
+      <div class="hint">Auto-generated from season data</div>
+      <p class="header-sub" style="margin-top:10px;">
+        Loading insight…
+      </p>
+    </section>
+
+    <!-- SNAPSHOT -->
+    <section id="snapshot-section" class="card">
+      <h2>Season Snapshot</h2>
+      <div class="hint">Auto-calculated</div>
+
+      <div class="snapshot-grid" style="margin-top:12px;">
+        <div class="snapshot">
+          <div class="label">Record</div>
+          <div class="value">—</div>
+        </div>
+        <div class="snapshot">
+          <div class="label">Avg Margin</div>
+          <div class="value">—</div>
+        </div>
+        <div class="snapshot">
+          <div class="label">Points For</div>
+          <div class="value">—</div>
+        </div>
+        <div class="snapshot">
+          <div class="label">Points Against</div>
+          <div class="value">—</div>
         </div>
       </div>
-      <div class="mb">
-        <div class="small">
-          Paste your <strong>JSON array of games</strong> here. Format per game:
-          <span class="mono">{ "game": 1, "opponent":"...", "teamScore":37, "oppScore":16, "halves":{"h1":{"team":13,"opp":7},"h2":{"team":24,"opp":9}}, "players":[{"name":"...", "pts":6, "ft":0, "two":3, "three":0, "fouls":2}] }</span>
-        </div>
-        <div class="spacer"></div>
-        <textarea class="ta" id="jsonEditor" spellcheck="false"></textarea>
+    </section>
+
+    <!-- DETAILS -->
+    <section id="detail-section" class="card">
+      <h2>Game Results & Player Analytics</h2>
+      <div class="hint">Tap a game to open details</div>
+
+      <div class="table-placeholder" style="margin-top:14px;">
+        Tables load in Part 3
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- PART 1 JS: minimal shell wiring only (no data yet) -->
-  <script>
-    // Part 1 intentionally does NOT load data.
-    // It only wires basic modal open/close so the UI feels alive.
-
-    const backdrop = document.getElementById("backdrop");
-    const editorBackdrop = document.getElementById("editorBackdrop");
-
-    document.getElementById("btnClose").onclick = ()=> backdrop.style.display = "none";
-    backdrop.onclick = (e)=> { if(e.target === backdrop) backdrop.style.display = "none"; };
-
-    document.getElementById("btnOpenEditor").onclick = ()=> {
-      editorBackdrop.style.display = "flex";
-    };
-    document.getElementById("btnCancelEditor").onclick = ()=> {
-      editorBackdrop.style.display = "none";
-    };
-
-    // Buttons are placeholders until Part 2/3
-    document.getElementById("btnExport").onclick = ()=> alert("Export comes in Part 3.");
-    document.getElementById("btnReset").onclick  = ()=> alert("Reset comes in Part 2.");
-    document.getElementById("btnApply").onclick  = ()=> alert("Apply/validation comes in Part 3.");
-  </script>
-</body>
-
+  </main>
+</div>
 <script>
-/* ============================================================
-   PART 2 — DATA + ANALYTICS ENGINE
-   ============================================================ */
+/* =========================================================
+   PART 2 — DATA LOADING + ANALYTICS ENGINE
+   ========================================================= */
 
-/* ------------------------------------------------------------
-   CONFIG
-   ------------------------------------------------------------ */
-const DATA_URL = "./data/season-2026.json";
-const TARGET_GAMES = 10;
+/* ---------- STATE ---------- */
+let seasonGames = [];
 
-/* ------------------------------------------------------------
-   STATE (single source of truth)
-   ------------------------------------------------------------ */
-let RAW_GAMES = [];
-let GAMES = [];
-
-/* ------------------------------------------------------------
-   UTILITIES
-   ------------------------------------------------------------ */
-const $ = id => document.getElementById(id);
-const safeNum = v => Number.isFinite(+v) ? +v : 0;
-const round1 = v => Math.round(safeNum(v) * 10) / 10;
-const clone = x => JSON.parse(JSON.stringify(x));
-
-function margin(g){
-  return safeNum(g.teamScore) - safeNum(g.oppScore);
-}
-function isWin(g){
-  return margin(g) > 0;
-}
-
-/* ------------------------------------------------------------
-   NORMALISE GAME OBJECTS
-   (prevents missing fields breaking UI)
-   ------------------------------------------------------------ */
-function normalizeGames(arr){
-  if(!Array.isArray(arr)) return [];
-
-  const map = new Map();
-
-  for(const raw of arr){
-    const g = {
-      game: safeNum(raw.game),
-      opponent: raw.opponent || raw.oppTeam || "Unknown",
-      team: raw.team || "Lakers U14 Boys Copper",
-      teamScore: safeNum(raw.teamScore),
-      oppScore: safeNum(raw.oppScore),
-      halves: {
-        h1:{
-          team: safeNum(raw?.halves?.h1?.team),
-          opp:  safeNum(raw?.halves?.h1?.opp)
-        },
-        h2:{
-          team: safeNum(raw?.halves?.h2?.team),
-          opp:  safeNum(raw?.halves?.h2?.opp)
-        }
-      },
-      players: Array.isArray(raw.players)
-        ? raw.players.map(p=>({
-            name: p.name || "Unknown",
-            pts: safeNum(p.pts),
-            ft: safeNum(p.ft),
-            two: safeNum(p.two),
-            three: safeNum(p.three),
-            fouls: safeNum(p.fouls)
-          }))
-        : []
-    };
-
-    if(g.game > 0) map.set(g.game, g);
-  }
-
-  return [...map.values()].sort((a,b)=>a.game-b.game);
-}
-
-/* ------------------------------------------------------------
-   LOAD JSON FROM GITHUB PAGES
-   ------------------------------------------------------------ */
-async function loadSeason(){
+/* ---------- LOAD DATA ---------- */
+async function loadSeasonData(){
   try{
-    const res = await fetch(DATA_URL, { cache:"no-store" });
-    if(!res.ok) throw new Error("HTTP " + res.status);
-
-    const json = await res.json();
-    GAMES = normalizeGames(json);
-    RAW_GAMES = clone(GAMES);
-
-    console.info("Season loaded:", GAMES.length, "games");
-    renderApp();
+    const res = await fetch('./data/season-2026.json');
+    if(!res.ok) throw new Error('JSON not found');
+    seasonGames = await res.json();
+    computeSeasonAnalytics();
   }catch(err){
-    console.error("Failed to load season JSON", err);
-    alert(
-      "Could not load season data.\n\n" +
-      "Check that this file exists:\n" +
-      DATA_URL
-    );
+    console.warn('Season data not loaded:', err.message);
+    showEmptyState();
   }
 }
 
-/* ------------------------------------------------------------
-   ANALYTICS ENGINE (PURE FUNCTIONS)
-   ------------------------------------------------------------ */
-function buildAnalytics(games){
-  const gp = games.length;
-  const wins = games.filter(isWin).length;
-  const losses = gp - wins;
-
-  const pf = games.reduce((t,g)=>t+g.teamScore,0);
-  const pa = games.reduce((t,g)=>t+g.oppScore,0);
-
-  const avgPF = gp ? pf/gp : 0;
-  const avgPA = gp ? pa/gp : 0;
-  const avgMargin = gp ? games.reduce((t,g)=>t+margin(g),0)/gp : 0;
-
-  const closeGames = games.filter(g=>Math.abs(margin(g))<=5).length;
-
-  /* Player aggregation */
-  const playerMap = {};
-  games.forEach(g=>{
-    g.players.forEach(p=>{
-      if(!playerMap[p.name]){
-        playerMap[p.name] = {
-          name:p.name,
-          games:0, pts:0, ft:0, two:0, three:0, fouls:0,
-          highs:[], lows:[]
-        };
-      }
-      const o = playerMap[p.name];
-      o.games++;
-      o.pts += p.pts;
-      o.ft += p.ft;
-      o.two += p.two;
-      o.three += p.three;
-      o.fouls += p.fouls;
-      o.highs.push(p.pts);
-      o.lows.push(p.pts);
-    });
-  });
-
-  const players = Object.values(playerMap).map(p=>({
-    ...p,
-    ppg: p.games ? p.pts/p.games : 0,
-    fpg: p.games ? p.fouls/p.games : 0,
-    high: p.highs.length ? Math.max(...p.highs) : 0,
-    low:  p.lows.length  ? Math.min(...p.lows)  : 0,
-    teamShare: pf ? (p.pts/pf)*100 : 0
-  })).sort((a,b)=>b.pts-a.pts);
-
-  return {
-    gp,wins,losses,
-    pf,pa,avgPF,avgPA,avgMargin,closeGames,
-    players
-  };
+/* ---------- EMPTY STATE ---------- */
+function showEmptyState(){
+  setText('.snapshot:nth-child(1) .value','0–0');
+  setText('.snapshot:nth-child(2) .value','—');
+  setText('.snapshot:nth-child(3) .value','—');
+  setText('.snapshot:nth-child(4) .value','—');
+  document.querySelector('#insight-section p').textContent =
+    'No games loaded yet. Add games to generate insights.';
 }
 
-/* ------------------------------------------------------------
-   RENDER SNAPSHOT TILES
-   ------------------------------------------------------------ */
-function renderSnapshot(A){
-  const tiles = $("tiles");
-  tiles.innerHTML = "";
-
-  const winPct = A.gp ? (A.wins/A.gp)*100 : 0;
-
-  const data = [
-    ["Games", A.gp, `Target ${TARGET_GAMES}`],
-    ["Record", `${A.wins}-${A.losses}`, `Win % ${round1(winPct)}`],
-    ["Avg PF", round1(A.avgPF), `Total ${A.pf}`],
-    ["Avg PA", round1(A.avgPA), `Total ${A.pa}`],
-    ["Avg Margin", round1(A.avgMargin), `Close ≤5: ${A.closeGames}`],
-    ["Status",
-      A.avgMargin >= 5 ? "Dominant" :
-      A.avgMargin >= 0 ? "Competitive" :
-      A.avgMargin > -5 ? "Learning" : "Developing",
-      "Auto classified"
-    ]
-  ];
-
-  data.forEach(([k,v,s])=>{
-    const d=document.createElement("div");
-    d.className="tile";
-    d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div>`;
-    tiles.appendChild(d);
-  });
-}
-
-/* ------------------------------------------------------------
-   RENDER RESULTS TABLE
-   ------------------------------------------------------------ */
-function renderResults(games){
-  const body = $("resultsBody");
-  body.innerHTML="";
-
-  games.forEach(g=>{
-    const m = margin(g);
-    const res = m>0 ? ["WIN","b-good"] : m<0 ? ["LOSS","b-bad"] : ["DRAW","b-mid"];
-
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td class="mono">R${g.game}</td>
-      <td>${g.opponent}</td>
-      <td class="rightTx mono">${g.teamScore}-${g.oppScore}</td>
-      <td class="rightTx mono">${m>0?"+":""}${m}</td>
-      <td><span class="badge ${res[1]}">${res[0]}</span></td>
-      <td class="rightTx mono muted2">
-        ${g.halves.h1.team}-${g.halves.h1.opp} /
-        ${g.halves.h2.team}-${g.halves.h2.opp}
-      </td>`;
-    body.appendChild(tr);
-  });
-}
-
-/* ------------------------------------------------------------
-   RENDER PLAYERS TABLE
-   ------------------------------------------------------------ */
-function renderPlayers(players){
-  const body=$("playersBody");
-  body.innerHTML="";
-
-  players.forEach(p=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td>${p.name}</td>
-      <td class="rightTx mono">${p.games}</td>
-      <td class="rightTx mono"><strong>${p.pts}</strong></td>
-      <td class="rightTx mono">${round1(p.ppg)}</td>
-      <td class="rightTx mono">${p.ft}</td>
-      <td class="rightTx mono">${p.two}</td>
-      <td class="rightTx mono">${p.three}</td>
-      <td class="rightTx mono">${p.fouls}</td>
-      <td class="rightTx mono">${round1(p.fpg)}</td>
-      <td class="rightTx mono">${p.high}</td>
-      <td class="rightTx mono">${p.low}</td>
-      <td class="rightTx mono">${round1(p.teamShare)}%</td>`;
-    body.appendChild(tr);
-  });
-}
-
-/* ------------------------------------------------------------
-   LOAD STATUS PILL
-   ------------------------------------------------------------ */
-function renderLoadStatus(gp){
-  $("loadedCount").textContent = gp;
-  $("targetCount").textContent = TARGET_GAMES;
-  const dot=$("loadedDot");
-  dot.className="dot " + (gp>=TARGET_GAMES?"good":gp>=TARGET_GAMES*0.7?"warn":"bad");
-}
-
-/* ------------------------------------------------------------
-   MAIN RENDER
-   ------------------------------------------------------------ */
-function renderApp(){
-  const A = buildAnalytics(GAMES);
-  renderLoadStatus(A.gp);
-  renderSnapshot(A);
-  renderResults(GAMES);
-  renderPlayers(A.players);
-}
-
-/* ------------------------------------------------------------
-   RESET
-   ------------------------------------------------------------ */
-$("btnReset").onclick = ()=>{
-  if(confirm("Reset to original uploaded data?")){
-    GAMES = clone(RAW_GAMES);
-    renderApp();
-  }
-};
-
-/* ------------------------------------------------------------
-   INIT
-   ------------------------------------------------------------ */
-loadSeason();
-</script>
-<script>
-/* ============================================================
-   PART 3 — CHARTS + TOOLTIP + MODALS + EDITOR + EXPORT
-   Requires: Part 2 loaded (GAMES, RAW_GAMES, normalizeGames, buildAnalytics, renderApp)
-   ============================================================ */
-
-/* ------------------------------------------------------------
-   SMALL HELPERS
-   ------------------------------------------------------------ */
-function setBackdrop(id, on){
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.style.display = on ? "flex" : "none";
-}
-function htmlEscape(s){
-  return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-/* ============================================================
-   CHART ENGINE (canvas, retina-safe, touch friendly)
-   ============================================================ */
-function canvasCtx(canvasId){
-  const c = document.getElementById(canvasId);
-  if(!c) return null;
-  const ctx = c.getContext("2d");
-
-  // CSS size (what user sees)
-  const cssW = c.clientWidth || 800;
-  const cssH = c.clientHeight || 240;
-
-  // DPR
-  const dpr = window.devicePixelRatio || 1;
-  c.width = Math.floor(cssW * dpr);
-  c.height = Math.floor(cssH * dpr);
-
-  // scale drawing to css pixels
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-
-  return { c, ctx, w: cssW, h: cssH };
-}
-
-function drawGrid(ctx, w, h, pad){
-  ctx.clearRect(0,0,w,h);
-
-  // subtle background wash
-  ctx.fillStyle = "rgba(0,0,0,.06)";
-  ctx.fillRect(0,0,w,h);
-
-  // grid
-  ctx.strokeStyle = "rgba(255,255,255,.07)";
-  ctx.lineWidth = 1;
-
-  for(let i=1;i<=4;i++){
-    const y = pad + (h-2*pad)*(i/4);
-    ctx.beginPath();
-    ctx.moveTo(pad,y);
-    ctx.lineTo(w-pad,y);
-    ctx.stroke();
-  }
-
-  // axes
-  ctx.strokeStyle = "rgba(255,255,255,.14)";
-  ctx.beginPath();
-  ctx.moveTo(pad, h-pad);
-  ctx.lineTo(w-pad, h-pad);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(pad, pad);
-  ctx.lineTo(pad, h-pad);
-  ctx.stroke();
-}
-
-function mapY(v, min, max, h, pad){
-  if(max === min) return h/2;
-  const t = (v-min)/(max-min);
-  return (h-pad) - t*(h-2*pad);
-}
-
-function mapX(i, n, w, pad){
-  if(n<=1) return pad + (w-2*pad)*0.5;
-  return pad + (w-2*pad)*(i/(n-1));
-}
-
-function strokeLine(ctx, pts, strokeStyle, width=2.5){
-  ctx.strokeStyle = strokeStyle;
-  ctx.lineWidth = width;
-  ctx.beginPath();
-  pts.forEach((p,i)=> i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
-  ctx.stroke();
-}
-
-function drawDots(ctx, pts, fill){
-  ctx.fillStyle = fill;
-  pts.forEach(p=>{
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,3,0,Math.PI*2);
-    ctx.fill();
-  });
-}
-
-/* ------------------------------------------------------------
-   TOOLTIP BINDER (mouse + touch)
-   ------------------------------------------------------------ */
-function bindChartTooltip(cardId, tipId, ptsA, ptsB, formatFn){
-  const card = document.getElementById(cardId);
-  const tip = document.getElementById(tipId);
-  if(!card || !tip) return;
-
-  function nearestPoint(x){
-    let best = null;
-    let bestD = 1e9;
-    ptsA.forEach(p=>{
-      const d = Math.abs(p.x - x);
-      if(d < bestD){ bestD=d; best=p; }
-    });
-    return best;
-  }
-
-  function show(clientX){
-    const r = card.getBoundingClientRect();
-    const x = clientX - r.left;
-
-    const p = nearestPoint(x);
-    if(!p) return;
-
-    // Build tooltip html
-    tip.innerHTML = formatFn(p.g, ptsA, ptsB);
-
-    // position relative to card
-    tip.style.left = p.x + "px";
-    tip.style.top  = p.y + "px";
-    tip.style.opacity = 1;
-  }
-
-  function hide(){ tip.style.opacity = 0; }
-
-  card.addEventListener("mousemove", (e)=> show(e.clientX));
-  card.addEventListener("mouseleave", hide);
-
-  card.addEventListener("touchstart", (e)=> show(e.touches[0].clientX), {passive:true});
-  card.addEventListener("touchmove",  (e)=> show(e.touches[0].clientX), {passive:true});
-  card.addEventListener("touchend", hide, {passive:true});
-}
-
-/* ============================================================
-   CHARTS: FOR/AGAINST + MARGINS
-   ============================================================ */
-function drawForAgainst(){
-  const pack = canvasCtx("chartForAgainst");
-  if(!pack) return;
-  const {ctx,w,h} = pack;
-  const pad = 28;
-
-  drawGrid(ctx,w,h,pad);
-
-  const games = [...GAMES].sort((a,b)=>a.game-b.game);
-  const vals = games.flatMap(g=>[g.teamScore, g.oppScore]);
-  const min = Math.min(0, ...vals);
-  const max = Math.max(10, ...vals);
-
-  const forPts = [];
-  const agPts  = [];
-
-  games.forEach((g,i)=>{
-    forPts.push({
-      x: mapX(i, games.length, w, pad),
-      y: mapY(g.teamScore, min, max, h, pad),
-      g
-    });
-    agPts.push({
-      x: mapX(i, games.length, w, pad),
-      y: mapY(g.oppScore, min, max, h, pad),
-      g
-    });
-  });
-
-  // “For” gradient stroke (premium look)
-  const grad = ctx.createLinearGradient(0,0,w,0);
-  grad.addColorStop(0, "rgba(110,231,255,.25)");
-  grad.addColorStop(.5,"rgba(110,231,255,.95)");
-  grad.addColorStop(1, "rgba(110,231,255,.25)");
-
-  strokeLine(ctx, forPts, grad, 2.7);
-  strokeLine(ctx, agPts, "rgba(255,92,122,.85)", 2.7);
-
-  drawDots(ctx, forPts, "rgba(110,231,255,.95)");
-  drawDots(ctx, agPts,  "rgba(255,92,122,.85)");
-
-  bindChartTooltip(
-    "chartCardFA",
-    "tipFA",
-    forPts,
-    agPts,
-    (g)=>{
-      return `
-        <strong>Round ${htmlEscape(g.game)}</strong><br/>
-        <span class="muted">For:</span> ${htmlEscape(g.teamScore)}
-        &nbsp; <span class="muted">Against:</span> ${htmlEscape(g.oppScore)}
-        <br/>
-        <span class="muted">${htmlEscape(g.opponent)}</span>
-      `;
-    }
-  );
-}
-
-function drawMargins(){
-  const pack = canvasCtx("chartMargins");
-  if(!pack) return;
-  const {ctx,w,h} = pack;
-  const pad = 28;
-
-  drawGrid(ctx,w,h,pad);
-
-  const games = [...GAMES].sort((a,b)=>a.game-b.game);
-  const mVals = games.map(g=> (g.teamScore - g.oppScore));
-  const min = Math.min(-10, ...mVals);
-  const max = Math.max(10, ...mVals);
-
-  const pts = [];
-  games.forEach((g,i)=>{
-    pts.push({
-      x: mapX(i, games.length, w, pad),
-      y: mapY(g.teamScore-g.oppScore, min, max, h, pad),
-      g
-    });
-  });
-
-  // zero line
-  const y0 = mapY(0, min, max, h, pad);
-  ctx.setLineDash([5,5]);
-  ctx.strokeStyle = "rgba(255,255,255,.18)";
-  ctx.beginPath();
-  ctx.moveTo(pad, y0);
-  ctx.lineTo(w-pad, y0);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  strokeLine(ctx, pts, "rgba(43,212,125,.95)", 2.8);
-  drawDots(ctx, pts, "rgba(43,212,125,.95)");
-
-  bindChartTooltip(
-    "chartCardM",
-    "tipM",
-    pts,
-    null,
-    (g)=>{
-      const m = g.teamScore - g.oppScore;
-      return `
-        <strong>Round ${htmlEscape(g.game)}</strong><br/>
-        <span class="muted">Margin:</span> ${m>0?"+":""}${htmlEscape(m)}
-        <br/>
-        <span class="muted">${htmlEscape(g.teamScore)}-${htmlEscape(g.oppScore)} vs ${htmlEscape(g.opponent)}</span>
-      `;
-    }
-  );
-}
-
-/* ============================================================
-   INSIGHT CARD (polished summary)
-   ============================================================ */
-function renderInsight(){
-  const el = document.getElementById("insightCard");
-  if(!el) return;
-
-  const A = buildAnalytics(GAMES);
-  if(A.gp === 0){
-    el.innerHTML = `<div class="icon">↗︎</div><div class="small">Add games to see insights.</div>`;
+/* ---------- ANALYTICS ---------- */
+function computeSeasonAnalytics(){
+  if(!seasonGames.length){
+    showEmptyState();
     return;
   }
 
-  // Simple “coach-style” insight
-  const msg =
-    A.avgMargin >= 5
-      ? `You’re winning comfortably on average (+${round1(A.avgMargin)}). Keep pressure up and maintain pace.`
-      : A.avgMargin >= 0
-        ? `You’re competitive (+${round1(A.avgMargin)}). One more strong quarter each week swings outcomes.`
-        : A.avgMargin > -5
-          ? `Most games are close (avg ${round1(A.avgMargin)}). Focus on 2nd half execution + limiting fouls.`
-          : `Tough stretch (avg ${round1(A.avgMargin)}). Prioritise defensive stops and higher-quality shots.`;
+  let wins = 0;
+  let losses = 0;
+  let ptsFor = 0;
+  let ptsAgainst = 0;
 
-  el.innerHTML = `
-    <div class="icon">↗︎</div>
-    <div class="small">
-      <b>Quick Insight:</b> ${htmlEscape(msg)}
-      <div style="margin-top:6px;color:rgba(255,255,255,.65)">
-        Games: <b>${A.gp}</b> · Record: <b>${A.wins}-${A.losses}</b> · Avg PF/PA: <b>${round1(A.avgPF)}/${round1(A.avgPA)}</b>
-      </div>
-    </div>
-  `;
-}
+  let bestWin = null;
+  let worstLoss = null;
 
-/* ============================================================
-   GAME DETAIL MODAL
-   - click row in results to open detail
-   ============================================================ */
-function openGameModal(gameNo){
-  const g = GAMES.find(x=>x.game===gameNo);
-  if(!g) return;
+  seasonGames.forEach(g=>{
+    ptsFor += g.teamScore;
+    ptsAgainst += g.oppScore;
 
-  const title = document.getElementById("modalTitle");
-  const body  = document.getElementById("modalBody");
+    const margin = g.teamScore - g.oppScore;
 
-  const m = g.teamScore - g.oppScore;
-
-  const players = (g.players || []).slice().sort((a,b)=>b.pts-a.pts);
-
-  title.textContent = `Round ${g.game} vs ${g.opponent}`;
-  body.innerHTML = `
-    <div class="row">
-      <span class="pill"><strong>${g.teamScore}-${g.oppScore}</strong> (${m>0?"+":""}${m})</span>
-      <span class="pill"><strong>1H</strong> ${g.halves.h1.team}-${g.halves.h1.opp}</span>
-      <span class="pill"><strong>2H</strong> ${g.halves.h2.team}-${g.halves.h2.opp}</span>
-    </div>
-
-    <div class="spacer"></div>
-
-    <div class="card" style="box-shadow:none;border-radius:16px;border:1px solid rgba(255,255,255,.10)">
-      <div class="bd">
-        <table>
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th class="rightTx">PTS</th>
-              <th class="rightTx">1PT</th>
-              <th class="rightTx">2PT</th>
-              <th class="rightTx">3PT</th>
-              <th class="rightTx">Fouls</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${
-              players.length
-                ? players.map(p=>`
-                    <tr>
-                      <td>${htmlEscape(p.name)}</td>
-                      <td class="rightTx mono"><strong>${p.pts}</strong></td>
-                      <td class="rightTx mono">${p.ft}</td>
-                      <td class="rightTx mono">${p.two}</td>
-                      <td class="rightTx mono">${p.three}</td>
-                      <td class="rightTx mono">${p.fouls}</td>
-                    </tr>
-                  `).join("")
-                : `<tr><td colspan="6" class="muted">No player data recorded for this game yet.</td></tr>`
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-
-  setBackdrop("backdrop", true);
-}
-
-(function bindModalClose(){
-  const closeBtn = document.getElementById("btnClose");
-  const bd = document.getElementById("backdrop");
-  if(closeBtn) closeBtn.onclick = ()=> setBackdrop("backdrop", false);
-  if(bd) bd.onclick = (e)=> { if(e.target === bd) setBackdrop("backdrop", false); };
-})();
-
-/* ============================================================
-   WIRE RESULTS ROWS TO MODAL
-   (rebind after render)
-   ============================================================ */
-function bindResultClicks(){
-  const body = document.getElementById("resultsBody");
-  if(!body) return;
-  [...body.querySelectorAll("tr")].forEach(tr=>{
-    const first = tr.querySelector("td");
-    if(!first) return;
-    const txt = first.textContent || "";
-    const num = parseInt(txt.replace(/[^\d]/g,""),10);
-    if(!Number.isFinite(num)) return;
-
-    tr.style.cursor = "pointer";
-    tr.addEventListener("click", ()=> openGameModal(num));
+    if(margin > 0){
+      wins++;
+      if(!bestWin || margin > bestWin.margin){
+        bestWin = { opponent:g.opponent, margin };
+      }
+    }else{
+      losses++;
+      if(!worstLoss || margin < worstLoss.margin){
+        worstLoss = { opponent:g.opponent, margin };
+      }
+    }
   });
+
+  const avgMargin = ((ptsFor - ptsAgainst) / seasonGames.length).toFixed(1);
+
+  updateSnapshot(wins, losses, avgMargin, ptsFor, ptsAgainst);
+  updateInsight(wins, losses, bestWin, worstLoss, avgMargin);
 }
 
-/* ============================================================
-   EDITOR MODAL
-   ============================================================ */
-(function bindEditor(){
-  const openBtn = document.getElementById("btnOpenEditor");
-  const cancel  = document.getElementById("btnCancelEditor");
-  const apply   = document.getElementById("btnApply");
-  const clear   = document.getElementById("btnClear");
-  const fill    = document.getElementById("btnFillTemplate");
-  const ed      = document.getElementById("jsonEditor");
-
-  if(openBtn) openBtn.onclick = ()=>{
-    if(ed) ed.value = JSON.stringify(GAMES, null, 2);
-    setBackdrop("editorBackdrop", true);
-  };
-
-  if(cancel) cancel.onclick = ()=> setBackdrop("editorBackdrop", false);
-
-  if(clear) clear.onclick = ()=> { if(ed) ed.value = ""; };
-
-  if(fill) fill.onclick = ()=>{
-    const template = {
-      game: 1,
-      opponent: "Immortal Warriors U14 Boys",
-      team: "Lakers U14 Boys Copper",
-      teamScore: 0,
-      oppScore: 0,
-      halves:{ h1:{team:0,opp:0}, h2:{team:0,opp:0} },
-      players:[
-        { name:"Player 1", pts:0, ft:0, two:0, three:0, fouls:0 }
-      ]
-    };
-    if(ed){
-      const cur = ed.value.trim();
-      ed.value = cur ? cur + "\n\n" + JSON.stringify(template,null,2) : JSON.stringify([template],null,2);
-    }
-  };
-
-  if(apply) apply.onclick = ()=>{
-    if(!ed) return;
-    try{
-      const parsed = JSON.parse(ed.value);
-      const normalized = normalizeGames(parsed);
-
-      GAMES = normalized;
-      setBackdrop("editorBackdrop", false);
-
-      // re-render everything
-      renderApp();
-      // then pro components
-      afterRenderEnhancements();
-    }catch(e){
-      alert("Invalid JSON. Please check commas, quotes, and brackets.");
-    }
-  };
-})();
-
-/* ============================================================
-   EXPORT CSV (players)
-   ============================================================ */
-(function bindExport(){
-  const btn = document.getElementById("btnExport");
-  if(!btn) return;
-
-  btn.onclick = ()=>{
-    const A = buildAnalytics(GAMES);
-    let csv = "Player,Games,PTS,PPG,1PT,2PT,3PT,Fouls,FPG,High,Low,TeamShare%\n";
-    A.players.forEach(p=>{
-      csv += [
-        `"${String(p.name).replaceAll('"','""')}"`,
-        p.games,
-        p.pts,
-        round1(p.ppg),
-        p.ft,
-        p.two,
-        p.three,
-        p.fouls,
-        round1(p.fpg),
-        p.high,
-        p.low,
-        round1(p.teamShare)
-      ].join(",") + "\n";
-    });
-
-    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "u14_player_analytics.csv";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
-})();
-
-/* ============================================================
-   POST-RENDER ENHANCEMENTS
-   - charts
-   - insight card
-   - bind row clicks
-   ============================================================ */
-function afterRenderEnhancements(){
-  drawForAgainst();
-  drawMargins();
-  renderInsight();
-  bindResultClicks();
+/* ---------- SNAPSHOT UI ---------- */
+function updateSnapshot(w,l,avg,forPts,againstPts){
+  setText('.snapshot:nth-child(1) .value', `${w}–${l}`);
+  setText('.snapshot:nth-child(2) .value', avg > 0 ? `+${avg}` : avg);
+  setText('.snapshot:nth-child(3) .value', forPts);
+  setText('.snapshot:nth-child(4) .value', againstPts);
 }
 
-/* ============================================================
-   PATCH: ensure our enhancements run after renderApp()
-   ============================================================ */
-(function hookIntoRender(){
-  // If renderApp exists, wrap it once.
-  if(typeof window.__renderWrapped === "undefined"){
-    window.__renderWrapped = true;
+/* ---------- INSIGHT COPY ---------- */
+function updateInsight(w,l,best,worst,avg){
+  let text = '';
 
-    const _renderApp = renderApp;
-    window.renderApp = function(){
-      _renderApp();
-      afterRenderEnhancements();
-    };
+  if(w > l){
+    text += `Strong season so far at ${w}–${l}. `;
+  }else{
+    text += `Development-focused season at ${w}–${l}. `;
   }
 
-  // run once now (after initial load)
-  window.addEventListener("resize", ()=>{
-    // redraw charts on resize (no full recalcs needed)
-    drawForAgainst();
-    drawMargins();
-  });
-})();
+  if(best){
+    text += `Best win was by ${best.margin} vs ${best.opponent}. `;
+  }
+
+  if(worst){
+    text += `Toughest loss was ${Math.abs(worst.margin)} points. `;
+  }
+
+  text += `Average margin sits at ${avg}.`;
+
+  document.querySelector('#insight-section p').textContent = text;
+}
+
+/* ---------- HELPERS ---------- */
+function setText(selector,value){
+  const el = document.querySelector(selector);
+  if(el) el.textContent = value;
+}
+
+/* ---------- INIT ---------- */
+document.addEventListener('DOMContentLoaded', loadSeasonData);
 </script>
+<script>
+/* =========================================================
+   PART 3 — CHARTS, TABLES, EXPORT
+   ========================================================= */
+
+/* ---------- CHART ---------- */
+let pfChart;
+
+function renderTrends(){
+  const ctx = document.getElementById('pfChart');
+  if(!ctx || !seasonGames.length) return;
+
+  const labels = seasonGames.map(g => `R${g.round}`);
+  const pf = seasonGames.map(g => g.teamScore);
+  const pa = seasonGames.map(g => g.oppScore);
+
+  if(pfChart) pfChart.destroy();
+
+  pfChart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {
+          label:'Points For',
+          data:pf,
+          borderWidth:3,
+          tension:0.35
+        },
+        {
+          label:'Points Against',
+          data:pa,
+          borderDash:[6,6],
+          borderWidth:2,
+          tension:0.35
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{display:true},
+        tooltip:{mode:'index',intersect:false}
+      },
+      scales:{
+        y:{beginAtZero:true}
+      }
+    }
+  });
+}
+
+/* ---------- GAME TABLE ---------- */
+function renderGameResults(){
+  const tbody = document.querySelector('#gamesTable tbody');
+  if(!tbody) return;
+
+  tbody.innerHTML = '';
+
+  seasonGames.forEach(g=>{
+    const margin = g.teamScore - g.oppScore;
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+      <td>R${g.round}</td>
+      <td>${g.opponent}</td>
+      <td>${g.teamScore}–${g.oppScore}</td>
+      <td class="${margin>0?'pos':'neg'}">${margin>0?'+':''}${margin}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+/* ---------- PLAYER ANALYTICS ---------- */
+function renderPlayers(){
+  const table = document.querySelector('#playersTable tbody');
+  if(!table) return;
+
+  const players = {};
+
+  seasonGames.forEach(g=>{
+    (g.players||[]).forEach(p=>{
+      if(!players[p.name]){
+        players[p.name]={games:0,pts:0};
+      }
+      players[p.name].games++;
+      players[p.name].pts += p.pts;
+    });
+  });
+
+  table.innerHTML = '';
+
+  Object.entries(players)
+    .sort((a,b)=>b[1].pts - a[1].pts)
+    .forEach(([name,data])=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${name}</td>
+        <td>${data.games}</td>
+        <td>${data.pts}</td>
+        <td>${(data.pts/data.games).toFixed(1)}</td>
+      `;
+      table.appendChild(tr);
+    });
+}
+
+/* ---------- CSV EXPORT ---------- */
+function exportCSV(){
+  let csv = 'Round,Opponent,For,Against,Margin\n';
+
+  seasonGames.forEach(g=>{
+    csv += `${g.round},${g.opponent},${g.teamScore},${g.oppScore},${g.teamScore-g.oppScore}\n`;
+  });
+
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'season-results.csv';
+  a.click();
+}
+
+/* ---------- HOOKS ---------- */
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('exportBtn')?.addEventListener('click',exportCSV);
+});
+
+/* ---------- RE-RENDER ON LOAD ---------- */
+const originalCompute = computeSeasonAnalytics;
+computeSeasonAnalytics = function(){
+  originalCompute();
+  renderTrends();
+  renderGameResults();
+  renderPlayers();
+};
+</script>
+</body>
 </html>
