@@ -1,9 +1,9 @@
 [
   {
     "game": 1,
-    "opponent": "Immortal Warriors U14 Boys",
-    "teamScore": 37,
-    "oppScore": 16
+    "opponent": "St Kilda Warriors BRAVE U14 Boys",
+    "teamScore": 30,
+    "oppScore": 17
   },
   {
     "game": 2,
@@ -15,52 +15,48 @@
     "game": 3,
     "opponent": "Vampire Wolves U14 Boys",
     "teamScore": 30,
-    "oppScore": 23,
-    "halves": {
-      "h1": { "team": 19, "opp": 7 },
-      "h2": { "team": 11, "opp": 16 }
-    }
+    "oppScore": 23
   },
   {
     "game": 4,
-    "opponent": "Bentleigh Lakers Flame",
-    "teamScore": 29,
-    "oppScore": 26
+    "opponent": "St Kilda Warriors BRAVE U14 Boys",
+    "teamScore": 30,
+    "oppScore": 17
   },
   {
     "game": 5,
-    "opponent": "Raptors U14 Boys Orange",
-    "teamScore": 28,
-    "oppScore": 45
-  },
-  {
-    "game": 6,
-    "opponent": "Carnegie Chargers U14 Bears",
-    "teamScore": 25,
-    "oppScore": 30
-  },
-  {
-    "game": 7,
     "opponent": "Bentleigh Lakers Copper",
     "teamScore": 26,
     "oppScore": 29
   },
   {
-    "game": 8,
+    "game": 6,
     "opponent": "Dark Wolves U14 Boys",
     "teamScore": 26,
     "oppScore": 28
   },
   {
-    "game": 9,
+    "game": 7,
     "opponent": "Raptors U14 Boys Orange",
     "teamScore": 28,
     "oppScore": 45
   },
   {
-    "game": 10,
+    "game": 8,
     "opponent": "Carnegie Chargers U14 Bears",
     "teamScore": 25,
     "oppScore": 30
+  },
+  {
+    "game": 9,
+    "opponent": "Bentleigh Lakers Flame",
+    "teamScore": 25,
+    "oppScore": 30
+  },
+  {
+    "game": 10,
+    "opponent": "Mountain Wolves U14 Boys",
+    "teamScore": 29,
+    "oppScore": 25
   }
 ]
