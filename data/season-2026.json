@@ -30,33 +30,47 @@
     "oppScore": 29
   },
   {
-    "game": 6,
-    "opponent": "Dark Wolves U14 Boys",
-    "teamScore": 26,
-    "oppScore": 28
-  },
+   [
   {
-    "game": 7,
-    "opponent": "Dark Wolves U14 Boys",
+    "game": 6,
+    "opponent": "Lakers U14 Boys Flame",
     "teamScore": 26,
-    "oppScore": 28
+    "oppScore": 29,
+    "halves": {
+      "h1": { "team": 7, "opp": 15 },
+      "h2": { "team": 19, "opp": 14 }
+    }
   },
   {
     "game": 8,
     "opponent": "Raptors U14 Boys Orange",
     "teamScore": 28,
-    "oppScore": 45
+    "oppScore": 45,
+    "halves": {
+      "h1": { "team": 16, "opp": 16 },
+      "h2": { "team": 12, "opp": 29 }
+    }
   },
   {
     "game": 9,
     "opponent": "Carnegie Chargers U14 Boys Bears",
     "teamScore": 25,
-    "oppScore": 30
+    "oppScore": 30,
+    "halves": {
+      "h1": { "team": 4, "opp": 13 },
+      "h2": { "team": 21, "opp": 17 }
+    }
   },
   {
     "game": 10,
     "opponent": "Mountain Wolves U14 Boys",
     "teamScore": 29,
-    "oppScore": 25
+    "oppScore": 25,
+    "halves": {
+      "h1": { "team": 9, "opp": 7 },
+      "h2": { "team": 20, "opp": 18 }
+    }
+  }
+]
   }
 ]
