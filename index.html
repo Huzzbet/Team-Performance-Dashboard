@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>U14 Season Analytics Dashboard</title>
 
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
-/* =========================================================
-   WEALTH-STYLE DESIGN SYSTEM
-   ========================================================= */
 :root{
   --bg0:#020617;
   --bg1:#071229;
@@ -29,7 +29,7 @@
   --font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
 }
 
-*{ box-sizing:border-box }
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -42,47 +42,32 @@ body{
   min-height:100vh;
 }
 
-/* =========================================================
-   APP SHELL
-   ========================================================= */
-#app-shell{
+#app{
   max-width:1200px;
   margin:0 auto;
   padding:20px 14px 80px;
 }
 
-/* =========================================================
-   TOP CONTROLS (WEALTH-APP STYLE)
-   ========================================================= */
-#top-controls{
+.card{
   background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
   border:1px solid var(--border);
   border-radius:var(--radius);
-  padding:16px;
   box-shadow:var(--shadow);
+  padding:16px;
   margin-bottom:18px;
 }
 
-.header-title{
-  font-size:22px;
-  font-weight:900;
-  margin:0 0 6px 0;
-}
+h1{margin:0;font-size:22px}
+h2{margin:0 0 6px;font-size:16px}
+.sub{color:var(--muted);font-size:13px}
 
-.header-sub{
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.4;
-}
-
-.control-stack{
+.controls{
   display:grid;
-  grid-template-columns:1fr;
   gap:12px;
   margin-top:14px;
 }
 
-.button{
+button{
   appearance:none;
   border:1px solid var(--border);
   background:var(--cardSoft);
@@ -93,69 +78,29 @@ body{
   cursor:pointer;
 }
 
-.button.primary{
-  background:linear-gradient(90deg, #2bd47d, #6ee7ff);
+.primary{
+  background:linear-gradient(90deg,#2bd47d,#6ee7ff);
   color:#021018;
   border:none;
 }
 
-.button.danger{
-  background:linear-gradient(90deg, #ff5c7a, #ffd166);
+.danger{
+  background:linear-gradient(90deg,#ff5c7a,#ffd166);
   color:#22080f;
   border:none;
 }
 
-/* =========================================================
-   STORY LAYOUT
-   ========================================================= */
-#story-layout{
+.grid{
   display:grid;
-  grid-template-columns:1fr;
   gap:18px;
 }
 
-/* =========================================================
-   CARDS
-   ========================================================= */
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:16px;
+@media(min-width:768px){
+  .grid{
+    grid-template-columns:1.3fr .7fr;
+  }
 }
 
-.card h2{
-  margin:0 0 6px 0;
-  font-size:16px;
-}
-
-.card .hint{
-  color:var(--muted);
-  font-size:12px;
-}
-
-/* =========================================================
-   HERO CHART PLACEHOLDER
-   ========================================================= */
-.hero-card{
-  padding:18px;
-}
-
-.hero-placeholder{
-  height:280px;
-  border-radius:18px;
-  border:1px dashed rgba(255,255,255,.12);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:var(--muted);
-  font-size:14px;
-}
-
-/* =========================================================
-   SNAPSHOT TILES
-   ========================================================= */
 .snapshot-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -170,8 +115,8 @@ body{
 }
 
 .snapshot .label{
-  color:var(--muted);
   font-size:11px;
+  color:var(--muted);
   text-transform:uppercase;
 }
 
@@ -181,367 +126,184 @@ body{
   margin-top:4px;
 }
 
-/* =========================================================
-   TABLE PLACEHOLDERS
-   ========================================================= */
-.table-placeholder{
-  height:180px;
-  border-radius:16px;
-  border:1px dashed rgba(255,255,255,.12);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:var(--muted);
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:12px;
 }
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-@media (min-width:768px){
-  #story-layout{
-    grid-template-columns:1.3fr .7fr;
-    grid-template-areas:
-      "hero insight"
-      "hero snapshot"
-      "details details";
-  }
-  #hero-section{ grid-area:hero }
-  #insight-section{ grid-area:insight }
-  #snapshot-section{ grid-area:snapshot }
-  #detail-section{ grid-area:details }
-
-  .snapshot-grid{
-    grid-template-columns:1fr;
-  }
+th,td{
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:13px;
 }
+
+th{color:var(--muted);text-align:left}
+
+.pos{color:var(--green)}
+.neg{color:var(--red)}
 </style>
 </head>
 
 <body>
+<div id="app">
 
-<div id="app-shell">
+  <section class="card">
+    <h1>U14 Season Analytics Dashboard</h1>
+    <div class="sub">Lakers U14 Boys Copper · Results · Trends · Player Analytics</div>
 
-  <!-- =========================
-       TOP CONTROLS
-       ========================= -->
-  <section id="top-controls">
-    <div class="header-title">U14 Season Analytics Dashboard</div>
-    <div class="header-sub">
-      Lakers U14 Boys Copper · Results · Trends · Player Analytics
-    </div>
-
-    <div class="control-stack">
-      <button class="button primary">Add / Edit Games</button>
-      <button class="button">Export CSV</button>
-      <button class="button danger">Reset Data</button>
+    <div class="controls">
+      <button class="primary">Add / Edit Games</button>
+      <button id="exportBtn">Export CSV</button>
+      <button class="danger">Reset Data</button>
     </div>
   </section>
 
-  <!-- =========================
-       STORY SECTIONS
-       ========================= -->
-  <main id="story-layout">
+  <div class="grid">
 
-    <!-- HERO -->
-    <section id="hero-section" class="card hero-card">
+    <section class="card">
       <h2>Season Trend</h2>
-      <div class="hint">Points for vs against · Tap for values</div>
-      <div class="hero-placeholder">
-        Chart loads in Part 2
-      </div>
+      <div class="sub">Points for vs against</div>
+      <canvas id="pfChart" height="280"></canvas>
     </section>
 
-    <!-- INSIGHT -->
-    <section id="insight-section" class="card">
-      <h2>Insight</h2>
-      <div class="hint">Auto-generated from season data</div>
-      <p class="header-sub" style="margin-top:10px;">
-        Loading insight…
-      </p>
-    </section>
-
-    <!-- SNAPSHOT -->
-    <section id="snapshot-section" class="card">
+    <section class="card">
       <h2>Season Snapshot</h2>
-      <div class="hint">Auto-calculated</div>
+      <div class="sub">Auto-calculated</div>
 
-      <div class="snapshot-grid" style="margin-top:12px;">
-        <div class="snapshot">
-          <div class="label">Record</div>
-          <div class="value">—</div>
-        </div>
-        <div class="snapshot">
-          <div class="label">Avg Margin</div>
-          <div class="value">—</div>
-        </div>
-        <div class="snapshot">
-          <div class="label">Points For</div>
-          <div class="value">—</div>
-        </div>
-        <div class="snapshot">
-          <div class="label">Points Against</div>
-          <div class="value">—</div>
-        </div>
+      <div class="snapshot-grid">
+        <div class="snapshot"><div class="label">Record</div><div class="value" id="rec">—</div></div>
+        <div class="snapshot"><div class="label">Avg Margin</div><div class="value" id="avg">—</div></div>
+        <div class="snapshot"><div class="label">Points For</div><div class="value" id="pf">—</div></div>
+        <div class="snapshot"><div class="label">Points Against</div><div class="value" id="pa">—</div></div>
       </div>
     </section>
 
-    <!-- DETAILS -->
-    <section id="detail-section" class="card">
-      <h2>Game Results & Player Analytics</h2>
-      <div class="hint">Tap a game to open details</div>
+  </div>
 
-      <div class="table-placeholder" style="margin-top:14px;">
-        Tables load in Part 3
-      </div>
-    </section>
+  <section class="card">
+    <h2>Game Results</h2>
+    <table id="gamesTable">
+      <thead>
+        <tr><th>Round</th><th>Opponent</th><th>Score</th><th>Margin</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
 
-  </main>
+  <section class="card">
+    <h2>Player Analytics</h2>
+    <table id="playersTable">
+      <thead>
+        <tr><th>Player</th><th>Games</th><th>PTS</th><th>PPG</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
 </div>
+
 <script>
-/* =========================================================
-   PART 2 — DATA LOADING + ANALYTICS ENGINE
-   ========================================================= */
-
-/* ---------- STATE ---------- */
 let seasonGames = [];
+let chart;
 
-/* ---------- LOAD DATA ---------- */
-async function loadSeasonData(){
-  try{
-    const res = await fetch('./data/season-2026.json');
-    if(!res.ok) throw new Error('JSON not found');
-    seasonGames = await res.json();
-    computeSeasonAnalytics();
-  }catch(err){
-    console.warn('Season data not loaded:', err.message);
-    showEmptyState();
-  }
+async function loadData(){
+  const res = await fetch('./data/season-2026.json');
+  seasonGames = await res.json();
+  compute();
 }
 
-/* ---------- EMPTY STATE ---------- */
-function showEmptyState(){
-  setText('.snapshot:nth-child(1) .value','0–0');
-  setText('.snapshot:nth-child(2) .value','—');
-  setText('.snapshot:nth-child(3) .value','—');
-  setText('.snapshot:nth-child(4) .value','—');
-  document.querySelector('#insight-section p').textContent =
-    'No games loaded yet. Add games to generate insights.';
-}
-
-/* ---------- ANALYTICS ---------- */
-function computeSeasonAnalytics(){
-  if(!seasonGames.length){
-    showEmptyState();
-    return;
-  }
-
-  let wins = 0;
-  let losses = 0;
-  let ptsFor = 0;
-  let ptsAgainst = 0;
-
-  let bestWin = null;
-  let worstLoss = null;
+function compute(){
+  let w=0,l=0,pf=0,pa=0;
 
   seasonGames.forEach(g=>{
-    ptsFor += g.teamScore;
-    ptsAgainst += g.oppScore;
-
-    const margin = g.teamScore - g.oppScore;
-
-    if(margin > 0){
-      wins++;
-      if(!bestWin || margin > bestWin.margin){
-        bestWin = { opponent:g.opponent, margin };
-      }
-    }else{
-      losses++;
-      if(!worstLoss || margin < worstLoss.margin){
-        worstLoss = { opponent:g.opponent, margin };
-      }
-    }
+    pf+=g.teamScore;
+    pa+=g.oppScore;
+    g.teamScore>g.oppScore? w++:l++;
   });
 
-  const avgMargin = ((ptsFor - ptsAgainst) / seasonGames.length).toFixed(1);
+  document.getElementById('rec').textContent=`${w}-${l}`;
+  document.getElementById('avg').textContent=((pf-pa)/seasonGames.length).toFixed(1);
+  document.getElementById('pf').textContent=pf;
+  document.getElementById('pa').textContent=pa;
 
-  updateSnapshot(wins, losses, avgMargin, ptsFor, ptsAgainst);
-  updateInsight(wins, losses, bestWin, worstLoss, avgMargin);
+  renderChart();
+  renderGames();
+  renderPlayers();
 }
 
-/* ---------- SNAPSHOT UI ---------- */
-function updateSnapshot(w,l,avg,forPts,againstPts){
-  setText('.snapshot:nth-child(1) .value', `${w}–${l}`);
-  setText('.snapshot:nth-child(2) .value', avg > 0 ? `+${avg}` : avg);
-  setText('.snapshot:nth-child(3) .value', forPts);
-  setText('.snapshot:nth-child(4) .value', againstPts);
-}
+function renderChart(){
+  const ctx=document.getElementById('pfChart');
+  const labels=seasonGames.map(g=>`R${g.game}`);
+  const pf=seasonGames.map(g=>g.teamScore);
+  const pa=seasonGames.map(g=>g.oppScore);
 
-/* ---------- INSIGHT COPY ---------- */
-function updateInsight(w,l,best,worst,avg){
-  let text = '';
+  if(chart) chart.destroy();
 
-  if(w > l){
-    text += `Strong season so far at ${w}–${l}. `;
-  }else{
-    text += `Development-focused season at ${w}–${l}. `;
-  }
-
-  if(best){
-    text += `Best win was by ${best.margin} vs ${best.opponent}. `;
-  }
-
-  if(worst){
-    text += `Toughest loss was ${Math.abs(worst.margin)} points. `;
-  }
-
-  text += `Average margin sits at ${avg}.`;
-
-  document.querySelector('#insight-section p').textContent = text;
-}
-
-/* ---------- HELPERS ---------- */
-function setText(selector,value){
-  const el = document.querySelector(selector);
-  if(el) el.textContent = value;
-}
-
-/* ---------- INIT ---------- */
-document.addEventListener('DOMContentLoaded', loadSeasonData);
-</script>
-<script>
-/* =========================================================
-   PART 3 — CHARTS, TABLES, EXPORT
-   ========================================================= */
-
-/* ---------- CHART ---------- */
-let pfChart;
-
-function renderTrends(){
-  const ctx = document.getElementById('pfChart');
-  if(!ctx || !seasonGames.length) return;
-
-  const labels = seasonGames.map(g => `R${g.round}`);
-  const pf = seasonGames.map(g => g.teamScore);
-  const pa = seasonGames.map(g => g.oppScore);
-
-  if(pfChart) pfChart.destroy();
-
-  pfChart = new Chart(ctx,{
+  chart=new Chart(ctx,{
     type:'line',
     data:{
       labels,
       datasets:[
-        {
-          label:'Points For',
-          data:pf,
-          borderWidth:3,
-          tension:0.35
-        },
-        {
-          label:'Points Against',
-          data:pa,
-          borderDash:[6,6],
-          borderWidth:2,
-          tension:0.35
-        }
+        {label:'Points For',data:pf,borderWidth:3,tension:.35},
+        {label:'Points Against',data:pa,borderDash:[6,6],borderWidth:2,tension:.35}
       ]
     },
-    options:{
-      responsive:true,
-      plugins:{
-        legend:{display:true},
-        tooltip:{mode:'index',intersect:false}
-      },
-      scales:{
-        y:{beginAtZero:true}
-      }
-    }
+    options:{responsive:true}
   });
 }
 
-/* ---------- GAME TABLE ---------- */
-function renderGameResults(){
-  const tbody = document.querySelector('#gamesTable tbody');
-  if(!tbody) return;
-
-  tbody.innerHTML = '';
-
+function renderGames(){
+  const tb=document.querySelector('#gamesTable tbody');
+  tb.innerHTML='';
   seasonGames.forEach(g=>{
-    const margin = g.teamScore - g.oppScore;
-    const tr = document.createElement('tr');
-
-    tr.innerHTML = `
-      <td>R${g.round}</td>
-      <td>${g.opponent}</td>
-      <td>${g.teamScore}–${g.oppScore}</td>
-      <td class="${margin>0?'pos':'neg'}">${margin>0?'+':''}${margin}</td>
-    `;
-
-    tbody.appendChild(tr);
+    const m=g.teamScore-g.oppScore;
+    tb.innerHTML+=`
+      <tr>
+        <td>R${g.game}</td>
+        <td>${g.opponent}</td>
+        <td>${g.teamScore}-${g.oppScore}</td>
+        <td class="${m>0?'pos':'neg'}">${m>0?'+':''}${m}</td>
+      </tr>`;
   });
 }
 
-/* ---------- PLAYER ANALYTICS ---------- */
 function renderPlayers(){
-  const table = document.querySelector('#playersTable tbody');
-  if(!table) return;
-
-  const players = {};
+  const tb=document.querySelector('#playersTable tbody');
+  const map={};
 
   seasonGames.forEach(g=>{
     (g.players||[]).forEach(p=>{
-      if(!players[p.name]){
-        players[p.name]={games:0,pts:0};
-      }
-      players[p.name].games++;
-      players[p.name].pts += p.pts;
+      if(!map[p.name]) map[p.name]={g:0,p:0};
+      map[p.name].g++;
+      map[p.name].p+=p.pts;
     });
   });
 
-  table.innerHTML = '';
-
-  Object.entries(players)
-    .sort((a,b)=>b[1].pts - a[1].pts)
-    .forEach(([name,data])=>{
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${name}</td>
-        <td>${data.games}</td>
-        <td>${data.pts}</td>
-        <td>${(data.pts/data.games).toFixed(1)}</td>
-      `;
-      table.appendChild(tr);
-    });
+  tb.innerHTML='';
+  Object.entries(map).forEach(([n,d])=>{
+    tb.innerHTML+=`
+      <tr>
+        <td>${n}</td>
+        <td>${d.g}</td>
+        <td>${d.p}</td>
+        <td>${(d.p/d.g).toFixed(1)}</td>
+      </tr>`;
+  });
 }
 
-/* ---------- CSV EXPORT ---------- */
-function exportCSV(){
-  let csv = 'Round,Opponent,For,Against,Margin\n';
-
+document.getElementById('exportBtn').onclick=()=>{
+  let csv='Round,Opponent,For,Against,Margin\n';
   seasonGames.forEach(g=>{
-    csv += `${g.round},${g.opponent},${g.teamScore},${g.oppScore},${g.teamScore-g.oppScore}\n`;
+    csv+=`${g.game},${g.opponent},${g.teamScore},${g.oppScore},${g.teamScore-g.oppScore}\n`;
   });
-
-  const blob = new Blob([csv],{type:'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'season-results.csv';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv]));
+  a.download='season-results.csv';
   a.click();
-}
-
-/* ---------- HOOKS ---------- */
-document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('exportBtn')?.addEventListener('click',exportCSV);
-});
-
-/* ---------- RE-RENDER ON LOAD ---------- */
-const originalCompute = computeSeasonAnalytics;
-computeSeasonAnalytics = function(){
-  originalCompute();
-  renderTrends();
-  renderGameResults();
-  renderPlayers();
 };
+
+loadData();
 </script>
 </body>
 </html>
