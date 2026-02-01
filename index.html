@@ -1,347 +1,459 @@
+<!-- ===================== -->
+<!-- U14 SEASON DASHBOARD -->
+<!-- PART 1 OF 3          -->
+<!-- ===================== -->
+
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+
 <title>U14 Season Analytics Dashboard</title>
+
 <style>
-  :root{
-    --bg0:#020617;
-    --bg1:#071229;
-    --card:#0b1932;
-    --card2:#0a1630;
-    --border:rgba(255,255,255,.10);
-    --text:#e8eefc;
-    --muted:#9fb0d0;
-    --muted2:#7f93ba;
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
 
-    --accent:#6ee7ff;
-    --green:#2bd47d;
-    --amber:#ffd166;
-    --red:#ff5c7a;
-    --purple:#a78bfa;
+:root{
+  --bg0:#020617;
+  --bg1:#071229;
+  --card:#0b1932;
+  --card2:#0a1630;
+  --border:rgba(255,255,255,.10);
+  --text:#e8eefc;
+  --muted:#9fb0d0;
+  --muted2:#7f93ba;
 
-    --shadow:0 24px 60px rgba(0,0,0,.55);
-    --radius:22px;
-    --radius2:16px;
-    --font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-    --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-  }
+  --accent:#6ee7ff;
+  --green:#2bd47d;
+  --amber:#ffd166;
+  --red:#ff5c7a;
+  --purple:#a78bfa;
 
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:var(--font);
-    color:var(--text);
-    background:
-      radial-gradient(1200px 700px at 18% 8%, rgba(110,231,255,.16), transparent 58%),
-      radial-gradient(900px 600px at 85% 18%, rgba(167,139,250,.14), transparent 60%),
-      radial-gradient(900px 700px at 40% 95%, rgba(43,212,125,.10), transparent 55%),
-      linear-gradient(180deg, var(--bg1), var(--bg0));
-    min-height:100vh;
-  }
+  --shadow:0 24px 60px rgba(0,0,0,.55);
+  --radius:22px;
+  --radius2:16px;
+  --font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
 
-  .wrap{
-    max-width:1180px;
-    margin:0 auto;
-    padding:28px 18px 60px;
-  }
+*{box-sizing:border-box}
 
-  .topbar{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:14px;
-    margin-bottom:18px;
-  }
+body{
+  margin:0;
+  font-family:var(--font);
+  color:var(--text);
+  background:
+    radial-gradient(1200px 700px at 18% 8%, rgba(110,231,255,.16), transparent 58%),
+    radial-gradient(900px 600px at 85% 18%, rgba(167,139,250,.14), transparent 60%),
+    radial-gradient(900px 700px at 40% 95%, rgba(43,212,125,.10), transparent 55%),
+    linear-gradient(180deg, var(--bg1), var(--bg0));
+  min-height:100vh;
+}
 
-  .title{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
-  .title h1{
-    margin:0;
-    font-size:22px;
-    letter-spacing:.2px;
-  }
-  .title .sub{
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.35;
-  }
+/* ============================================================
+   LAYOUT
+   ============================================================ */
 
-  .controls{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
+.wrap{
+  max-width:1180px;
+  margin:0 auto;
+  padding:28px 18px 60px;
+}
 
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:10px 12px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.05);
-    box-shadow:0 10px 28px rgba(0,0,0,.25) inset;
-    color:var(--text);
-    font-size:12px;
-    user-select:none;
-  }
-  .pill strong{font-weight:800}
-  .dot{width:8px;height:8px;border-radius:999px;background:var(--accent); box-shadow:0 0 0 4px rgba(110,231,255,.12)}
-  .dot.warn{background:var(--amber); box-shadow:0 0 0 4px rgba(255,209,102,.14)}
-  .dot.good{background:var(--green); box-shadow:0 0 0 4px rgba(43,212,125,.12)}
-  .dot.bad{background:var(--red); box-shadow:0 0 0 4px rgba(255,92,122,.14)}
+.topbar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:18px;
+}
 
-  .btn{
-    appearance:none;
-    border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.06);
-    color:var(--text);
-    padding:10px 12px;
-    border-radius:12px;
-    font-weight:800;
-    font-size:12px;
-    cursor:pointer;
-    transition:transform .06s ease, background .2s ease, border-color .2s ease;
-  }
-  .btn:hover{ background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.20) }
-  .btn:active{ transform:translateY(1px) }
-  .btn.primary{
-    border-color:rgba(110,231,255,.35);
-    background:rgba(110,231,255,.10);
-  }
-  .btn.danger{
-    border-color:rgba(255,92,122,.35);
-    background:rgba(255,92,122,.10);
-  }
+.title{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
 
-  .grid{
-    display:grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap:14px;
-  }
+.title h1{
+  margin:0;
+  font-size:22px;
+  letter-spacing:.2px;
+}
 
-  .card{
-    grid-column: span 12;
-    border:1px solid rgba(255,255,255,.10);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    overflow:hidden;
-  }
+.title .sub{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.35;
+}
 
-  .card .hd{
-    padding:14px 16px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    border-bottom:1px solid rgba(255,255,255,.08);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
-  }
-  .card .hd h2{
-    margin:0;
-    font-size:14px;
-    letter-spacing:.2px;
-  }
-  .card .hd .hint{
-    color:var(--muted);
-    font-size:12px;
-  }
+/* ============================================================
+   CONTROLS
+   ============================================================ */
 
-  .card .bd{ padding:14px 16px; }
+.controls{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
 
-  /* stat tiles */
-  .tiles{
-    display:grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap:12px;
-  }
-  .tile{
-    grid-column: span 3;
-    min-height:82px;
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:18px;
-    background:
-      radial-gradient(900px 150px at 20% 0%, rgba(110,231,255,.12), transparent 55%),
-      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-    padding:12px 12px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-  }
-  .tile .k{ color:var(--muted); font-size:11px; letter-spacing:.3px; text-transform:uppercase }
-  .tile .v{ font-size:22px; font-weight:900; letter-spacing:.2px }
-  .tile .s{ color:var(--muted2); font-size:12px }
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);
+  box-shadow:0 10px 28px rgba(0,0,0,.25) inset;
+  color:var(--text);
+  font-size:12px;
+  user-select:none;
+}
 
-  @media (max-width: 980px){
-    .tile{ grid-column: span 6; }
-  }
-  @media (max-width: 540px){
-    .tile{ grid-column: span 12; }
-  }
+.pill strong{font-weight:800}
 
-  /* tables */
-  table{
-    width:100%;
-    border-collapse:collapse;
-    overflow:hidden;
-    border-radius:14px;
-  }
-  thead th{
-    text-align:left;
-    font-size:11px;
-    color:var(--muted);
-    font-weight:900;
-    letter-spacing:.3px;
-    text-transform:uppercase;
-    padding:10px 10px;
-    border-bottom:1px solid rgba(255,255,255,.08);
-  }
-  tbody td{
-    padding:10px 10px;
-    border-bottom:1px solid rgba(255,255,255,.07);
-    font-size:13px;
-  }
-  tbody tr:hover{ background:rgba(255,255,255,.04); }
-  .mono{ font-family:var(--mono); }
-  .right{ text-align:right; }
-  .muted{ color:var(--muted); }
-  .badge{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:11px;
-    font-weight:900;
-    letter-spacing:.2px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(255,255,255,.06);
-  }
-  .b-good{ border-color:rgba(43,212,125,.30); background:rgba(43,212,125,.12); color:#bff6da; }
-  .b-bad{ border-color:rgba(255,92,122,.30); background:rgba(255,92,122,.12); color:#ffd0da; }
-  .b-mid{ border-color:rgba(255,209,102,.30); background:rgba(255,209,102,.12); color:#ffe9b4; }
-  .click{
-    cursor:pointer;
-    text-decoration:none;
-    color:var(--text);
-  }
-  .click:hover{ color:var(--accent); }
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--accent);
+  box-shadow:0 0 0 4px rgba(110,231,255,.12)
+}
 
-  /* charts */
-  .chartWrap{
-    display:grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap:12px;
-  }
-  .chartCard{
-    grid-column: span 6;
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:18px;
-    background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-    padding:12px;
-    overflow:hidden;
-  }
-  .chartCard h3{
-    margin:0 0 8px 0;
-    font-size:12px;
-    color:var(--muted);
-    font-weight:900;
-    letter-spacing:.2px;
-    text-transform:uppercase;
-  }
-  canvas{
-    width:100%;
-    height:240px;
-    border-radius:12px;
-    background:rgba(0,0,0,.18);
-    border:1px solid rgba(255,255,255,.06);
-  }
-  @media (max-width: 980px){
-    .chartCard{ grid-column: span 12; }
-    canvas{ height:220px; }
-  }
+.dot.warn{
+  background:var(--amber);
+  box-shadow:0 0 0 4px rgba(255,209,102,.14)
+}
 
-  /* modal */
-  .backdrop{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-    z-index:50;
-  }
-  .modal{
-    width:min(940px, 100%);
-    max-height:86vh;
-    overflow:auto;
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:22px;
-    background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(2,6,23,.98));
-    box-shadow:0 40px 80px rgba(0,0,0,.65);
-  }
-  .modal .mh{
-    position:sticky;
-    top:0;
-    background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(10,22,48,.85));
-    padding:14px 16px;
-    border-bottom:1px solid rgba(255,255,255,.10);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-  }
-  .modal .mh h2{ margin:0; font-size:14px; }
-  .modal .mb{ padding:14px 16px; }
-  .closeX{
-    border:1px solid rgba(255,255,255,.14);
-    background:rgba(255,255,255,.06);
-    border-radius:12px;
-    padding:8px 10px;
-    cursor:pointer;
-    color:var(--text);
-    font-weight:900;
-  }
+.dot.good{
+  background:var(--green);
+  box-shadow:0 0 0 4px rgba(43,212,125,.12)
+}
 
-  /* editor */
-  .editor{
-    display:grid;
-    grid-template-columns: 1fr;
-    gap:10px;
-  }
-  .ta{
-    width:100%;
-    min-height:220px;
-    resize:vertical;
-    border-radius:16px;
-    border:1px solid rgba(255,255,255,.12);
-    background:rgba(0,0,0,.22);
-    color:var(--text);
-    padding:12px 12px;
-    font-family:var(--mono);
-    font-size:12px;
-    line-height:1.45;
-    outline:none;
-  }
-  .ta:focus{ border-color:rgba(110,231,255,.35); box-shadow:0 0 0 4px rgba(110,231,255,.10) }
-  .row{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-  .row .pill{ padding:8px 10px }
-  .spacer{ height:8px }
-  .small{ font-size:12px; color:var(--muted); line-height:1.4 }
+.dot.bad{
+  background:var(--red);
+  box-shadow:0 0 0 4px rgba(255,92,122,.14)
+}
+
+.btn{
+  appearance:none;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:12px;
+  font-weight:800;
+  font-size:12px;
+  cursor:pointer;
+  transition:transform .06s ease, background .2s ease, border-color .2s ease;
+}
+
+.btn:hover{
+  background:rgba(255,255,255,.09);
+  border-color:rgba(255,255,255,.20)
+}
+
+.btn:active{ transform:translateY(1px) }
+
+.btn.primary{
+  border-color:rgba(110,231,255,.35);
+  background:rgba(110,231,255,.10);
+}
+
+.btn.danger{
+  border-color:rgba(255,92,122,.35);
+  background:rgba(255,92,122,.10);
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+
+.card{
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  margin-bottom:14px;
+}
+
+.card .hd{
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+}
+
+.card .hd h2{
+  margin:0;
+  font-size:14px;
+  letter-spacing:.2px;
+}
+
+.card .hd .hint{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.card .bd{
+  padding:14px 16px;
+}
+
+/* ============================================================
+   STAT TILES
+   ============================================================ */
+
+.tiles{
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap:12px;
+}
+
+.tile{
+  grid-column: span 3;
+  min-height:82px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:18px;
+  background:
+    radial-gradient(900px 150px at 20% 0%, rgba(110,231,255,.12), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.tile .k{
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:.3px;
+  text-transform:uppercase
+}
+
+.tile .v{
+  font-size:22px;
+  font-weight:900;
+}
+
+.tile .s{
+  color:var(--muted2);
+  font-size:12px;
+}
+
+@media (max-width: 980px){
+  .tile{ grid-column: span 6; }
+}
+
+@media (max-width: 540px){
+  .tile{ grid-column: span 12; }
+}
+
+/* ===================== */
+/* END PART <!-- ===================== -->
+<!-- U14 SEASON DASHBOARD -->
+<!-- PART 2 OF 3          -->
+<!-- (append directly after Part 1) -->
+<!-- ===================== -->
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  overflow:hidden;
+  border-radius:14px;
+}
+
+thead th{
+  text-align:left;
+  font-size:11px;
+  color:var(--muted);
+  font-weight:900;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+  padding:10px 10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+tbody td{
+  padding:10px 10px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  font-size:13px;
+}
+
+tbody tr:hover{ background:rgba(255,255,255,.04); }
+
+.mono{ font-family:var(--mono); }
+.right{ text-align:right; }
+.muted{ color:var(--muted); }
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.2px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+}
+
+.b-good{ border-color:rgba(43,212,125,.30); background:rgba(43,212,125,.12); color:#bff6da; }
+.b-bad{ border-color:rgba(255,92,122,.30); background:rgba(255,92,122,.12); color:#ffd0da; }
+.b-mid{ border-color:rgba(255,209,102,.30); background:rgba(255,209,102,.12); color:#ffe9b4; }
+
+.click{
+  cursor:pointer;
+  text-decoration:none;
+  color:var(--text);
+}
+
+.click:hover{ color:var(--accent); }
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+
+.chartWrap{
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap:12px;
+}
+
+.chartCard{
+  grid-column: span 6;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+  padding:12px;
+  overflow:hidden;
+}
+
+.chartCard h3{
+  margin:0 0 8px 0;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:900;
+  letter-spacing:.2px;
+  text-transform:uppercase;
+}
+
+canvas{
+  width:100%;
+  height:240px;
+  border-radius:12px;
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(255,255,255,.06);
+}
+
+@media (max-width: 980px){
+  .chartCard{ grid-column: span 12; }
+  canvas{ height:220px; }
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+
+.backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:50;
+}
+
+.modal{
+  width:min(940px, 100%);
+  max-height:86vh;
+  overflow:auto;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:22px;
+  background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(2,6,23,.98));
+  box-shadow:0 40px 80px rgba(0,0,0,.65);
+}
+
+.modal .mh{
+  position:sticky;
+  top:0;
+  background:linear-gradient(180deg, rgba(10,22,48,.98), rgba(10,22,48,.85));
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,.10);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.modal .mh h2{ margin:0; font-size:14px; }
+.modal .mb{ padding:14px 16px; }
+
+.closeX{
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  border-radius:12px;
+  padding:8px 10px;
+  cursor:pointer;
+  color:var(--text);
+  font-weight:900;
+}
+
+/* ============================================================
+   EDITOR
+   ============================================================ */
+
+.editor{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:10px;
+}
+
+.ta{
+  width:100%;
+  min-height:220px;
+  resize:vertical;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.22);
+  color:var(--text);
+  padding:12px 12px;
+  font-family:var(--mono);
+  font-size:12px;
+  line-height:1.45;
+  outline:none;
+}
+
+.ta:focus{
+  border-color:rgba(110,231,255,.35);
+  box-shadow:0 0 0 4px rgba(110,231,255,.10)
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.row .pill{ padding:8px 10px }
+.spacer{ height:8px }
+.small{ font-size:12px; color:var(--muted); line-height:1.4 }
 </style>
 </head>
 
@@ -352,15 +464,19 @@
       <h1>U14 Season Analytics Dashboard</h1>
       <div class="sub">
         Season analytics for <strong>Lakers U14 Boys Copper</strong> (results, player scoring, fouls, trends).<br/>
-        Includes an editor to paste missing games and instantly recompute everything.
+        Loads from <span class="mono">/data/season-2026.json</span> on GitHub Pages. Includes editor + CSV export.
       </div>
     </div>
 
     <div class="controls">
-      <div class="pill" id="loadedPill"><span class="dot warn" id="loadedDot"></span><strong id="loadedCount">7</strong> / 10 games loaded</div>
+      <div class="pill" id="loadedPill">
+        <span class="dot warn" id="loadedDot"></span>
+        <strong id="loadedCount">0</strong> / 10 games loaded
+      </div>
       <button class="btn primary" id="btnOpenEditor">Add / Edit Games</button>
       <button class="btn" id="btnExport">Export CSV</button>
-      <button class="btn danger" id="btnReset">Reset to Uploaded</aw Data</button>
+      <!-- FIXED: valid button closing tag -->
+      <button class="btn danger" id="btnReset">Reset to Uploaded Data</button>
     </div>
   </div>
 
@@ -376,7 +492,7 @@
   </div>
 
   <!-- Charts -->
-  <div class="card" style="margin-top:14px;">
+  <div class="card">
     <div class="hd">
       <h2>Trends</h2>
       <div class="hint">Points for/against and margins over time</div>
@@ -396,7 +512,7 @@
   </div>
 
   <!-- Results table -->
-  <div class="card" style="margin-top:14px;">
+  <div class="card">
     <div class="hd">
       <h2>Game Results</h2>
       <div class="hint">Click a game to open detail modal</div>
@@ -419,7 +535,7 @@
   </div>
 
   <!-- Player leaderboards -->
-  <div class="card" style="margin-top:14px;">
+  <div class="card">
     <div class="hd">
       <h2>Player Analytics</h2>
       <div class="hint">Totals + per-game + splits (1PT/2PT/3PT) + fouls</div>
@@ -446,11 +562,10 @@
       </table>
       <div class="spacer"></div>
       <div class="small">
-        Tip: If a player’s totals look low, check if they are missing from a game’s player list — you can add them in the editor and analytics will recalc instantly.
+        Tip: If a player’s totals look low, check if they are missing from a game’s player list — add them in the editor and analytics will recalc instantly.
       </div>
     </div>
   </div>
-
 </div>
 
 <!-- Modal (Game Detail) -->
@@ -477,8 +592,8 @@
     </div>
     <div class="mb">
       <div class="small">
-        You currently have <strong id="editorLoaded">7</strong> games loaded. Add Games 1, 2, and 10 here and your analytics will update.
-        <br/>Format per game:
+        This dashboard loads games from <span class="mono">/data/season-2026.json</span>. If you paste here, it edits in-memory (and exports CSV).
+        <br/>Format per game (extended):
         <span class="mono">{ "game": 10, "opponent":"...", "team":"Lakers U14 Boys Copper", "oppTeam":"...", "teamScore":26, "oppScore":28, "halves":{"h1":{"team":10,"opp":16},"h2":{"team":16,"opp":12}}, "players":[{"name":"...", "pts":6, "ft":0, "two":3, "three":0, "fouls":2}] }</span>
       </div>
       <div class="spacer"></div>
@@ -494,12 +609,11 @@
 
 <script>
 /* ============================================================
-   1) RAW DATA (from screenshots available in this chat)
-   - We have 7 games (3 to 9). Games 1,2,10 can be added in editor.
+   1) FALLBACK RAW DATA (Games 3–9 from earlier screenshots)
+   NOTE: Real season data is loaded from /data/season-2026.json
    ============================================================ */
 
 const INITIAL_GAMES = [
-  // Game 3: Lakers U14 Boys Copper vs Vampire Wolves U14 Boys (30-23, W by 7)
   {
     game: 3,
     opponent: "Vampire Wolves U14 Boys",
@@ -514,16 +628,12 @@ const INITIAL_GAMES = [
       { name:"Ethan Poon",   pts:6, ft:2, two:2, three:0, fouls:1 },
       { name:"Lior Rizvash", pts:3, ft:1, two:1, three:0, fouls:0 },
       { name:"Rodion Prystupa", pts:4, ft:0, two:2, three:0, fouls:2 },
-
-      // Some screenshots show additional players higher up the list:
       { name:"Archer Kenny", pts:0, ft:0, two:0, three:0, fouls:0 },
       { name:"Bill Pham", pts:0, ft:0, two:0, three:0, fouls:0 },
       { name:"Thomas O'Sullivan", pts:0, ft:0, two:0, three:0, fouls:0 }
     ],
     note: "From screenshots: totals line shows 30 pts, 7 FT, 10 2PT, 1 3PT, 3 fouls."
   },
-
-  // Game 4: St Kilda Warriors BRAVE U14 Boys vs Lakers Copper (17-30, W by 13)
   {
     game: 4,
     opponent: "St Kilda Warriors BRAVE U14 Boys",
@@ -539,12 +649,10 @@ const INITIAL_GAMES = [
       { name:"Tate Power", pts:0, ft:0, two:0, three:0, fouls:1 },
       { name:"Ethan Poon", pts:12, ft:0, two:6, three:0, fouls:2 },
       { name:"Lior Rizvash", pts:4, ft:0, two:2, three:0, fouls:3 },
-      { name:"Rodion Prystupa", pts:5, ft:1, two:2, three:0, fouls:5 },
+      { name:"Rodion Prystupa", pts:5, ft:1, two:2, three:0, fouls:5 }
     ],
     note: "Totals line shows 30 pts, 1 FT, 13 2PT, 1 3PT, 16 fouls."
   },
-
-  // Game 5: Lakers Copper vs Vampire Wolves (14-34, L by 20)
   {
     game: 5,
     opponent: "Vampire Wolves U14 Boys",
@@ -560,12 +668,10 @@ const INITIAL_GAMES = [
       { name:"Tate Power", pts:0, ft:0, two:0, three:0, fouls:2 },
       { name:"Ethan Poon", pts:6, ft:0, two:3, three:0, fouls:2 },
       { name:"Lior Rizvash", pts:0, ft:0, two:0, three:0, fouls:2 },
-      { name:"Rodion Prystupa", pts:5, ft:1, two:2, three:0, fouls:3 },
+      { name:"Rodion Prystupa", pts:5, ft:1, two:2, three:0, fouls:3 }
     ],
     note: "Totals line shows 14 pts, 2 FT, 6 2PT, 0 3PT, 11 fouls."
   },
-
-  // Game 6: Lakers Flame vs Lakers Copper (29-26, L by 3)
   {
     game: 6,
     opponent: "Lakers U14 Boys Flame",
@@ -582,12 +688,10 @@ const INITIAL_GAMES = [
       { name:"Tate Power", pts:0, ft:0, two:0, three:0, fouls:1 },
       { name:"Ethan Poon", pts:8, ft:0, two:4, three:0, fouls:0 },
       { name:"Lior Rizvash", pts:2, ft:0, two:1, three:0, fouls:4 },
-      { name:"Rodion Prystupa", pts:6, ft:0, two:3, three:0, fouls:3 },
+      { name:"Rodion Prystupa", pts:6, ft:0, two:3, three:0, fouls:3 }
     ],
     note: "Totals line shows 26 pts, 2 FT, 12 2PT, 0 3PT, 10 fouls."
   },
-
-  // Game 7: Lakers Copper vs Dark Wolves (26-28, L by 2)
   {
     game: 7,
     opponent: "Dark Wolves U14 Boys",
@@ -598,17 +702,15 @@ const INITIAL_GAMES = [
     halves: { h1:{team:10, opp:16}, h2:{team:16, opp:12} },
     players: [
       { name:"Archer Kenny", pts:0, ft:0, two:0, three:0, fouls:1 },
-      { name:"Bill Pham", pts:4, ft:0, two:0, three:0, fouls:4 }, // screenshot shows pts & fouls only
+      { name:"Bill Pham", pts:4, ft:0, two:0, three:0, fouls:4 },
       { name:"Thomas O'Sullivan", pts:6, ft:0, two:0, three:0, fouls:1 },
       { name:"Jacob Nguyen", pts:4, ft:0, two:0, three:0, fouls:1 },
       { name:"Ethan Poon", pts:4, ft:0, two:0, three:0, fouls:0 },
       { name:"Lior Rizvash", pts:2, ft:0, two:0, three:0, fouls:4 },
-      { name:"Rodion Prystupa", pts:6, ft:0, two:0, three:0, fouls:3 },
+      { name:"Rodion Prystupa", pts:6, ft:0, two:0, three:0, fouls:3 }
     ],
-    note: "This game screenshot provides only PTS and Fouls per player (no FT/2PT/3PT splits)."
+    note: "This game screenshot provided only PTS and Fouls per player (no FT/2PT/3PT splits)."
   },
-
-  // Game 8: Raptors U14 Boys Orange vs Lakers Copper (45-28, L by 17)
   {
     game: 8,
     opponent: "Raptors U14 Boys Orange",
@@ -625,12 +727,10 @@ const INITIAL_GAMES = [
       { name:"Tate Power", pts:0, ft:0, two:0, three:0, fouls:1 },
       { name:"Ethan Poon", pts:10, ft:0, two:5, three:0, fouls:1 },
       { name:"Lior Rizvash", pts:0, ft:0, two:0, three:0, fouls:4 },
-      { name:"Rodion Prystupa", pts:4, ft:0, two:2, three:0, fouls:0 },
+      { name:"Rodion Prystupa", pts:4, ft:0, two:2, three:0, fouls:0 }
     ],
     note: "Totals line shows 28 pts, 2 FT, 13 2PT, 0 3PT, 11 fouls."
   },
-
-  // Game 9: Carnegie Chargers U14 Boys Bears vs Lakers Copper (30-25, L by 5)
   {
     game: 9,
     opponent: "Carnegie Chargers U14 Boys Bears",
@@ -646,238 +746,29 @@ const INITIAL_GAMES = [
       { name:"Tate Power", pts:0, ft:0, two:0, three:0, fouls:1 },
       { name:"Ethan Poon", pts:4, ft:2, two:1, three:0, fouls:2 },
       { name:"Lior Rizvash", pts:6, ft:0, two:3, three:0, fouls:3 },
-      { name:"Rodion Prystupa", pts:0, ft:0, two:0, three:0, fouls:2 },
+      { name:"Rodion Prystupa", pts:0, ft:0, two:0, three:0, fouls:2 }
     ],
     note: "Totals line shows 25 pts, 2 FT, 10 2PT, 1 3PT, 10 fouls."
-  },
+  }
 ];
 
-const TARGET_GAMES = 10; // user said 10 games uploaded
+const TARGET_GAMES = 10;
 
 /* ============================================================
    2) STATE + HELPERS
    ============================================================ */
+
 let GAMES = deepClone(INITIAL_GAMES);
+let LAST_LOADED_FROM_FILE = false;
 
 function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
-
 function safeNum(n){ return (Number.isFinite(+n) ? +n : 0); }
-
-function round1(x){
-  x = safeNum(x);
-  return Math.round(x*10)/10;
-}
-
-function sum(arr, fn){
-  let t = 0;
-  for(const a of arr){ t += safeNum(fn(a)); }
-  return t;
-}
-
-function uniq(arr){
-  return Array.from(new Set(arr));
-}
-
-function byNameAsc(a,b){
-  return a.name.localeCompare(b.name);
-}
-
+function round1(x){ x = safeNum(x); return Math.round(x*10)/10; }
+function sum(arr, fn){ let t = 0; for(const a of arr){ t += safeNum(fn(a)); } return t; }
+function uniq(arr){ return Array.from(new Set(arr)); }
+function byNameAsc(a,b){ return a.name.localeCompare(b.name); }
 function margin(g){ return safeNum(g.teamScore) - safeNum(g.oppScore); }
 function isWin(g){ return margin(g) > 0; }
-
-/* ============================================================
-   3) ANALYTICS
-   ============================================================ */
-function buildAnalytics(games){
-  // Team totals
-  const gp = games.length;
-  const wins = games.filter(isWin).length;
-  const losses = gp - wins;
-
-  const pf = sum(games, g => g.teamScore);
-  const pa = sum(games, g => g.oppScore);
-
-  const avgPF = gp ? pf/gp : 0;
-  const avgPA = gp ? pa/gp : 0;
-
-  const margins = games.map(g => margin(g));
-  const avgMargin = gp ? sum(margins, x => x)/gp : 0;
-
-  const closeGames = games.filter(g => Math.abs(margin(g)) <= 5).length;
-
-  const bestWin = games
-    .filter(isWin)
-    .sort((a,b)=> margin(b)-margin(a))[0] || null;
-
-  const worstLoss = games
-    .filter(g => !isWin(g))
-    .sort((a,b)=> margin(a)-margin(b))[0] || null;
-
-  // 1H / 2H scoring
-  const h1For = sum(games, g => g?.halves?.h1?.team ?? 0);
-  const h1Against = sum(games, g => g?.halves?.h1?.opp ?? 0);
-  const h2For = sum(games, g => g?.halves?.h2?.team ?? 0);
-  const h2Against = sum(games, g => g?.halves?.h2?.opp ?? 0);
-
-  // Std dev of score (consistency)
-  const scores = games.map(g => safeNum(g.teamScore));
-  const mean = gp ? sum(scores, x=>x)/gp : 0;
-  const variance = gp ? sum(scores, x => (x-mean)*(x-mean))/gp : 0;
-  const sd = Math.sqrt(variance);
-
-  // Players aggregation
-  const allPlayers = uniq(games.flatMap(g => (g.players||[]).map(p=>p.name))).filter(Boolean);
-
-  const players = allPlayers.map(name=>{
-    const rows = [];
-    for(const g of games){
-      const p = (g.players||[]).find(x=>x.name===name);
-      if(p){
-        rows.push({
-          game: g.game,
-          pts: safeNum(p.pts),
-          ft: safeNum(p.ft),
-          two: safeNum(p.two),
-          three: safeNum(p.three),
-          fouls: safeNum(p.fouls)
-        });
-      }
-    }
-    const gamesPlayed = rows.length;
-    const pts = sum(rows, r=>r.pts);
-    const ft = sum(rows, r=>r.ft);
-    const two = sum(rows, r=>r.two);
-    const three = sum(rows, r=>r.three);
-    const fouls = sum(rows, r=>r.fouls);
-    const ppg = gamesPlayed ? pts/gamesPlayed : 0;
-    const fpg = gamesPlayed ? fouls/gamesPlayed : 0;
-    const high = gamesPlayed ? Math.max(...rows.map(r=>r.pts)) : 0;
-    const low = gamesPlayed ? Math.min(...rows.map(r=>r.pts)) : 0;
-    const teamShare = pf ? (pts/pf)*100 : 0;
-
-    return { name, gamesPlayed, pts, ppg, ft, two, three, fouls, fpg, high, low, teamShare };
-  }).sort((a,b)=> b.pts - a.pts || a.name.localeCompare(b.name));
-
-  return {
-    gp, wins, losses,
-    pf, pa, avgPF, avgPA, avgMargin,
-    closeGames, bestWin, worstLoss,
-    h1For, h1Against, h2For, h2Against,
-    sd,
-    margins,
-    players
-  };
-}
-
-/* ============================================================
-   4) UI RENDER
-   ============================================================ */
-function render(){
-  const A = buildAnalytics(GAMES);
-
-  // Loaded pill
-  const loadedDot = document.getElementById("loadedDot");
-  const loadedCount = document.getElementById("loadedCount");
-  const editorLoaded = document.getElementById("editorLoaded");
-  loadedCount.textContent = String(A.gp);
-  editorLoaded.textContent = String(A.gp);
-
-  if(A.gp >= TARGET_GAMES){
-    loadedDot.className = "dot good";
-  } else if(A.gp >= Math.ceil(TARGET_GAMES*0.7)){
-    loadedDot.className = "dot warn";
-  } else {
-    loadedDot.className = "dot bad";
-  }
-
-  // Tiles
-  const tiles = document.getElementById("tiles");
-  tiles.innerHTML = "";
-  const winPct = A.gp ? (A.wins/A.gp)*100 : 0;
-
-  const competitiveBadge = (function(){
-    // heuristic label
-    if(A.gp === 0) return {label:"No data", cls:"b-mid"};
-    if(A.avgMargin >= 5) return {label:"Dominant", cls:"b-good"};
-    if(A.avgMargin >= 0) return {label:"Competitive", cls:"b-good"};
-    if(A.avgMargin > -5) return {label:"Close but learning", cls:"b-mid"};
-    return {label:"Developing", cls:"b-bad"};
-  })();
-
-  const tileData = [
-    {k:"Games", v:A.gp, s:`Target: ${TARGET_GAMES}`},
-    {k:"Record", v:`${A.wins}-${A.losses}`, s:`Win%: ${round1(winPct)}%`},
-    {k:"Avg Points For", v:round1(A.avgPF), s:`Total PF: ${A.pf}`},
-    {k:"Avg Points Against", v:round1(A.avgPA), s:`Total PA: ${A.pa}`},
-    {k:"Avg Margin", v:round1(A.avgMargin), s:`Close games (≤5): ${A.closeGames}`},
-    {k:"Consistency (SD)", v:round1(A.sd), s:`Lower = more consistent`},
-    {k:"1H vs 2H (For)", v:`${A.h1For} / ${A.h2For}`, s:`1H & 2H points scored`},
-    {k:"Season Label", v:competitiveBadge.label, s:`Heuristic based on margin`},
-  ];
-
-  for(const t of tileData){
-    const div = document.createElement("div");
-    div.className = "tile";
-    div.innerHTML = `<div class="k">${escapeHtml(t.k)}</div>
-                     <div class="v">${escapeHtml(String(t.v))}</div>
-                     <div class="s">${escapeHtml(String(t.s))}</div>`;
-    tiles.appendChild(div);
-  }
-
-  // Results table
-  const resultsBody = document.getElementById("resultsBody");
-  resultsBody.innerHTML = "";
-  const gamesSorted = [...GAMES].sort((a,b)=> safeNum(a.game)-safeNum(b.game));
-  for(const g of gamesSorted){
-    const m = margin(g);
-    const res = m>0 ? {txt:"WIN", cls:"b-good"} : (m<0 ? {txt:"LOSS", cls:"b-bad"} : {txt:"DRAW", cls:"b-mid"});
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="mono"><a class="click" data-game="${g.game}">#${escapeHtml(String(g.game))}</a></td>
-      <td><a class="click" data-game="${g.game}">${escapeHtml(g.opponent||"Unknown")}</a></td>
-      <td class="right mono">${escapeHtml(`${g.teamScore}-${g.oppScore}`)}</td>
-      <td class="right mono">${m>0?"+":""}${escapeHtml(String(m))}</td>
-      <td><span class="badge ${res.cls}">${res.txt}</span></td>
-      <td class="right mono muted">${escapeHtml(`${g?.halves?.h1?.team ?? "?"}-${g?.halves?.h1?.opp ?? "?"} / ${g?.halves?.h2?.team ?? "?"}-${g?.halves?.h2?.opp ?? "?"}`)}</td>
-    `;
-    resultsBody.appendChild(tr);
-  }
-
-  // Click handlers for game detail
-  resultsBody.querySelectorAll("[data-game]").forEach(a=>{
-    a.addEventListener("click", (e)=>{
-      e.preventDefault();
-      const gameNo = safeNum(a.getAttribute("data-game"));
-      openGameModal(gameNo);
-    });
-  });
-
-  // Player table
-  const playersBody = document.getElementById("playersBody");
-  playersBody.innerHTML = "";
-  for(const p of A.players){
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${escapeHtml(p.name)}</td>
-      <td class="right mono">${p.gamesPlayed}</td>
-      <td class="right mono"><strong>${p.pts}</strong></td>
-      <td class="right mono">${round1(p.ppg)}</td>
-      <td class="right mono">${p.ft}</td>
-      <td class="right mono">${p.two}</td>
-      <td class="right mono">${p.three}</td>
-      <td class="right mono">${p.fouls}</td>
-      <td class="right mono">${round1(p.fpg)}</td>
-      <td class="right mono">${p.high}</td>
-      <td class="right mono">${p.low}</td>
-      <td class="right mono">${round1(p.teamShare)}%</td>
-    `;
-    playersBody.appendChild(tr);
-  }
-
-  // Charts
-  drawForAgainstChart("chartForAgainst", gamesSorted);
-  drawMarginsChart("chartMargins", gamesSorted);
-}
 
 function escapeHtml(s){
   return String(s)
@@ -889,406 +780,346 @@ function escapeHtml(s){
 }
 
 /* ============================================================
-   5) CHARTS (No external libs)
+   3) LOAD SEASON JSON (THIS IS THE KEY FIX)
+   - Loads /data/season-2026.json
+   - Merges minimal game fields into the richer schema
+   - Uses cache busting for GitHub Pages
    ============================================================ */
-function getCanvas(id){
-  const c = document.getElementById(id);
-  const ctx = c.getContext("2d");
-  // handle high DPI
-  const dpr = window.devicePixelRatio || 1;
-  const cssW = c.clientWidth || 800;
-  const cssH = c.clientHeight || 240;
-  c.width = Math.floor(cssW * dpr);
-  c.height = Math.floor(cssH * dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  return {c, ctx, w: cssW, h: cssH};
-}
 
-function drawAxes(ctx, w, h, pad){
-  ctx.save();
-  ctx.strokeStyle = "rgba(255,255,255,.12)";
-  ctx.lineWidth = 1;
-  // x axis
-  ctx.beginPath();
-  ctx.moveTo(pad, h-pad);
-  ctx.lineTo(w-pad, h-pad);
-  ctx.stroke();
-  // y axis
-  ctx.beginPath();
-  ctx.moveTo(pad, pad);
-  ctx.lineTo(pad, h-pad);
-  ctx.stroke();
-
-  // grid
-  ctx.strokeStyle = "rgba(255,255,255,.07)";
-  const steps = 4;
-  for(let i=1;i<=steps;i++){
-    const y = pad + (h-2*pad)*(i/steps);
-    ctx.beginPath();
-    ctx.moveTo(pad, y);
-    ctx.lineTo(w-pad, y);
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-
-function drawLine(ctx, pts, stroke){
-  if(pts.length < 2) return;
-  ctx.save();
-  ctx.strokeStyle = stroke;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x, pts[0].y);
-  for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y);
-  ctx.stroke();
-  ctx.restore();
-}
-
-function drawPoints(ctx, pts, fill){
-  ctx.save();
-  ctx.fillStyle = fill;
-  for(const p of pts){
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
-    ctx.fill();
-  }
-  ctx.restore();
-}
-
-function drawLabels(ctx, games, w, h, pad){
-  ctx.save();
-  ctx.fillStyle = "rgba(255,255,255,.55)";
-  ctx.font = "11px " + getComputedStyle(document.body).fontFamily;
-  ctx.textAlign = "center";
-  const n = games.length;
-  for(let i=0;i<n;i++){
-    const x = pad + (w-2*pad) * (n===1 ? 0.5 : i/(n-1));
-    ctx.fillText("#"+games[i].game, x, h - pad + 16);
-  }
-  ctx.restore();
-}
-
-function mapY(value, min, max, h, pad){
-  if(max === min) return h/2;
-  const t = (value - min)/(max-min);
-  return (h-pad) - t*(h-2*pad);
-}
-
-function drawForAgainstChart(canvasId, games){
-  const {ctx, w, h} = getCanvas(canvasId);
-  ctx.clearRect(0,0,w,h);
-
-  const pad = 26;
-  drawAxes(ctx, w, h, pad);
-
-  const values = games.flatMap(g => [safeNum(g.teamScore), safeNum(g.oppScore)]);
-  const min = Math.min(...values, 0);
-  const max = Math.max(...values, 10);
-
-  const n = games.length;
-  const forPts = [];
-  const againstPts = [];
-  for(let i=0;i<n;i++){
-    const x = pad + (w-2*pad) * (n===1 ? 0.5 : i/(n-1));
-    const yFor = mapY(safeNum(games[i].teamScore), min, max, h, pad);
-    const yAg = mapY(safeNum(games[i].oppScore), min, max, h, pad);
-    forPts.push({x,y:yFor});
-    againstPts.push({x,y:yAg});
-  }
-
-  // use subtle neon strokes
-  drawLine(ctx, forPts, "rgba(110,231,255,.95)");     // For (accent)
-  drawPoints(ctx, forPts, "rgba(110,231,255,.95)");
-
-  drawLine(ctx, againstPts, "rgba(255,92,122,.85)");  // Against (red)
-  drawPoints(ctx, againstPts, "rgba(255,92,122,.85)");
-
-  drawLabels(ctx, games, w, h, pad);
-
-  // legend
-  ctx.save();
-  ctx.font = "12px " + getComputedStyle(document.body).fontFamily;
-  ctx.fillStyle = "rgba(255,255,255,.85)";
-  ctx.fillText("For", pad+30, pad-8);
-  ctx.fillStyle = "rgba(110,231,255,.95)";
-  ctx.fillRect(pad, pad-16, 18, 4);
-
-  ctx.fillStyle = "rgba(255,255,255,.85)";
-  ctx.fillText("Against", pad+110, pad-8);
-  ctx.fillStyle = "rgba(255,92,122,.85)";
-  ctx.fillRect(pad+78, pad-16, 18, 4);
-  ctx.restore();
-}
-
-function drawMarginsChart(canvasId, games){
-  const {ctx, w, h} = getCanvas(canvasId);
-  ctx.clearRect(0,0,w,h);
-
-  const pad = 26;
-  drawAxes(ctx, w, h, pad);
-
-  const m = games.map(g => margin(g));
-  const min = Math.min(...m, -10);
-  const max = Math.max(...m, 10);
-
-  const n = games.length;
-  const pts = [];
-  for(let i=0;i<n;i++){
-    const x = pad + (w-2*pad) * (n===1 ? 0.5 : i/(n-1));
-    const y = mapY(m[i], min, max, h, pad);
-    pts.push({x,y});
-  }
-
-  // baseline at 0
-  const y0 = mapY(0, min, max, h, pad);
-  ctx.save();
-  ctx.strokeStyle = "rgba(255,255,255,.16)";
-  ctx.setLineDash([4,4]);
-  ctx.beginPath();
-  ctx.moveTo(pad, y0);
-  ctx.lineTo(w-pad, y0);
-  ctx.stroke();
-  ctx.restore();
-
-  drawLine(ctx, pts, "rgba(43,212,125,.90)");
-  drawPoints(ctx, pts, "rgba(43,212,125,.90)");
-  drawLabels(ctx, games, w, h, pad);
-
-  // fill bars (subtle)
-  ctx.save();
-  for(let i=0;i<n;i++){
-    const x = pad + (w-2*pad) * (n===1 ? 0.5 : i/(n-1));
-    const barW = 10;
-    const y = pts[i].y;
-    const top = Math.min(y, y0);
-    const bot = Math.max(y, y0);
-    const good = m[i] >= 0;
-    ctx.fillStyle = good ? "rgba(43,212,125,.22)" : "rgba(255,92,122,.22)";
-    ctx.fillRect(x - barW/2, top, barW, bot - top);
-  }
-  ctx.restore();
-}
-
-/* ============================================================
-   6) MODALS
-   ============================================================ */
-const backdrop = document.getElementById("backdrop");
-const modalTitle = document.getElementById("modalTitle");
-const modalBody = document.getElementById("modalBody");
-
-function openGameModal(gameNo){
-  const g = GAMES.find(x => safeNum(x.game) === safeNum(gameNo));
-  if(!g) return;
-
-  const m = margin(g);
-  const res = m>0 ? {txt:"WIN", cls:"b-good"} : (m<0 ? {txt:"LOSS", cls:"b-bad"} : {txt:"DRAW", cls:"b-mid"});
-
-  modalTitle.innerHTML = `Game #${escapeHtml(String(g.game))} — ${escapeHtml(g.team)} vs ${escapeHtml(g.oppTeam)}`;
-
-  const rows = (g.players||[]).slice().sort(byNameAsc).map(p=>{
-    return `<tr>
-      <td>${escapeHtml(p.name)}</td>
-      <td class="right mono">${safeNum(p.pts)}</td>
-      <td class="right mono">${safeNum(p.ft)}</td>
-      <td class="right mono">${safeNum(p.two)}</td>
-      <td class="right mono">${safeNum(p.three)}</td>
-      <td class="right mono">${safeNum(p.fouls)}</td>
-    </tr>`;
-  }).join("");
-
-  modalBody.innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div class="pill"><span class="dot ${m>0?"good":(m<0?"bad":"warn")}"></span>
-        <strong class="mono">${escapeHtml(`${g.teamScore}-${g.oppScore}`)}</strong>
-        <span class="muted">(${m>0?"+":""}${escapeHtml(String(m))})</span>
-      </div>
-      <span class="badge ${res.cls}">${res.txt}</span>
-    </div>
-    <div class="spacer"></div>
-    <div class="small">
-      Halves: <span class="mono">H1 ${escapeHtml(`${g?.halves?.h1?.team ?? "?"}-${g?.halves?.h1?.opp ?? "?"}`)}</span>,
-      <span class="mono">H2 ${escapeHtml(`${g?.halves?.h2?.team ?? "?"}-${g?.halves?.h2?.opp ?? "?"}`)}</span>
-    </div>
-    ${g.note ? `<div class="spacer"></div><div class="small">${escapeHtml(g.note)}</div>` : ""}
-    <div class="spacer"></div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Player</th>
-          <th class="right">PTS</th>
-          <th class="right">1PT</th>
-          <th class="right">2PT</th>
-          <th class="right">3PT</th>
-          <th class="right">F</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
-  `;
-
-  backdrop.style.display = "flex";
-}
-
-document.getElementById("btnClose").addEventListener("click", ()=> backdrop.style.display="none");
-backdrop.addEventListener("click", (e)=>{ if(e.target===backdrop) backdrop.style.display="none"; });
-
-/* ============================================================
-   7) EDITOR (paste missing games)
-   ============================================================ */
-const editorBackdrop = document.getElementById("editorBackdrop");
-const jsonEditor = document.getElementById("jsonEditor");
-
-document.getElementById("btnOpenEditor").addEventListener("click", ()=>{
-  jsonEditor.value = JSON.stringify(GAMES, null, 2);
-  editorBackdrop.style.display = "flex";
-});
-document.getElementById("btnCancelEditor").addEventListener("click", ()=> editorBackdrop.style.display="none");
-editorBackdrop.addEventListener("click", (e)=>{ if(e.target===editorBackdrop) editorBackdrop.style.display="none"; });
-
-document.getElementById("btnApply").addEventListener("click", ()=>{
+async function loadSeasonFromFile(){
   try{
-    const parsed = JSON.parse(jsonEditor.value);
-    if(!Array.isArray(parsed)) throw new Error("Root must be an array of game objects.");
+    const url = "./data/season-2026.json?v=" + Date.now(); // cache buster
+    const res = await fetch(url, { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
 
-    // minimal validation + normalization
-    const cleaned = parsed.map(g=>{
-      const gg = deepClone(g);
-      gg.game = safeNum(gg.game);
-      gg.teamScore = safeNum(gg.teamScore);
-      gg.oppScore = safeNum(gg.oppScore);
-      gg.opponent = gg.opponent || gg.oppTeam || "Unknown";
-      gg.team = gg.team || "Lakers U14 Boys Copper";
-      gg.oppTeam = gg.oppTeam || gg.opponent || "Opponent";
-      gg.halves = gg.halves || {h1:{team:null,opp:null}, h2:{team:null,opp:null}};
-      gg.players = Array.isArray(gg.players) ? gg.players.map(p=>({
+    const raw = await res.json();
+    if(!Array.isArray(raw)) throw new Error("Root JSON must be an array");
+
+    // Normalize into the dashboard schema
+    const normalized = raw.map(g => ({
+      game: safeNum(g.game),
+      opponent: g.opponent || g.oppTeam || "Unknown",
+      team: g.team || "Lakers U14 Boys Copper",
+      oppTeam: g.oppTeam || g.opponent || "Opponent",
+      teamScore: safeNum(g.teamScore),
+      oppScore: safeNum(g.oppScore),
+      halves: g.halves || { h1:{team:null,opp:null}, h2:{team:null,opp:null} },
+      players: Array.isArray(g.players) ? g.players.map(p=>({
         name: p.name || "Unknown",
         pts: safeNum(p.pts),
         ft: safeNum(p.ft),
         two: safeNum(p.two),
         three: safeNum(p.three),
         fouls: safeNum(p.fouls),
-      })) : [];
-      return gg;
-    }).filter(g => g.game !== 0);
+      })) : [],
+      note: g.note || ""
+    })).filter(g => g.game !== 0);
 
-    // de-dup by game #
+    // De-dup by game number (latest wins)
     const map = new Map();
-    for(const g of cleaned){
-      map.set(g.game, g);
-    }
+    for(const g of normalized){ map.set(g.game, g); }
     GAMES = Array.from(map.values()).sort((a,b)=>a.game-b.game);
 
-    editorBackdrop.style.display = "none";
+    LAST_LOADED_FROM_FILE = true;
     render();
-  } catch(err){
-    alert("JSON parse/validation error:\n\n" + (err?.message || String(err)));
+  }catch(err){
+    console.warn("Could not load /data/season-2026.json. Using fallback INITIAL_GAMES.", err);
+    LAST_LOADED_FROM_FILE = false;
+    GAMES = deepClone(INITIAL_GAMES);
+    render();
   }
-});
+}
 
-document.getElementById("btnFillTemplate").addEventListener("click", ()=>{
-  const template = {
-    game: 10,
-    opponent: "Opponent Name",
-    team: "Lakers U14 Boys Copper",
-    oppTeam: "Opponent Name",
-    teamScore: 0,
-    oppScore: 0,
-    halves: { h1:{team:0, opp:0}, h2:{team:0, opp:0} },
-    players: [
-      { name:"Archer Kenny", pts:0, ft:0, two:0, three:0, fouls:0 },
-      { name:"Bill Pham", pts:0, ft:0, two:0, three:0, fouls:0 },
-      { name:"Thomas O'Sullivan", pts:0, ft:0, two:0, three:0, fouls:0 },
-      { name:"Jacob Nguyen", pts:0, ft:0, two:0, three:0, fouls:0 },
-      { name:"Tate Power", pts:0, ft:0, two:0, three:0, fouls:0 },
-      { name:"Ethan Poon", pts:0, ft:0, two:0, three:0, fouls:0 },
-      { name:"Lior Rizvash", pts:0, ft:0, two:0, three:0, fouls:0 },
-      { name:"Rodion Prystupa", pts:0, ft:0, two:0, three:0, fouls:0 },
-    ],
-    note: "Pasted template - fill from PlayHQ screenshot"
-  };
+/* ===================== */
+/* END PART 2            */
+/* ===================== */
 
-  // If editor empty, insert array; else append
-  try{
-    const current = jsonEditor.value.trim();
-    if(!current){
-      jsonEditor.value = JSON.stringify([template], null, 2);
-      return;
-    }
-    const parsed = JSON.parse(current);
-    if(Array.isArray(parsed)){
-      parsed.push(template);
-      jsonEditor.value = JSON.stringify(parsed, null, 2);
-      return;
-    }
-    // if it's something else, overwrite safely
-    jsonEditor.value = JSON.stringify([template], null, 2);
-  }catch{
-    jsonEditor.value = JSON.stringify(GAMES.concat([template]), null, 2);
-  }
-});
-
-document.getElementById("btnClear").addEventListener("click", ()=>{ jsonEditor.value=""; });
+<!-- ===================== -->
+<!-- U14 SEASON DASHBOARD -->
+<!-- PART 3 OF 3          -->
+<!-- (final section)      -->
+<!-- ===================== -->
 
 /* ============================================================
-   8) EXPORT CSV
+   4) ANALYTICS BUILDERS
    ============================================================ */
-document.getElementById("btnExport").addEventListener("click", ()=>{
-  const A = buildAnalytics(GAMES);
 
-  // players CSV
-  const headers = ["Player","Games","PTS","PPG","1PT","2PT","3PT","Fouls","FPG","High","Low","TeamShare%"];
-  const lines = [headers.join(",")];
+function buildSnapshot(){
+  const gp = GAMES.length;
+  const wins = GAMES.filter(isWin).length;
+  const pf = sum(GAMES, g=>g.teamScore);
+  const pa = sum(GAMES, g=>g.oppScore);
+  const avgPf = gp ? round1(pf/gp) : 0;
+  const avgPa = gp ? round1(pa/gp) : 0;
+  const avgMargin = gp ? round1((pf-pa)/gp) : 0;
 
-  for(const p of A.players){
-    const row = [
-      p.name,
-      p.gamesPlayed,
-      p.pts,
-      round1(p.ppg),
-      p.ft,
-      p.two,
-      p.three,
-      p.fouls,
-      round1(p.fpg),
-      p.high,
-      p.low,
-      round1(p.teamShare),
-    ].map(csvEsc).join(",");
-    lines.push(row);
-  }
+  const tiles = document.getElementById("tiles");
+  tiles.innerHTML = `
+    <div class="tile">
+      <div class="k">Record</div>
+      <div class="v">${wins}-${gp-wins}</div>
+      <div class="s">${gp} games</div>
+    </div>
+    <div class="tile">
+      <div class="k">Avg Points For</div>
+      <div class="v">${avgPf}</div>
+      <div class="s">${pf} total</div>
+    </div>
+    <div class="tile">
+      <div class="k">Avg Points Against</div>
+      <div class="v">${avgPa}</div>
+      <div class="s">${pa} total</div>
+    </div>
+    <div class="tile">
+      <div class="k">Avg Margin</div>
+      <div class="v">${avgMargin}</div>
+      <div class="s">${avgMargin>0?"Positive":"Negative"}</div>
+    </div>
+  `;
 
-  const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "u14_player_analytics.csv";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-});
-
-function csvEsc(v){
-  const s = String(v ?? "");
-  if(/[,"\n]/.test(s)) return `"${s.replaceAll('"','""')}"`;
-  return s;
+  document.getElementById("loadedCount").textContent = gp;
+  const dot = document.getElementById("loadedDot");
+  dot.className = "dot " + (gp===TARGET_GAMES ? "good" : gp>=7 ? "warn" : "bad");
 }
 
 /* ============================================================
-   9) RESET
+   5) RESULTS TABLE
    ============================================================ */
-document.getElementById("btnReset").addEventListener("click", ()=>{
-  if(!confirm("Reset dashboard back to the uploaded raw data (Games 3–9)?")) return;
-  GAMES = deepClone(INITIAL_GAMES);
-  render();
-});
+
+function buildResults(){
+  const body = document.getElementById("resultsBody");
+  body.innerHTML = "";
+
+  for(const g of GAMES){
+    const m = margin(g);
+    const badge = m>0 ? "b-good" : m<0 ? "b-bad" : "b-mid";
+    const label = m>0 ? "WIN" : m<0 ? "LOSS" : "DRAW";
+    const halves =
+      (g.halves?.h1?.team!=null)
+        ? `${g.halves.h1.team}-${g.halves.h1.opp} / ${g.halves.h2.team}-${g.halves.h2.opp}`
+        : "—";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="mono click">#${g.game}</td>
+      <td>${escapeHtml(g.opponent)}</td>
+      <td class="right mono">${g.teamScore}-${g.oppScore}</td>
+      <td class="right mono">${m}</td>
+      <td><span class="badge ${badge}">${label}</span></td>
+      <td class="right mono muted">${halves}</td>
+    `;
+    tr.onclick = ()=> openGameModal(g);
+    body.appendChild(tr);
+  }
+}
 
 /* ============================================================
-   10) INIT + RESIZE
+   6) PLAYER AGGREGATION
    ============================================================ */
-render();
+
+function buildPlayers(){
+  const map = new Map();
+
+  for(const g of GAMES){
+    for(const p of (g.players||[])){
+      if(!map.has(p.name)){
+        map.set(p.name, {
+          name:p.name, games:0, pts:0, ft:0, two:0, three:0,
+          fouls:0, highs:[], lows:[]
+        });
+      }
+      const a = map.get(p.name);
+      a.games++;
+      a.pts += safeNum(p.pts);
+      a.ft += safeNum(p.ft);
+      a.two += safeNum(p.two);
+      a.three += safeNum(p.three);
+      a.fouls += safeNum(p.fouls);
+      a.highs.push(p.pts);
+      a.lows.push(p.pts);
+    }
+  }
+
+  const totalTeamPts = sum(GAMES, g=>g.teamScore);
+  const rows = Array.from(map.values())
+    .sort((a,b)=>b.pts-a.pts);
+
+  const body = document.getElementById("playersBody");
+  body.innerHTML = "";
+
+  for(const p of rows){
+    const ppg = p.games ? round1(p.pts/p.games) : 0;
+    const fpg = p.games ? round1(p.fouls/p.games) : 0;
+    const hi = p.highs.length ? Math.max(...p.highs) : 0;
+    const lo = p.lows.length ? Math.min(...p.lows) : 0;
+    const share = totalTeamPts ? round1((p.pts/totalTeamPts)*100) : 0;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(p.name)}</td>
+      <td class="right mono">${p.games}</td>
+      <td class="right mono">${p.pts}</td>
+      <td class="right mono">${ppg}</td>
+      <td class="right mono">${p.ft}</td>
+      <td class="right mono">${p.two}</td>
+      <td class="right mono">${p.three}</td>
+      <td class="right mono">${p.fouls}</td>
+      <td class="right mono">${fpg}</td>
+      <td class="right mono">${hi}</td>
+      <td class="right mono">${lo}</td>
+      <td class="right mono">${share}%</td>
+    `;
+    body.appendChild(tr);
+  }
+}
+
+/* ============================================================
+   7) CHARTS (CANVAS)
+   ============================================================ */
+
+function drawLineChart(canvasId, seriesA, seriesB){
+  const c = document.getElementById(canvasId);
+  const ctx = c.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  c.width = w*dpr; c.height = h*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+
+  const pad = 26;
+  const maxVal = Math.max(...seriesA, ...seriesB, 40);
+  const stepX = (w-2*pad)/(seriesA.length-1 || 1);
+
+  function plot(arr, color){
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    arr.forEach((v,i)=>{
+      const x = pad + i*stepX;
+      const y = h-pad - (v/maxVal)*(h-2*pad);
+      if(i===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  }
+
+  plot(seriesA, "#6ee7ff");
+  plot(seriesB, "#ff5c7a");
+}
+
+function drawMarginChart(){
+  const c = document.getElementById("chartMargins");
+  const ctx = c.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  c.width = w*dpr; c.height = h*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+
+  const pad = 26;
+  const margins = GAMES.map(margin);
+  const maxAbs = Math.max(...margins.map(m=>Math.abs(m)), 10);
+  const barW = (w-2*pad)/margins.length - 6;
+
+  margins.forEach((m,i)=>{
+    const x = pad + i*((w-2*pad)/margins.length) + 3;
+    const zeroY = h/2;
+    const barH = (Math.abs(m)/maxAbs)*(h/2-pad);
+    ctx.fillStyle = m>=0 ? "#2bd47d" : "#ff5c7a";
+    ctx.fillRect(x, m>=0 ? zeroY-barH : zeroY, barW, barH);
+  });
+
+  ctx.strokeStyle = "rgba(255,255,255,.15)";
+  ctx.beginPath();
+  ctx.moveTo(pad, h/2);
+  ctx.lineTo(w-pad, h/2);
+  ctx.stroke();
+}
+
+/* ============================================================
+   8) MODALS + EDITOR
+   ============================================================ */
+
+function openGameModal(g){
+  document.getElementById("modalTitle").textContent =
+    `Game ${g.game} vs ${g.opponent}`;
+  document.getElementById("modalBody").innerHTML = `
+    <p><strong>Score:</strong> ${g.teamScore}-${g.oppScore}</p>
+    <p><strong>Halves:</strong>
+      ${g.halves?.h1?.team!=null
+        ? `${g.halves.h1.team}-${g.halves.h1.opp} / ${g.halves.h2.team}-${g.halves.h2.opp}`
+        : "—"}
+    </p>
+    <pre class="mono">${escapeHtml(JSON.stringify(g.players,null,2))}</pre>
+    <p class="small muted">${escapeHtml(g.note||"")}</p>
+  `;
+  document.getElementById("backdrop").style.display="flex";
+}
+
+document.getElementById("btnClose").onclick =
+  ()=> document.getElementById("backdrop").style.display="none";
+
+document.getElementById("btnOpenEditor").onclick = ()=>{
+  document.getElementById("jsonEditor").value = JSON.stringify(GAMES,null,2);
+  document.getElementById("editorBackdrop").style.display="flex";
+};
+
+document.getElementById("btnCancelEditor").onclick =
+  ()=> document.getElementById("editorBackdrop").style.display="none";
+
+document.getElementById("btnApply").onclick = ()=>{
+  try{
+    const data = JSON.parse(document.getElementById("jsonEditor").value);
+    if(!Array.isArray(data)) throw new Error("Root must be array");
+    GAMES = data;
+    LAST_LOADED_FROM_FILE = false;
+    document.getElementById("editorBackdrop").style.display="none";
+    render();
+  }catch(e){
+    alert("Invalid JSON");
+  }
+};
+
+document.getElementById("btnReset").onclick = loadSeasonFromFile;
+
+/* ============================================================
+   9) EXPORT
+   ============================================================ */
+
+document.getElementById("btnExport").onclick = ()=>{
+  const rows = [["Game","Opponent","TeamScore","OppScore","Margin"]];
+  GAMES.forEach(g=>rows.push([g.game,g.opponent,g.teamScore,g.oppScore,margin(g)]));
+  const csv = rows.map(r=>r.join(",")).join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download = "season-results.csv";
+  a.click();
+};
+
+/* ============================================================
+   10) RENDER + INIT
+   ============================================================ */
+
+function render(){
+  buildSnapshot();
+  buildResults();
+  buildPlayers();
+
+  drawLineChart(
+    "chartForAgainst",
+    GAMES.map(g=>g.teamScore),
+    GAMES.map(g=>g.oppScore)
+  );
+
+  drawMarginChart();
+}
+
 window.addEventListener("resize", ()=> render());
+loadSeasonFromFile();
+
+/* ===================== */
+/* END PART 3            */
+/* ===================== */
 </script>
 </body>
 </html>
