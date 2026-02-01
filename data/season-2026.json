@@ -3,52 +3,68 @@
     "game": 1,
     "opponent": "St Kilda Warriors BRAVE U14 Boys",
     "teamScore": 30,
-    "oppScore": 17
+    "oppScore": 17,
+    "result": "W"
   },
   {
     "game": 2,
     "opponent": "Dark Wolves U14 Boys",
     "teamScore": 27,
-    "oppScore": 33
+    "oppScore": 33,
+    "result": "L"
   },
   {
     "game": 3,
     "opponent": "Vampire Wolves U14 Boys",
     "teamScore": 30,
-    "oppScore": 23
+    "oppScore": 23,
+    "result": "W"
   },
   {
     "game": 4,
     "opponent": "St Kilda Warriors BRAVE U14 Boys",
     "teamScore": 30,
-    "oppScore": 17
+    "oppScore": 17,
+    "result": "W"
   },
   {
     "game": 5,
     "opponent": "Bentleigh Lakers Flame",
     "teamScore": 26,
-    "oppScore": 29
+    "oppScore": 29,
+    "result": "L"
   },
-  {
-   [
   {
     "game": 6,
     "opponent": "Lakers U14 Boys Flame",
     "teamScore": 26,
     "oppScore": 29,
+    "result": "L",
     "halves": {
       "h1": { "team": 7, "opp": 15 },
       "h2": { "team": 19, "opp": 14 }
     }
   },
   {
-    "game": 8,
-    "opponent": "Raptors U14 Boys Orange",
+    "game": 7,
+    "opponent": "Oakleigh Raptors U14 Boys Orange",
     "teamScore": 28,
     "oppScore": 45,
+    "result": "L",
     "halves": {
       "h1": { "team": 16, "opp": 16 },
       "h2": { "team": 12, "opp": 29 }
+    }
+  },
+  {
+    "game": 8,
+    "opponent": "Lakers U14 Boys Flame",
+    "teamScore": 26,
+    "oppScore": 29,
+    "result": "L",
+    "halves": {
+      "h1": { "team": 7, "opp": 15 },
+      "h2": { "team": 19, "opp": 14 }
     }
   },
   {
@@ -56,6 +72,7 @@
     "opponent": "Carnegie Chargers U14 Boys Bears",
     "teamScore": 25,
     "oppScore": 30,
+    "result": "L",
     "halves": {
       "h1": { "team": 4, "opp": 13 },
       "h2": { "team": 21, "opp": 17 }
@@ -66,11 +83,14 @@
     "opponent": "Mountain Wolves U14 Boys",
     "teamScore": 29,
     "oppScore": 25,
+    "result": "W",
     "halves": {
       "h1": { "team": 9, "opp": 7 },
       "h2": { "team": 20, "opp": 18 }
     }
   }
+]
+
 ]
   }
 ]
