@@ -1,41 +1,62 @@
-<script>
-let GAMES = [];
-
-async function loadGames(){
-  try{
-    const res = await fetch("./data/season-2026.json");
-    if(!res.ok) throw new Error("Failed to load season-2026.json");
-    const data = await res.json();
-
-    if(!Array.isArray(data)){
-      throw new Error("season-2026.json must be an array");
-    }
-
-    // normalise + validate
-    const map = new Map();
-    for(const g of data){
-      if(!g.game) continue;
-
-      map.set(Number(g.game), {
-        game: Number(g.game),
-        opponent: g.opponent || g.oppTeam || "Unknown",
-        team: "Lakers U14 Boys Copper",
-        oppTeam: g.oppTeam || g.opponent || "Opponent",
-        teamScore: Number(g.teamScore) || 0,
-        oppScore: Number(g.oppScore) || 0,
-        halves: g.halves || {h1:{}, h2:{}},
-        players: Array.isArray(g.players) ? g.players : [],
-        note: g.note || ""
-      });
-    }
-
-    GAMES = Array.from(map.values()).sort((a,b)=>a.game-b.game);
-    render();
-
-  } catch(err){
-    alert("Game data failed to load:\n" + err.message);
+[
+  {
+    "game": 1,
+    "opponent": "Bentleigh Lakers Flame",
+    "teamScore": 29,
+    "oppScore": 26
+  },
+  {
+    "game": 2,
+    "opponent": "Dark Wolves U14 Boys",
+    "teamScore": 26,
+    "oppScore": 28
+  },
+  {
+    "game": 3,
+    "opponent": "Raptors U14 Boys Orange",
+    "teamScore": 28,
+    "oppScore": 45
+  },
+  {
+    "game": 4,
+    "opponent": "Carnegie Chargers U14 Bears",
+    "teamScore": 25,
+    "oppScore": 30
+  },
+  {
+    "game": 5,
+    "opponent": "Bentleigh Lakers Copper",
+    "teamScore": 26,
+    "oppScore": 29
+  },
+  {
+    "game": 6,
+    "opponent": "Dark Wolves U14 Boys",
+    "teamScore": 26,
+    "oppScore": 28
+  },
+  {
+    "game": 7,
+    "opponent": "Raptors U14 Boys Orange",
+    "teamScore": 28,
+    "oppScore": 45
+  },
+  {
+    "game": 8,
+    "opponent": "Carnegie Chargers U14 Bears",
+    "teamScore": 25,
+    "oppScore": 30
+  },
+  {
+    "game": 9,
+    "opponent": "Bentleigh Lakers Flame",
+    "teamScore": 29,
+    "oppScore": 26
+  },
+  {
+    "game": 10,
+    "opponent": "Dark Wolves U14 Boys",
+    "teamScore": 26,
+    "oppScore": 28
   }
-}
-
-loadGames();
-</script>
+]
