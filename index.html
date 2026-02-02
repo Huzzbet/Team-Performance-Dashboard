@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>U14 Season Analytics Dashboard</title>
 
-<!-- CHART.JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -13,20 +12,14 @@
   --bg0:#020617;
   --bg1:#071229;
   --card:#0b1932;
-  --cardSoft:rgba(255,255,255,.04);
   --border:rgba(255,255,255,.10);
   --text:#e8eefc;
   --muted:#9fb0d0;
-
-  --accent:#6ee7ff;
   --green:#2bd47d;
-  --amber:#ffd166;
   --red:#ff5c7a;
-
   --radius:22px;
-  --radiusSm:14px;
   --shadow:0 24px 60px rgba(0,0,0,.55);
-  --font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  --font:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
 }
 
 *{box-sizing:border-box}
@@ -37,7 +30,6 @@ body{
   color:var(--text);
   background:
     radial-gradient(1200px 600px at 20% 0%, rgba(110,231,255,.14), transparent 60%),
-    radial-gradient(900px 600px at 80% 10%, rgba(43,212,125,.12), transparent 55%),
     linear-gradient(180deg, var(--bg1), var(--bg0));
   min-height:100vh;
 }
@@ -61,44 +53,13 @@ h1{margin:0;font-size:22px}
 h2{margin:0 0 6px;font-size:16px}
 .sub{color:var(--muted);font-size:13px}
 
-.controls{
-  display:grid;
-  gap:12px;
-  margin-top:14px;
-}
-
-button{
-  appearance:none;
-  border:1px solid var(--border);
-  background:var(--cardSoft);
-  color:var(--text);
-  padding:14px;
-  border-radius:var(--radiusSm);
-  font-weight:900;
-  cursor:pointer;
-}
-
-.primary{
-  background:linear-gradient(90deg,#2bd47d,#6ee7ff);
-  color:#021018;
-  border:none;
-}
-
-.danger{
-  background:linear-gradient(90deg,#ff5c7a,#ffd166);
-  color:#22080f;
-  border:none;
-}
-
 .grid{
   display:grid;
   gap:18px;
 }
 
 @media(min-width:768px){
-  .grid{
-    grid-template-columns:1.3fr .7fr;
-  }
+  .grid{grid-template-columns:1.3fr .7fr}
 }
 
 .snapshot-grid{
@@ -139,7 +100,6 @@ th,td{
 }
 
 th{color:var(--muted);text-align:left}
-
 .pos{color:var(--green)}
 .neg{color:var(--red)}
 </style>
@@ -150,27 +110,17 @@ th{color:var(--muted);text-align:left}
 
   <section class="card">
     <h1>U14 Season Analytics Dashboard</h1>
-    <div class="sub">Lakers U14 Boys Copper · Results · Trends · Player Analytics</div>
-
-    <div class="controls">
-      <button class="primary">Add / Edit Games</button>
-      <button id="exportBtn">Export CSV</button>
-      <button class="danger">Reset Data</button>
-    </div>
+    <div class="sub">Lakers U14 Boys Copper · Full Season Overview</div>
   </section>
 
   <div class="grid">
-
     <section class="card">
       <h2>Season Trend</h2>
-      <div class="sub">Points for vs against</div>
-      <canvas id="pfChart" height="280"></canvas>
+      <canvas id="trendChart" height="280"></canvas>
     </section>
 
     <section class="card">
       <h2>Season Snapshot</h2>
-      <div class="sub">Auto-calculated</div>
-
       <div class="snapshot-grid">
         <div class="snapshot"><div class="label">Record</div><div class="value" id="rec">—</div></div>
         <div class="snapshot"><div class="label">Avg Margin</div><div class="value" id="avg">—</div></div>
@@ -178,26 +128,15 @@ th{color:var(--muted);text-align:left}
         <div class="snapshot"><div class="label">Points Against</div><div class="value" id="pa">—</div></div>
       </div>
     </section>
-
   </div>
 
   <section class="card">
     <h2>Game Results</h2>
-    <table id="gamesTable">
+    <table>
       <thead>
-        <tr><th>Round</th><th>Opponent</th><th>Score</th><th>Margin</th></tr>
+        <tr><th>Game</th><th>Opponent</th><th>Score</th><th>Margin</th></tr>
       </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-
-  <section class="card">
-    <h2>Player Analytics</h2>
-    <table id="playersTable">
-      <thead>
-        <tr><th>Player</th><th>Games</th><th>PTS</th><th>PPG</th></tr>
-      </thead>
-      <tbody></tbody>
+      <tbody id="gamesBody"></tbody>
     </table>
   </section>
 
@@ -207,38 +146,44 @@ th{color:var(--muted);text-align:left}
 let seasonGames = [];
 let chart;
 
-async function loadData(){
-  const res = await fetch('./data/season-2026.json');
-  seasonGames = await res.json();
-  compute();
+async function loadSeason(){
+  try{
+    const res = await fetch('./data/season-2026.json');
+    if(!res.ok) throw new Error('JSON not found');
+    seasonGames = await res.json();
+    if(!Array.isArray(seasonGames)) throw new Error('JSON is not an array');
+    renderAll();
+  }catch(err){
+    console.error('DATA LOAD ERROR:', err);
+  }
 }
 
-function compute(){
-  let w=0,l=0,pf=0,pa=0;
+function renderAll(){
+  computeSnapshot();
+  renderChart();
+  renderTable();
+}
+
+function computeSnapshot(){
+  let wins=0, losses=0, pf=0, pa=0;
 
   seasonGames.forEach(g=>{
     pf+=g.teamScore;
     pa+=g.oppScore;
-    g.teamScore>g.oppScore? w++:l++;
+    g.teamScore>g.oppScore ? wins++ : losses++;
   });
 
-  document.getElementById('rec').textContent=`${w}-${l}`;
-  document.getElementById('avg').textContent=((pf-pa)/seasonGames.length).toFixed(1);
-  document.getElementById('pf').textContent=pf;
-  document.getElementById('pa').textContent=pa;
-
-  renderChart();
-  renderGames();
-  renderPlayers();
+  document.getElementById('rec').textContent = `${wins}-${losses}`;
+  document.getElementById('avg').textContent = ((pf-pa)/seasonGames.length).toFixed(1);
+  document.getElementById('pf').textContent = pf;
+  document.getElementById('pa').textContent = pa;
 }
 
 function renderChart(){
-  const ctx=document.getElementById('pfChart');
-  const labels=seasonGames.map(g=>`R${g.game}`);
+  const ctx=document.getElementById('trendChart');
+  const labels=seasonGames.map(g=>`G${g.game}`);
   const pf=seasonGames.map(g=>g.teamScore);
   const pa=seasonGames.map(g=>g.oppScore);
-
-  if(chart) chart.destroy();
 
   chart=new Chart(ctx,{
     type:'line',
@@ -253,14 +198,14 @@ function renderChart(){
   });
 }
 
-function renderGames(){
-  const tb=document.querySelector('#gamesTable tbody');
+function renderTable(){
+  const tb=document.getElementById('gamesBody');
   tb.innerHTML='';
   seasonGames.forEach(g=>{
     const m=g.teamScore-g.oppScore;
     tb.innerHTML+=`
       <tr>
-        <td>R${g.game}</td>
+        <td>G${g.game}</td>
         <td>${g.opponent}</td>
         <td>${g.teamScore}-${g.oppScore}</td>
         <td class="${m>0?'pos':'neg'}">${m>0?'+':''}${m}</td>
@@ -268,42 +213,7 @@ function renderGames(){
   });
 }
 
-function renderPlayers(){
-  const tb=document.querySelector('#playersTable tbody');
-  const map={};
-
-  seasonGames.forEach(g=>{
-    (g.players||[]).forEach(p=>{
-      if(!map[p.name]) map[p.name]={g:0,p:0};
-      map[p.name].g++;
-      map[p.name].p+=p.pts;
-    });
-  });
-
-  tb.innerHTML='';
-  Object.entries(map).forEach(([n,d])=>{
-    tb.innerHTML+=`
-      <tr>
-        <td>${n}</td>
-        <td>${d.g}</td>
-        <td>${d.p}</td>
-        <td>${(d.p/d.g).toFixed(1)}</td>
-      </tr>`;
-  });
-}
-
-document.getElementById('exportBtn').onclick=()=>{
-  let csv='Round,Opponent,For,Against,Margin\n';
-  seasonGames.forEach(g=>{
-    csv+=`${g.game},${g.opponent},${g.teamScore},${g.oppScore},${g.teamScore-g.oppScore}\n`;
-  });
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv]));
-  a.download='season-results.csv';
-  a.click();
-};
-
-loadData();
+loadSeason();
 </script>
 </body>
 </html>
