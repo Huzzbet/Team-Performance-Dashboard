@@ -148,10 +148,9 @@ let chart;
 
 async function loadSeason(){
   try{
-    const res = await fetch('data/season-2026.json');
+    const res = await fetch('./data/season-2026.json');
     if(!res.ok) throw new Error('JSON not found');
     seasonGames = await res.json();
-    console.log('Loaded season data:', seasonGames);
     if(!Array.isArray(seasonGames)) throw new Error('JSON is not an array');
     renderAll();
   }catch(err){
@@ -169,9 +168,9 @@ function computeSnapshot(){
   let wins=0, losses=0, pf=0, pa=0;
 
   seasonGames.forEach(g=>{
-    pf+=g.teamScore;
-    pa+=g.oppScore;
-    g.teamScore>g.oppScore ? wins++ : losses++;
+    pf += g.teamScore;
+    pa += g.oppScore;
+    g.teamScore > g.oppScore ? wins++ : losses++;
   });
 
   document.getElementById('rec').textContent = `${wins}-${losses}`;
@@ -181,18 +180,17 @@ function computeSnapshot(){
 }
 
 function renderChart(){
-  const ctx=document.getElementById('trendChart');
-  const labels=seasonGames.map(g=>`G${g.game}`);
-  const pf=seasonGames.map(g=>g.teamScore);
-  const pa=seasonGames.map(g=>g.oppScore);
+  const ctx = document.getElementById('trendChart');
 
-  chart=new Chart(ctx,{
+  if(chart) chart.destroy();
+
+  chart = new Chart(ctx,{
     type:'line',
     data:{
-      labels,
+      labels: seasonGames.map(g=>`G${g.game}`),
       datasets:[
-        {label:'Points For',data:pf,borderWidth:3,tension:.35},
-        {label:'Points Against',data:pa,borderDash:[6,6],borderWidth:2,tension:.35}
+        {label:'Points For',data:seasonGames.map(g=>g.teamScore),borderWidth:3,tension:.35},
+        {label:'Points Against',data:seasonGames.map(g=>g.oppScore),borderDash:[6,6],borderWidth:2,tension:.35}
       ]
     },
     options:{responsive:true}
