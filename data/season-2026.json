@@ -91,6 +91,14 @@
     "halves": {
       "h1": { "team": 9, "opp": 7 },
       "h2": { "team": 20, "opp": 18 }
-    }
+    },
+    "players": [
+      { "name": "Thomas O'Sullivan", "number": 22, "points": 12, "fouls": 0 },
+      { "name": "Archer Kenny", "number": 16, "points": 7, "fouls": 1 },
+      { "name": "Bill Pham", "number": 20, "points": 4, "fouls": 3 },
+      { "name": "Tate Power", "number": 72, "points": 3, "fouls": 4 },
+      { "name": "Lior Rizvash", "number": 93, "points": 3, "fouls": 2 },
+      { "name": "Rodion Prystupa", "number": 94, "points": 0, "fouls": 0 }
+    ]
   }
 ]
