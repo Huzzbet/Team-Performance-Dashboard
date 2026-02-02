@@ -150,16 +150,18 @@ async function loadSeason(){
   try{
     const res = await fetch('/Team-Performance-Dashboard/data/season-2026.json');
     if(!res.ok) throw new Error('JSON not found');
+
     seasonGames = await res.json();
-    if(!Array.isArray(seasonGames)) throw new Error('JSON is not an array');
+    if(!Array.isArray(seasonGames)) {
+      throw new Error('JSON is not an array');
+    }
+
     renderAll();
   }catch(err){
     console.error('DATA LOAD ERROR:', err);
   }
 }
-document.addEventListener('DOMContentLoaded', loadSeason);
-  }
-}
+
 function renderAll(){
   computeSnapshot();
   renderChart();
@@ -167,7 +169,7 @@ function renderAll(){
 }
 
 function computeSnapshot(){
-  let wins=0, losses=0, pf=0, pa=0;
+  let wins = 0, losses = 0, pf = 0, pa = 0;
 
   seasonGames.forEach(g=>{
     pf += g.teamScore;
@@ -176,45 +178,62 @@ function computeSnapshot(){
   });
 
   document.getElementById('rec').textContent = `${wins}-${losses}`;
-  document.getElementById('avg').textContent = ((pf-pa)/seasonGames.length).toFixed(1);
+  document.getElementById('avg').textContent =
+    ((pf - pa) / seasonGames.length).toFixed(1);
   document.getElementById('pf').textContent = pf;
   document.getElementById('pa').textContent = pa;
 }
 
 function renderChart(){
   const ctx = document.getElementById('trendChart');
-
   if(chart) chart.destroy();
 
   chart = new Chart(ctx,{
     type:'line',
     data:{
-      labels: seasonGames.map(g=>`G${g.game}`),
+      labels: seasonGames.map(g => `G${g.game}`),
       datasets:[
-        {label:'Points For',data:seasonGames.map(g=>g.teamScore),borderWidth:3,tension:.35},
-        {label:'Points Against',data:seasonGames.map(g=>g.oppScore),borderDash:[6,6],borderWidth:2,tension:.35}
+        {
+          label:'Points For',
+          data: seasonGames.map(g=>g.teamScore),
+          borderWidth:3,
+          tension:.35
+        },
+        {
+          label:'Points Against',
+          data: seasonGames.map(g=>g.oppScore),
+          borderDash:[6,6],
+          borderWidth:2,
+          tension:.35
+        }
       ]
     },
-    options:{responsive:true}
+    options:{ responsive:true }
   });
 }
 
 function renderTable(){
-  const tb=document.getElementById('gamesBody');
-  tb.innerHTML='';
+  const tb = document.getElementById('gamesBody');
+  tb.innerHTML = '';
+
   seasonGames.forEach(g=>{
-    const m=g.teamScore-g.oppScore;
-    tb.innerHTML+=`
+    const m = g.teamScore - g.oppScore;
+    tb.innerHTML += `
       <tr>
         <td>G${g.game}</td>
         <td>${g.opponent}</td>
         <td>${g.teamScore}-${g.oppScore}</td>
-        <td class="${m>0?'pos':'neg'}">${m>0?'+':''}${m}</td>
-      </tr>`;
+        <td class="${m > 0 ? 'pos' : 'neg'}">
+          ${m > 0 ? '+' : ''}${m}
+        </td>
+      </tr>
+    `;
   });
 }
 
+/* ✅ THIS is the only place this should exist */
 document.addEventListener('DOMContentLoaded', loadSeason);
 </script>
+
 </body>
 </html>
