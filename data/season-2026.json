@@ -29,14 +29,18 @@
   },
   {
     "game": 5,
-    "opponent": "Bentleigh Lakers Flame",
-    "teamScore": 26,
-    "oppScore": 29,
-    "result": "L"
+    "opponent": "Vampire Wolves U14 Boys",
+    "teamScore": 14,
+    "oppScore": 34,
+    "result": "L",
+    "halves": {
+      "h1": { "team": 8, "opp": 12 },
+      "h2": { "team": 6, "opp": 22 }
+    }
   },
   {
     "game": 6,
-    "opponent": "Lakers U14 Boys Flame",
+    "opponent": "Bentleigh Lakers Flame",
     "teamScore": 26,
     "oppScore": 29,
     "result": "L",
