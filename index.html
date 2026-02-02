@@ -157,7 +157,9 @@ async function loadSeason(){
     console.error('DATA LOAD ERROR:', err);
   }
 }
-
+document.addEventListener('DOMContentLoaded', loadSeason);
+  }
+}
 function renderAll(){
   computeSnapshot();
   renderChart();
@@ -212,7 +214,7 @@ function renderTable(){
   });
 }
 
-loadSeason();
+document.addEventListener('DOMContentLoaded', loadSeason);
 </script>
 </body>
 </html>
