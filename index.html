@@ -148,7 +148,7 @@ let chart;
 
 async function loadSeason(){
   try{
-    const res = await fetch('/Team-Performance-Dashboard/data/season-2026.json');
+    const res = await fetch('./data/season-2026.json');
     if(!res.ok) throw new Error('JSON not found');
 
     seasonGames = await res.json();
