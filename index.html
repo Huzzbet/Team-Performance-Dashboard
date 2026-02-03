@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>U14 Season Analytics Dashboard</title>
+<title>U14 Game Dashboard — NBA Style</title>
 
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -15,225 +16,807 @@
   --border:rgba(255,255,255,.10);
   --text:#e8eefc;
   --muted:#9fb0d0;
+
   --green:#2bd47d;
+  --amber:#ffd166;
   --red:#ff5c7a;
-  --radius:22px;
-  --shadow:0 24px 60px rgba(0,0,0,.55);
+  --accent:#6ee7ff;
+
+  --radius:20px;
+  --shadow:0 20px 55px rgba(0,0,0,.55);
   --font:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:var(--font);
   color:var(--text);
   background:
-    radial-gradient(1200px 600px at 20% 0%, rgba(110,231,255,.14), transparent 60%),
-    linear-gradient(180deg, var(--bg1), var(--bg0));
-  min-height:100vh;
+    radial-gradient(1000px 500px at 15% 10%, rgba(110,231,255,.18), transparent 60%),
+    radial-gradient(900px 480px at 85% 18%, rgba(255,92,122,.12), transparent 60%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
 }
 
-#app{
-  max-width:1200px;
+.wrap{
+  max-width:1100px;
   margin:0 auto;
-  padding:20px 14px 80px;
+  padding:18px 14px 40px;
 }
 
-.card{
-  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.brand h1{
+  margin:0;
+  font-size:16px;
+  letter-spacing:.02em;
+}
+.brand .sub{
+  font-size:12px;
+  color:var(--muted);
+}
+.controls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.btn{
+  appearance:none;
+  border:1px solid rgba(110,231,255,.25);
+  background:rgba(110,231,255,.08);
+  color:var(--text);
+  padding:9px 12px;
+  border-radius:12px;
+  font-weight:800;
+  font-size:12px;
+  cursor:pointer;
+}
+.btn:active{ transform:translateY(1px); }
+.select{
   border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:16px;
-  margin-bottom:18px;
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+  padding:9px 10px;
+  border-radius:12px;
+  font-weight:800;
+  font-size:12px;
 }
-
-h1{margin:0;font-size:22px}
-h2{margin:0 0 6px;font-size:16px}
-.sub{color:var(--muted);font-size:13px}
 
 .grid{
   display:grid;
-  gap:18px;
+  grid-template-columns: 1.2fr .8fr;
+  gap:14px;
+}
+@media (max-width: 940px){
+  .grid{ grid-template-columns:1fr; }
 }
 
-@media(min-width:768px){
-  .grid{grid-template-columns:1.3fr .7fr}
+.card{
+  background:rgba(11,25,50,.92);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
 }
 
-.snapshot-grid{
+.card .hd{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.card .hd h2{
+  margin:0;
+  font-size:13px;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  color:rgba(232,238,252,.92);
+}
+.badges{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+}
+.badge.win{ border-color:rgba(43,212,125,.35); background:rgba(43,212,125,.10); color:var(--green); }
+.badge.close{ border-color:rgba(255,209,102,.35); background:rgba(255,209,102,.10); color:var(--amber); }
+.badge.alert{ border-color:rgba(255,92,122,.35); background:rgba(255,92,122,.10); color:var(--red); }
+
+.content{ padding:14px 16px 16px; }
+
+.headerScore{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns: 1fr auto 1fr;
+  align-items:center;
+  gap:10px;
+}
+.team{
+  display:flex;
+  align-items:center;
   gap:12px;
 }
-
-.snapshot{
-  background:rgba(0,0,0,.25);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:14px;
+.logo{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  color:rgba(232,238,252,.85);
+}
+.team .name{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.team .name .t{
+  font-weight:900;
+  font-size:14px;
+}
+.team .name .s{
+  font-size:12px;
+  color:var(--muted);
+}
+.score{
+  text-align:center;
+}
+.score .big{
+  font-size:40px;
+  font-weight:1000;
+  letter-spacing:.02em;
+  line-height:1.0;
+}
+.score .meta{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--muted);
+}
+hr.sep{
+  border:0;
+  border-top:1px solid rgba(255,255,255,.08);
+  margin:14px 0;
 }
 
-.snapshot .label{
+.twoCol{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+@media (max-width: 560px){
+  .twoCol{ grid-template-columns:1fr; }
+}
+
+.kpi{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:12px 12px;
+  background:rgba(255,255,255,.04);
+}
+.kpi .label{
   font-size:11px;
   color:var(--muted);
   text-transform:uppercase;
-}
-
-.snapshot .value{
-  font-size:22px;
+  letter-spacing:.04em;
   font-weight:900;
-  margin-top:4px;
+}
+.kpi .value{
+  margin-top:6px;
+  font-size:20px;
+  font-weight:1000;
+}
+.kpi .hint{
+  margin-top:6px;
+  font-size:12px;
+  color:rgba(232,238,252,.82);
 }
 
-table{
+.table{
   width:100%;
-  border-collapse:collapse;
-  margin-top:12px;
+  border-collapse:separate;
+  border-spacing:0;
+  overflow:hidden;
 }
-
-th,td{
-  padding:10px;
-  border-bottom:1px solid rgba(255,255,255,.08);
+.table th, .table td{
+  padding:10px 10px;
   font-size:13px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.table th{
+  text-align:left;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--muted);
+}
+.table td.num, .table th.num{ text-align:right; font-variant-numeric:tabular-nums; }
+.trail{
+  color:rgba(232,238,252,.86);
+  font-size:12px;
+}
+.tag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.05);
+}
+.tag.hot{ border-color:rgba(110,231,255,.40); background:rgba(110,231,255,.10); color:var(--accent); }
+.tag.ok{ border-color:rgba(43,212,125,.35); background:rgba(43,212,125,.10); color:var(--green); }
+.tag.warn{ border-color:rgba(255,209,102,.35); background:rgba(255,209,102,.10); color:var(--amber); }
+.tag.danger{ border-color:rgba(255,92,122,.35); background:rgba(255,92,122,.10); color:var(--red); }
+
+.meterRow{
+  display:grid;
+  grid-template-columns: 1fr 3fr auto;
+  gap:10px;
+  align-items:center;
+  padding:8px 0;
+  border-bottom:1px dashed rgba(255,255,255,.08);
+}
+.meterRow:last-child{ border-bottom:0; }
+.meterName{ font-weight:900; font-size:13px; }
+.meterBar{
+  height:10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+}
+.meterFill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+}
+.meterVal{
+  font-variant-numeric:tabular-nums;
+  font-weight:1000;
+  font-size:12px;
+  color:rgba(232,238,252,.85);
 }
 
-th{color:var(--muted);text-align:left}
-.pos{color:var(--green)}
-.neg{color:var(--red)}
+.smallNote{
+  font-size:12px;
+  color:rgba(232,238,252,.80);
+  line-height:1.35;
+}
+
+.canvasWrap{
+  padding:12px 14px 14px;
+}
+canvas{ width:100%; height:260px; }
+
+.footerNote{
+  margin-top:14px;
+  font-size:12px;
+  color:rgba(232,238,252,.70);
+}
+.mono{ font-family:var(--mono); }
 </style>
 </head>
 
 <body>
-<div id="app">
-
-  <section class="card">
-    <h1>U14 Season Analytics Dashboard</h1>
-    <div class="sub">Lakers U14 Boys Copper · Full Season Overview</div>
-  </section>
-
-  <div class="grid">
-    <section class="card">
-      <h2>Season Trend</h2>
-      <canvas id="trendChart" height="280"></canvas>
-    </section>
-
-    <section class="card">
-      <h2>Season Snapshot</h2>
-      <div class="snapshot-grid">
-        <div class="snapshot"><div class="label">Record</div><div class="value" id="rec">—</div></div>
-        <div class="snapshot"><div class="label">Avg Margin</div><div class="value" id="avg">—</div></div>
-        <div class="snapshot"><div class="label">Points For</div><div class="value" id="pf">—</div></div>
-        <div class="snapshot"><div class="label">Points Against</div><div class="value" id="pa">—</div></div>
-      </div>
-    </section>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <h1>U14 Game Dashboard</h1>
+      <div class="sub">NBA-style box score + fouls + momentum panels</div>
+    </div>
+    <div class="controls">
+      <select id="gameSelect" class="select" title="Select game"></select>
+      <button class="btn" id="btnExport">Export Game JSON</button>
+      <button class="btn" id="btnDemoAdd">Add Demo Game</button>
+    </div>
   </div>
 
-  <section class="card">
-    <h2>Game Results</h2>
-    <table>
-      <thead>
-        <tr><th>Game</th><th>Opponent</th><th>Score</th><th>Margin</th></tr>
-      </thead>
-      <tbody id="gamesBody"></tbody>
-    </table>
-  </section>
+  <div class="grid">
+    <!-- LEFT COLUMN -->
+    <div class="card" id="cardHeader">
+      <div class="hd">
+        <h2>Game Summary</h2>
+        <div class="badges" id="summaryBadges"></div>
+      </div>
+      <div class="content">
+        <div class="headerScore" id="headerScore"></div>
 
+        <hr class="sep"/>
+
+        <div class="twoCol">
+          <div class="kpi">
+            <div class="label">Primary scorer</div>
+            <div class="value" id="kpiPrimary">—</div>
+            <div class="hint" id="kpiPrimaryHint">—</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Foul trouble</div>
+            <div class="value" id="kpiFoul">—</div>
+            <div class="hint" id="kpiFoulHint">—</div>
+          </div>
+        </div>
+
+        <div class="footerNote" id="autoInsights"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="card">
+      <div class="hd">
+        <h2>Team Discipline</h2>
+        <div class="badges" id="disciplineBadges"></div>
+      </div>
+      <div class="content" id="disciplinePanel"></div>
+    </div>
+
+    <!-- LEFT COLUMN - Halves -->
+    <div class="card">
+      <div class="hd">
+        <h2>Halves</h2>
+        <div class="trail" id="halvesTrail">—</div>
+      </div>
+      <div class="canvasWrap">
+        <canvas id="halvesChart"></canvas>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN - Scoring Distribution -->
+    <div class="card">
+      <div class="hd">
+        <h2>Scoring Share</h2>
+        <div class="trail" id="shareTrail">—</div>
+      </div>
+      <div class="canvasWrap">
+        <canvas id="shareChart"></canvas>
+      </div>
+    </div>
+
+    <!-- LEFT COLUMN - Box Score -->
+    <div class="card" style="grid-column:1 / -1;">
+      <div class="hd">
+        <h2>Player Box Score</h2>
+        <div class="trail">PTS, Fouls, Status, Impact (PTS − Fouls)</div>
+      </div>
+      <div class="content" id="boxScoreWrap"></div>
+    </div>
+
+    <!-- LEFT COLUMN - Foul Risk -->
+    <div class="card">
+      <div class="hd">
+        <h2>Foul Risk Meter</h2>
+        <div class="trail">0–1 🟢, 2–3 🟡, 4+ 🔴</div>
+      </div>
+      <div class="content" id="foulMeter"></div>
+    </div>
+
+    <!-- RIGHT COLUMN - Momentum -->
+    <div class="card">
+      <div class="hd">
+        <h2>Momentum</h2>
+        <div class="trail">Simple H1/H2 flow (placeholder until play-by-play)</div>
+      </div>
+      <div class="canvasWrap">
+        <canvas id="momentumChart"></canvas>
+      </div>
+      <div class="content">
+        <div class="smallNote" id="momentumNote"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-let seasonGames = [];
-let chart;
+/* ==========================
+   1) DATA STORE
+   ========================== */
 
-async function loadSeason(){
-  try{
-    const res = await fetch('./data/season-2026.json');
-    if(!res.ok) throw new Error('JSON not found');
-
-    seasonGames = await res.json();
-    if(!Array.isArray(seasonGames)) {
-      throw new Error('JSON is not an array');
-    }
-
-    renderAll();
-  }catch(err){
-    console.error('DATA LOAD ERROR:', err);
+const games = [
+  {
+    gameId: 10,
+    date: "2026-01-31",
+    opponent: "Mountain Wolves U14 Boys",
+    result: "W",
+    score: { lakers: 29, opponent: 25 },
+    halves: {
+      H1: { lakers: 9, opponent: 7 },
+      H2: { lakers: 20, opponent: 18 }
+    },
+    players: [
+      { name: "Archer Kenny", points: 7, fouls: 1 },
+      { name: "Bill Pham", points: 4, fouls: 3 },
+      { name: "Thomas O'Sullivan", points: 12, fouls: 0 },
+      { name: "Tate Power", points: 3, fouls: 4 },
+      { name: "Lior Rizvash", points: 3, fouls: 2 },
+      { name: "Rodion Prystupa", points: 0, fouls: 0 }
+    ]
   }
+];
+
+const TEAM_NAME = "Lakers U14 Boys Copper";
+const TEAM_ABBR = "LAK";
+const OPP_ABBR  = "WOL";
+
+/* ==========================
+   2) UTILITIES
+   ========================== */
+
+const $ = (sel) => document.querySelector(sel);
+
+function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+function pct(n, d){
+  if(!d) return 0;
+  return Math.round((n/d)*100);
 }
 
-function renderAll(){
-  computeSnapshot();
-  renderChart();
-  renderTable();
+function formatDateISO(iso){
+  // simple: YYYY-MM-DD -> Sat 31 Jan 2026 (approx, no locale heavy)
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString(undefined, { weekday:"short", day:"2-digit", month:"short", year:"numeric" });
 }
 
-function computeSnapshot(){
-  let wins = 0, losses = 0, pf = 0, pa = 0;
-
-  seasonGames.forEach(g=>{
-    pf += g.teamScore;
-    pa += g.oppScore;
-    g.teamScore > g.oppScore ? wins++ : losses++;
-  });
-
-  document.getElementById('rec').textContent = `${wins}-${losses}`;
-  document.getElementById('avg').textContent =
-    ((pf - pa) / seasonGames.length).toFixed(1);
-  document.getElementById('pf').textContent = pf;
-  document.getElementById('pa').textContent = pa;
+function statusTag(player, teamTotalPoints){
+  const share = teamTotalPoints ? (player.points / teamTotalPoints) : 0;
+  if (share >= 0.40) return { label:"🔥 Primary", cls:"hot" };
+  if (player.fouls >= 4) return { label:"🚨 Trouble", cls:"danger" };
+  if (player.fouls === 3) return { label:"⚠️ Watch", cls:"warn" };
+  return { label:"🟢 OK", cls:"ok" };
 }
 
-function renderChart(){
-  const ctx = document.getElementById('trendChart');
-  if(chart) chart.destroy();
+function foulColor(f){
+  if (f >= 4) return "var(--red)";
+  if (f >= 2) return "var(--amber)";
+  return "var(--green)";
+}
 
-  chart = new Chart(ctx,{
-    type:'line',
-    data:{
-      labels: seasonGames.map(g => `G${g.game}`),
-      datasets:[
-        {
-          label:'Points For',
-          data: seasonGames.map(g=>g.teamScore),
-          borderWidth:3,
-          tension:.35
-        },
-        {
-          label:'Points Against',
-          data: seasonGames.map(g=>g.oppScore),
-          borderDash:[6,6],
-          borderWidth:2,
-          tension:.35
-        }
+function badgeHTML(text, cls){
+  return `<span class="badge ${cls||""}">${text}</span>`;
+}
+
+function buildSelect(){
+  const sel = $("#gameSelect");
+  sel.innerHTML = games
+    .slice()
+    .sort((a,b)=> a.gameId - b.gameId)
+    .map(g => `<option value="${g.gameId}">Game ${g.gameId} vs ${g.opponent}</option>`)
+    .join("");
+  sel.value = games[0].gameId;
+}
+
+/* ==========================
+   3) CHARTS (instances)
+   ========================== */
+
+let halvesChart, shareChart, momentumChart;
+
+function destroyChart(ch){
+  if(ch){ ch.destroy(); }
+}
+
+/* ==========================
+   4) RENDER FUNCTIONS
+   ========================== */
+
+function renderGame(gameId){
+  const game = games.find(g => String(g.gameId) === String(gameId));
+  if(!game) return;
+
+  const teamPts = game.score.lakers;
+  const oppPts  = game.score.opponent;
+  const margin  = teamPts - oppPts;
+
+  // --- BADGES (summary) ---
+  const badges = [];
+  badges.push(badgeHTML(game.result === "W" ? "WIN" : "LOSS", game.result === "W" ? "win" : "alert"));
+  if (Math.abs(margin) <= 5) badges.push(badgeHTML("CLOSE GAME", "close"));
+  if (teamPts >= 30) badges.push(badgeHTML("HIGH SCORING", ""));
+  $("#summaryBadges").innerHTML = badges.join("");
+
+  // --- HEADER SCORE ---
+  $("#headerScore").innerHTML = `
+    <div class="team">
+      <div class="logo">${TEAM_ABBR}</div>
+      <div class="name">
+        <div class="t">${TEAM_NAME}</div>
+        <div class="s">${formatDateISO(game.date)}</div>
+      </div>
+    </div>
+
+    <div class="score">
+      <div class="big">${teamPts} <span style="opacity:.55">—</span> ${oppPts}</div>
+      <div class="meta">${game.result === "W" ? `Won by ${margin}` : `Lost by ${Math.abs(margin)}` } | vs ${game.opponent}</div>
+    </div>
+
+    <div class="team" style="justify-content:flex-end; text-align:right;">
+      <div class="name">
+        <div class="t">${game.opponent}</div>
+        <div class="s">Opponent</div>
+      </div>
+      <div class="logo">${OPP_ABBR}</div>
+    </div>
+  `;
+
+  // --- PRIMARY SCORER KPI ---
+  const top = game.players.slice().sort((a,b)=> b.points - a.points)[0];
+  const topShare = pct(top.points, teamPts);
+  $("#kpiPrimary").textContent = `${top.name} — ${top.points} pts`;
+  $("#kpiPrimaryHint").textContent = `${topShare}% of team scoring`;
+
+  // --- FOUL TROUBLE KPI ---
+  const foulLeader = game.players.slice().sort((a,b)=> b.fouls - a.fouls)[0];
+  $("#kpiFoul").textContent = `${foulLeader.name} — ${foulLeader.fouls} fouls`;
+  $("#kpiFoulHint").textContent = foulLeader.fouls >= 4 ? "High foul risk — manage rotations" : (foulLeader.fouls === 3 ? "Monitor foul trouble" : "Team discipline solid");
+
+  // --- AUTO INSIGHTS ---
+  const zeroFoulScorers = game.players.filter(p => p.points > 0 && p.fouls === 0).map(p => p.name);
+  const teamFouls = game.players.reduce((s,p)=> s + (p.fouls||0), 0);
+  const insights = [];
+  insights.push(`<span class="mono">Team Fouls:</span> <b>${teamFouls}</b>`);
+  insights.push(`<span class="mono">Primary Share:</span> <b>${topShare}%</b>`);
+  if (zeroFoulScorers.length) insights.push(`<span class="mono">Zero-foul scorers:</span> <b>${zeroFoulScorers.join(", ")}</b>`);
+  if (Math.abs(margin) <= 5 && game.result === "W") insights.push(`<b style="color:var(--green)">Closed out a tight game without excessive fouling.</b>`);
+  $("#autoInsights").innerHTML = insights.join(" &nbsp; • &nbsp; ");
+
+  // --- TEAM DISCIPLINE PANEL ---
+  const avgFouls = (teamFouls / Math.max(1, game.players.length)).toFixed(1);
+  const disciplineBadges = [];
+  if (teamFouls <= 10) disciplineBadges.push(badgeHTML("DISCIPLINED", "win"));
+  if (teamFouls >= 14) disciplineBadges.push(badgeHTML("FOUL HEAVY", "alert"));
+  $("#disciplineBadges").innerHTML = disciplineBadges.join("");
+
+  $("#disciplinePanel").innerHTML = `
+    <div class="twoCol">
+      <div class="kpi">
+        <div class="label">Total team fouls</div>
+        <div class="value">${teamFouls}</div>
+        <div class="hint">Lower is better for closing games</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Avg fouls / player</div>
+        <div class="value">${avgFouls}</div>
+        <div class="hint">Track season trend over time</div>
+      </div>
+    </div>
+    <hr class="sep"/>
+    <div class="smallNote">
+      <b>Coach note:</b> this panel becomes powerful when you add <span class="mono">minutes</span>.
+      Then you can show <span class="mono">fouls per minute</span> + foul-out risk projections.
+    </div>
+  `;
+
+  // --- HALVES CHART ---
+  $("#halvesTrail").textContent = `H1: ${game.halves.H1.lakers}-${game.halves.H1.opponent}  •  H2: ${game.halves.H2.lakers}-${game.halves.H2.opponent}`;
+
+  destroyChart(halvesChart);
+  halvesChart = new Chart($("#halvesChart"), {
+    type: "bar",
+    data: {
+      labels: ["H1", "H2"],
+      datasets: [
+        { label: TEAM_ABBR, data: [game.halves.H1.lakers, game.halves.H2.lakers] },
+        { label: OPP_ABBR,  data: [game.halves.H1.opponent, game.halves.H2.opponent] }
       ]
     },
-    options:{ responsive:true }
+    options: {
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{ labels:{ color:"#e8eefc" } },
+        tooltip:{ enabled:true }
+      },
+      scales:{
+        x:{ ticks:{ color:"#9fb0d0" }, grid:{ color:"rgba(255,255,255,.08)" } },
+        y:{ ticks:{ color:"#9fb0d0" }, grid:{ color:"rgba(255,255,255,.08)" }, beginAtZero:true }
+      }
+    }
   });
-}
 
-function renderTable(){
-  const tb = document.getElementById('gamesBody');
-  tb.innerHTML = '';
+  // --- SCORING SHARE DONUT ---
+  const shareLabels = game.players.map(p => p.name);
+  const shareData = game.players.map(p => p.points);
+  $("#shareTrail").textContent = `${top.name}: ${topShare}% scoring share`;
 
-  seasonGames.forEach(g=>{
-    const m = g.teamScore - g.oppScore;
-    tb.innerHTML += `
+  destroyChart(shareChart);
+  shareChart = new Chart($("#shareChart"), {
+    type:"doughnut",
+    data:{
+      labels: shareLabels,
+      datasets: [{ data: shareData }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:"bottom", labels:{ color:"#e8eefc", boxWidth:10 } },
+        tooltip:{ enabled:true }
+      },
+      cutout:"62%"
+    }
+  });
+
+  // --- PLAYER BOX SCORE TABLE ---
+  const sorted = game.players.slice().sort((a,b)=> (b.points - a.points) || (a.fouls - b.fouls));
+  const rows = sorted.map(p=>{
+    const tag = statusTag(p, teamPts);
+    const impact = (p.points||0) - (p.fouls||0);
+    return `
       <tr>
-        <td>G${g.game}</td>
-        <td>${g.opponent}</td>
-        <td>${g.teamScore}-${g.oppScore}</td>
-        <td class="${m > 0 ? 'pos' : 'neg'}">
-          ${m > 0 ? '+' : ''}${m}
-        </td>
+        <td><b>${p.name}</b></td>
+        <td class="num"><b>${p.points}</b></td>
+        <td class="num">${p.fouls}</td>
+        <td class="num"><span class="tag ${tag.cls}">${tag.label}</span></td>
+        <td class="num"><b>${impact >= 0 ? "+"+impact : impact}</b></td>
       </tr>
     `;
+  }).join("");
+
+  $("#boxScoreWrap").innerHTML = `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th class="num">PTS</th>
+          <th class="num">F</th>
+          <th class="num">Status</th>
+          <th class="num">Impact</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr>
+          <th>Total</th>
+          <th class="num">${teamPts}</th>
+          <th class="num">${teamFouls}</th>
+          <th class="num">—</th>
+          <th class="num">—</th>
+        </tr>
+      </tfoot>
+    </table>
+  `;
+
+  // --- FOUL RISK METER ---
+  const meter = sorted
+    .slice()
+    .sort((a,b)=> b.fouls - a.fouls)
+    .map(p=>{
+      const w = clamp((p.fouls/5)*100, 0, 100); // 5 is the foul-out reference in many junior formats; adjust if needed
+      return `
+        <div class="meterRow">
+          <div class="meterName">${p.name}</div>
+          <div class="meterBar">
+            <div class="meterFill" style="width:${w}%; background:${foulColor(p.fouls)}"></div>
+          </div>
+          <div class="meterVal">${p.fouls}</div>
+        </div>
+      `;
+    }).join("");
+
+  $("#foulMeter").innerHTML = `
+    ${meter}
+    <div style="margin-top:10px" class="smallNote">
+      <b>Tip:</b> Add <span class="mono">minutes</span> to unlock fouls/min + projected foul-out risk in real time.
+    </div>
+  `;
+
+  // --- MOMENTUM (simple synthetic line from halves) ---
+  // Build a 0..N timeline that ends at final margin
+  const m1 = game.halves.H1.lakers - game.halves.H1.opponent;  // margin at half
+  const m2 = margin;                                           // final margin
+  const points = [
+    {x:0, y:0},
+    {x:1, y:m1},
+    {x:2, y:m2}
+  ];
+  const note = (m1 >= 0 && m2 >= 0)
+    ? `Stayed in front after half-time (margin +${m1}), finished strong to win by +${m2}.`
+    : `Trailed at half-time (${m1}), then flipped momentum to win by +${m2}.`;
+
+  $("#momentumNote").textContent = note;
+
+  destroyChart(momentumChart);
+  momentumChart = new Chart($("#momentumChart"), {
+    type:"line",
+    data:{
+      labels:["Start","Half","Final"],
+      datasets:[{
+        label:"Margin (Lakers − Opponent)",
+        data:[0, m1, m2],
+        tension:0.15,
+        fill:true
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{ labels:{ color:"#e8eefc" } },
+        tooltip:{ enabled:true }
+      },
+      scales:{
+        x:{ ticks:{ color:"#9fb0d0" }, grid:{ color:"rgba(255,255,255,.08)" } },
+        y:{ ticks:{ color:"#9fb0d0" }, grid:{ color:"rgba(255,255,255,.08)" }, suggestedMin:-10, suggestedMax:10 }
+      }
+    }
   });
 }
 
-/* ✅ THIS is the only place this should exist */
-document.addEventListener('DOMContentLoaded', loadSeason);
-</script>
+/* ==========================
+   5) EVENTS
+   ========================== */
 
+$("#gameSelect")?.addEventListener("change", (e)=> renderGame(e.target.value));
+
+$("#btnExport")?.addEventListener("click", ()=>{
+  const id = $("#gameSelect").value;
+  const game = games.find(g => String(g.gameId) === String(id));
+  if(!game) return;
+
+  const blob = new Blob([JSON.stringify(game, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `game_${game.gameId}_stats.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+$("#btnDemoAdd")?.addEventListener("click", ()=>{
+  const nextId = Math.max(...games.map(g=>g.gameId)) + 1;
+  games.push({
+    gameId: nextId,
+    date: "2026-02-07",
+    opponent: "Demo Opponent U14",
+    result: "L",
+    score: { lakers: 24, opponent: 31 },
+    halves: { H1:{ lakers: 10, opponent: 14 }, H2:{ lakers: 14, opponent: 17 } },
+    players: [
+      { name:"Player A", points:8, fouls:2 },
+      { name:"Player B", points:6, fouls:3 },
+      { name:"Player C", points:4, fouls:0 },
+      { name:"Player D", points:3, fouls:4 },
+      { name:"Player E", points:3, fouls:1 },
+      { name:"Player F", points:0, fouls:0 }
+    ]
+  });
+  buildSelect();
+  $("#gameSelect").value = nextId;
+  renderGame(nextId);
+});
+
+/* ==========================
+   6) INIT
+   ========================== */
+
+buildSelect();
+renderGame(games[0].gameId);
+</script>
 </body>
 </html>
