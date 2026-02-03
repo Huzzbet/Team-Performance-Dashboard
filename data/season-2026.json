@@ -1,104 +1,195 @@
-[
-  {
-    "game": 1,
-    "opponent": "St Kilda Warriors BRAVE U14 Boys",
-    "teamScore": 30,
-    "oppScore": 17,
-    "result": "W"
-  },
-  {
-    "game": 2,
-    "opponent": "Dark Wolves U14 Boys",
-    "teamScore": 27,
-    "oppScore": 33,
-    "result": "L"
-  },
-  {
-    "game": 3,
-    "opponent": "Vampire Wolves U14 Boys",
-    "teamScore": 30,
-    "oppScore": 23,
-    "result": "W"
-  },
-  {
-    "game": 4,
-    "opponent": "St Kilda Warriors BRAVE U14 Boys",
-    "teamScore": 30,
-    "oppScore": 17,
-    "result": "W"
-  },
-  {
-    "game": 5,
-    "opponent": "Vampire Wolves U14 Boys",
-    "teamScore": 14,
-    "oppScore": 34,
-    "result": "L",
-    "halves": {
-      "h1": { "team": 8, "opp": 12 },
-      "h2": { "team": 6, "opp": 22 }
-    }
-  },
-  {
-    "game": 6,
-    "opponent": "Bentleigh Lakers Flame",
-    "teamScore": 26,
-    "oppScore": 29,
-    "result": "L",
-    "halves": {
-      "h1": { "team": 7, "opp": 15 },
-      "h2": { "team": 19, "opp": 14 }
-    }
-  },
-  {
-    "game": 7,
-    "opponent": "Oakleigh Raptors U14 Boys Orange",
-    "teamScore": 28,
-    "oppScore": 45,
-    "result": "L",
-    "halves": {
-      "h1": { "team": 16, "opp": 16 },
-      "h2": { "team": 12, "opp": 29 }
-    }
-  },
-  {
-    "game": 8,
-    "opponent": "Lakers U14 Boys Flame",
-    "teamScore": 26,
-    "oppScore": 29,
-    "result": "L",
-    "halves": {
-      "h1": { "team": 7, "opp": 15 },
-      "h2": { "team": 19, "opp": 14 }
-    }
-  },
-  {
-    "game": 9,
-    "opponent": "Carnegie Chargers U14 Boys Bears",
-    "teamScore": 25,
-    "oppScore": 30,
-    "result": "L",
-    "halves": {
-      "h1": { "team": 4, "opp": 13 },
-      "h2": { "team": 21, "opp": 17 }
-    }
-  },
-  {
-    "game": 10,
-    "opponent": "Mountain Wolves U14 Boys",
-    "teamScore": 29,
-    "oppScore": 25,
-    "result": "W",
-    "halves": {
-      "h1": { "team": 9, "opp": 7 },
-      "h2": { "team": 20, "opp": 18 }
+{
+  "team": "Lakers U14 Boys Copper",
+  "season": "2026",
+  "games": [
+    {
+      "gameId": 1,
+      "round": 1,
+      "date": "2025-11-15",
+      "opponent": "Unknown",
+      "result": "W",
+      "score": { "lakers": 30 },
+      "teamTotals": { "points": 30, "fouls": 16 },
+      "players": [
+        { "name": "Archer Kenny", "pts": 5, "fouls": 1 },
+        { "name": "Bill Pham", "pts": 4, "fouls": 4 },
+        { "name": "Jacob Nguyen", "pts": 0, "fouls": 0 },
+        { "name": "Tate Power", "pts": 0, "fouls": 1 },
+        { "name": "Ethan Poon", "pts": 12, "fouls": 2 },
+        { "name": "Lior Rizvash", "pts": 4, "fouls": 3 },
+        { "name": "Rodion Prystupa", "pts": 5, "fouls": 5 }
+      ]
     },
-    "players": [
-      { "name": "Thomas O'Sullivan", "number": 22, "points": 12, "fouls": 0 },
-      { "name": "Archer Kenny", "number": 16, "points": 7, "fouls": 1 },
-      { "name": "Bill Pham", "number": 20, "points": 4, "fouls": 3 },
-      { "name": "Tate Power", "number": 72, "points": 3, "fouls": 4 },
-      { "name": "Lior Rizvash", "number": 93, "points": 3, "fouls": 2 },
-      { "name": "Rodion Prystupa", "number": 94, "points": 0, "fouls": 0 }
-    ]
-  }
-]
+    {
+      "gameId": 2,
+      "round": 2,
+      "date": "2025-11-22",
+      "opponent": "Unknown",
+      "result": "W",
+      "score": { "lakers": 27 },
+      "teamTotals": { "points": 27, "fouls": 19 },
+      "players": [
+        { "name": "Archer Kenny", "pts": 4, "fouls": 1 },
+        { "name": "Bill Pham", "pts": 2, "fouls": 4 },
+        { "name": "Thomas O'Sullivan", "pts": 11, "fouls": 4 },
+        { "name": "Jacob Nguyen", "pts": 0, "fouls": 0 },
+        { "name": "Tate Power", "pts": 2, "fouls": 2 },
+        { "name": "Ethan Poon", "pts": 4, "fouls": 1 },
+        { "name": "Lior Rizvash", "pts": 2, "fouls": 4 },
+        { "name": "Rodion Prystupa", "pts": 2, "fouls": 3 }
+      ]
+    },
+    {
+      "gameId": 3,
+      "round": 3,
+      "date": "2025-11-29",
+      "opponent": "Unknown",
+      "result": "W",
+      "score": { "lakers": 30 },
+      "teamTotals": { "points": 30, "fouls": 3 },
+      "players": [
+        { "name": "Archer Kenny", "pts": 0, "fouls": 0 },
+        { "name": "Bill Pham", "pts": 4, "fouls": 0 },
+        { "name": "Thomas O'Sullivan", "pts": 11, "fouls": 0 },
+        { "name": "Jacob Nguyen", "pts": 0, "fouls": 0 },
+        { "name": "Tate Power", "pts": 2, "fouls": 0 },
+        { "name": "Ethan Poon", "pts": 6, "fouls": 1 },
+        { "name": "Lior Rizvash", "pts": 3, "fouls": 0 },
+        { "name": "Rodion Prystupa", "pts": 4, "fouls": 2 }
+      ]
+    },
+    {
+      "gameId": 4,
+      "round": 4,
+      "date": "2025-12-06",
+      "opponent": "Unknown",
+      "result": "W",
+      "score": { "lakers": 30 },
+      "teamTotals": { "points": 30, "fouls": 16 },
+      "players": [
+        { "name": "Archer Kenny", "pts": 5, "fouls": 1 },
+        { "name": "Bill Pham", "pts": 4, "fouls": 4 },
+        { "name": "Jacob Nguyen", "pts": 0, "fouls": 0 },
+        { "name": "Tate Power", "pts": 0, "fouls": 1 },
+        { "name": "Ethan Poon", "pts": 12, "fouls": 2 },
+        { "name": "Lior Rizvash", "pts": 4, "fouls": 3 },
+        { "name": "Rodion Prystupa", "pts": 5, "fouls": 5 }
+      ]
+    },
+    {
+      "gameId": 5,
+      "round": 5,
+      "date": "2025-12-13",
+      "opponent": "Unknown",
+      "result": "L",
+      "score": { "lakers": 14 },
+      "teamTotals": { "points": 14, "fouls": 11 },
+      "players": [
+        { "name": "Archer Kenny", "pts": 2, "fouls": 1 },
+        { "name": "Thomas O'Sullivan", "pts": 1, "fouls": 1 },
+        { "name": "Jacob Nguyen", "pts": 0, "fouls": 0 },
+        { "name": "Tate Power", "pts": 0, "fouls": 2 },
+        { "name": "Ethan Poon", "pts": 6, "fouls": 2 },
+        { "name": "Lior Rizvash", "pts": 0, "fouls": 2 },
+        { "name": "Rodion Prystupa", "pts": 5, "fouls": 3 }
+      ]
+    },
+    {
+      "gameId": 6,
+      "round": 6,
+      "date": "2026-01-03",
+      "opponent": "Unknown",
+      "result": "W",
+      "score": { "lakers": 26 },
+      "teamTotals": { "points": 26, "fouls": 10 },
+      "players": [
+        { "name": "Archer Kenny", "pts": 5, "fouls": 0 },
+        { "name": "Bill Pham", "pts": 0, "fouls": 0 },
+        { "name": "Thomas O'Sullivan", "pts": 2, "fouls": 0 },
+        { "name": "Jacob Nguyen", "pts": 3, "fouls": 1 },
+        { "name": "Tate Power", "pts": 0, "fouls": 1 },
+        { "name": "Ethan Poon", "pts": 8, "fouls": 0 },
+        { "name": "Lior Rizvash", "pts": 2, "fouls": 4 },
+        { "name": "Rodion Prystupa", "pts": 6, "fouls": 3 }
+      ]
+    },
+    {
+      "gameId": 7,
+      "round": 7,
+      "date": "2026-01-10",
+      "opponent": "Unknown",
+      "result": "W",
+      "score": { "lakers": 26 },
+      "teamTotals": { "points": 26, "fouls": 14 },
+      "players": [
+        { "name": "Archer Kenny", "pts": 0, "fouls": 1 },
+        { "name": "Bill Pham", "pts": 4, "fouls": 4 },
+        { "name": "Thomas O'Sullivan", "pts": 6, "fouls": 1 },
+        { "name": "Jacob Nguyen", "pts": 4, "fouls": 1 },
+        { "name": "Ethan Poon", "pts": 4, "fouls": 0 },
+        { "name": "Lior Rizvash", "pts": 2, "fouls": 4 },
+        { "name": "Rodion Prystupa", "pts": 6, "fouls": 3 }
+      ]
+    },
+    {
+      "gameId": 8,
+      "round": 8,
+      "date": "2026-01-17",
+      "opponent": "Unknown",
+      "result": "W",
+      "score": { "lakers": 28 },
+      "teamTotals": { "points": 28, "fouls": 11 },
+      "players": [
+        { "name": "Archer Kenny", "pts": 6, "fouls": 0 },
+        { "name": "Bill Pham", "pts": 2, "fouls": 2 },
+        { "name": "Thomas O'Sullivan", "pts": 6, "fouls": 3 },
+        { "name": "Jacob Nguyen", "pts": 0, "fouls": 0 },
+        { "name": "Tate Power", "pts": 0, "fouls": 1 },
+        { "name": "Ethan Poon", "pts": 10, "fouls": 1 },
+        { "name": "Lior Rizvash", "pts": 0, "fouls": 4 },
+        { "name": "Rodion Prystupa", "pts": 4, "fouls": 0 }
+      ]
+    },
+    {
+      "gameId": 9,
+      "round": 9,
+      "date": "2026-01-24",
+      "opponent": "Unknown",
+      "result": "W",
+      "score": { "lakers": 25 },
+      "teamTotals": {
+        "points": 25,
+        "ft": 2,
+        "twopt": 10,
+        "threept": 1,
+        "fouls": 10
+      },
+      "players": [
+        { "name": "Archer Kenny", "pts": 4, "ft": 0, "twopt": 2, "threept": 0, "fouls": 0 },
+        { "name": "Thomas O'Sullivan", "pts": 11, "ft": 0, "twopt": 4, "threept": 1, "fouls": 2 },
+        { "name": "Jacob Nguyen", "pts": 0, "ft": 0, "twopt": 0, "threept": 0, "fouls": 0 },
+        { "name": "Tate Power", "pts": 0, "ft": 0, "twopt": 0, "threept": 0, "fouls": 1 },
+        { "name": "Ethan Poon", "pts": 4, "ft": 2, "twopt": 1, "threept": 0, "fouls": 2 },
+        { "name": "Lior Rizvash", "pts": 6, "ft": 0, "twopt": 3, "threept": 0, "fouls": 3 },
+        { "name": "Rodion Prystupa", "pts": 0, "ft": 0, "twopt": 0, "threept": 0, "fouls": 2 }
+      ]
+    },
+    {
+      "gameId": 10,
+      "round": 10,
+      "date": "2026-01-31",
+      "opponent": "Mountain Wolves U14 Boys",
+      "result": "W",
+      "score": { "lakers": 29 },
+      "teamTotals": { "points": 29, "fouls": 10 },
+      "players": [
+        { "name": "Archer Kenny", "pts": 7, "fouls": 1 },
+        { "name": "Bill Pham", "pts": 4, "fouls": 3 },
+        { "name": "Thomas O'Sullivan", "pts": 12, "fouls": 0 },
+        { "name": "Tate Power", "pts": 3, "fouls": 4 },
+        { "name": "Lior Rizvash", "pts": 3, "fouls": 2 },
+        { "name": "Rodion Prystupa", "pts": 0, "fouls": 0 }
+      ]
+    }
+  ]
+}
