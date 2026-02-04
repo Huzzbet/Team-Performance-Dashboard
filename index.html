@@ -23,7 +23,6 @@
   --radius:18px;
   --shadow:0 30px 80px rgba(0,0,0,.75);
   --font:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas;
 }
 *{box-sizing:border-box}
 body{
@@ -36,55 +35,171 @@ body{
     linear-gradient(180deg, var(--bg0), var(--bg1));
 }
 .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 40px}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-.brand h1{margin:0;font-size:15px;letter-spacing:.08em;text-transform:uppercase}
-.brand .sub{font-size:12px;color:var(--muted)}
-.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.pills{display:flex;gap:8px;padding:6px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
-.pill{border:0;background:none;color:var(--muted);padding:9px 12px;border-radius:999px;font-weight:900;font-size:12px;cursor:pointer;text-transform:uppercase}
-.pill.active{color:var(--text);background:linear-gradient(135deg, rgba(76,201,240,.22), rgba(155,92,255,.18))}
-.select,.btn{border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text);padding:10px 12px;border-radius:14px;font-weight:900;font-size:12px}
-.btn{background:linear-gradient(135deg, rgba(76,201,240,.14), rgba(155,92,255,.10));cursor:pointer}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.hd{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
-.hd h2{margin:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px
+}
+
+.brand h1{
+  margin:0;
+  font-size:15px;
+  letter-spacing:.08em;
+  text-transform:uppercase
+}
+.brand .sub{font-size:12px;color:var(--muted)}
+
+.controls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center
+}
+
+.pills{
+  display:flex;
+  gap:8px;
+  padding:6px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04)
+}
+.pill{
+  border:0;
+  background:none;
+  color:var(--muted);
+  padding:9px 12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  cursor:pointer;
+  text-transform:uppercase
+}
+.pill.active{
+  color:var(--text);
+  background:linear-gradient(135deg, rgba(76,201,240,.22), rgba(155,92,255,.18))
+}
+
+.select{
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:14px;
+  font-weight:900;
+  font-size:12px
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden
+}
+.hd{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08)
+}
+.hd h2{
+  margin:0;
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase
+}
 .trail{font-size:12px;color:var(--muted)}
 .content{padding:14px 16px 16px}
-.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
-@media(max-width:980px){.grid,.grid2{grid-template-columns:1fr}}
 
-.hero{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;padding:16px;border:1px solid var(--border);border-radius:20px}
+.grid{
+  display:grid;
+  grid-template-columns:1.25fr .75fr;
+  gap:14px
+}
+@media(max-width:980px){
+  .grid{grid-template-columns:1fr}
+}
+
+.hero{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:16px;
+  align-items:center;
+  padding:16px;
+  border:1px solid var(--border);
+  border-radius:20px
+}
 .heroSide{display:flex;gap:12px;align-items:center}
-.heroSide.right{justify-content:flex-end;text-align:right}
-.heroLogo{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--purple))}
-.heroScore{font-size:44px;font-weight:900;text-align:center}
+.heroSide.right{justify-content:flex-end}
+.heroLogo{
+  width:54px;
+  height:54px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  background:linear-gradient(135deg,var(--accent),var(--purple))
+}
+.heroScore{
+  font-size:44px;
+  font-weight:900;
+  text-align:center
+}
 .heroScore span{opacity:.45;padding:0 6px}
-.heroLine{text-align:center;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em}
 
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
-@media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
-.kpi{border:1px solid var(--border);border-radius:16px;padding:12px;background:rgba(255,255,255,.04)}
-.kpi .label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:900}
-.kpi .value{font-size:22px;font-weight:900;margin-top:6px}
-.kpi .hint{font-size:12px;color:rgba(241,245,255,.84);margin-top:6px}
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:12px
+}
+@media(max-width:820px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+.kpi{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:12px;
+  background:rgba(255,255,255,.04)
+}
+.kpi .label{
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  font-weight:900
+}
+.kpi .value{
+  font-size:22px;
+  font-weight:900;
+  margin-top:6px
+}
+.kpi .hint{
+  font-size:12px;
+  color:rgba(241,245,255,.84);
+  margin-top:6px
+}
 
 .table{width:100%;border-collapse:separate;border-spacing:0}
-.table th,.table td{padding:10px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.08)}
-.table th{text-transform:uppercase;font-size:11px;color:var(--muted)}
-.table .num{text-align:right;font-variant-numeric:tabular-nums}
-
-.tag{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:900;border:1px solid var(--border)}
-.tag.hot{color:var(--accent)}
-.tag.ok{color:var(--green)}
-.tag.warn{color:var(--amber)}
-.tag.danger{color:var(--red)}
+.table th,.table td{
+  padding:10px;
+  font-size:13px;
+  border-bottom:1px solid rgba(255,255,255,.08)
+}
+.table th{
+  text-transform:uppercase;
+  font-size:11px;
+  color:var(--muted)
+}
+.table .num{text-align:right}
 
 .view{display:none}
 .view.active{display:block}
 canvas{height:260px}
-.locked{opacity:.45;filter:grayscale(1)}
 </style>
 </head>
 
@@ -102,47 +217,72 @@ canvas{height:260px}
       <button class="pill" id="tabGame">Game</button>
     </div>
     <select id="gameSelect" class="select"></select>
-    <button class="btn" id="btnExportSeason">Export Season JSON</button>
-    <button class="btn" id="btnExportGame">Export Game JSON</button>
   </div>
 </div>
 
 <div class="view active" id="viewSeason">
   <div class="grid">
+
     <div class="card">
       <div class="hd"><h2>Season Overview</h2></div>
       <div class="content">
         <div class="hero" id="seasonHero"></div>
-        <div class="kpis" id="seasonKPIs"></div>
       </div>
     </div>
 
     <div class="card">
-      <div class="hd"><h2>Leaders</h2><div class="trail">Season totals</div></div>
+      <div class="hd">
+        <h2>Leaders</h2>
+        <div class="trail">Season totals</div>
+      </div>
       <div class="content" id="leadersTable"></div>
+    </div>
+
+  </div>
+
+  <!-- 📈 SEASON CHART -->
+  <div class="card" style="margin-top:14px">
+    <div class="hd">
+      <h2>Season Performance</h2>
+      <div class="trail">Points & Fouls by Game</div>
+    </div>
+    <div class="content">
+      <canvas id="seasonChart"></canvas>
     </div>
   </div>
 </div>
 
 <div class="view" id="viewGame">
   <div class="card">
-    <div class="hd"><h2>Game Summary</h2><div id="summaryBadges"></div></div>
+    <div class="hd"><h2>Game Summary</h2></div>
     <div class="content">
       <div class="hero" id="gameHero"></div>
 
       <div class="kpis">
-        <div class="kpi"><div class="label">Primary scorer</div><div class="value" id="kpiPrimary">—</div><div class="hint" id="kpiPrimaryHint">—</div></div>
-        <div class="kpi"><div class="label">Foul trouble</div><div class="value" id="kpiFoul">—</div><div class="hint" id="kpiFoulHint">—</div></div>
-        <div class="kpi"><div class="label">Team points</div><div class="value" id="kpiPts">—</div></div>
-        <div class="kpi"><div class="label">Team fouls</div><div class="value" id="kpiTF">—</div></div>
+        <div class="kpi">
+          <div class="label">Primary scorer</div>
+          <div class="value" id="kpiPrimary">—</div>
+          <div class="hint" id="kpiPrimaryHint">—</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Foul trouble</div>
+          <div class="value" id="kpiFoul">—</div>
+          <div class="hint" id="kpiFoulHint">—</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Team points</div>
+          <div class="value" id="kpiPts">—</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Team fouls</div>
+          <div class="value" id="kpiTF">—</div>
+        </div>
       </div>
 
       <div id="boxScoreWrap" style="margin-top:14px"></div>
     </div>
   </div>
-</div>
-
-<script>
+</div><script>
 /* ================= DATA ================= */
 const SEASON = {
   team:{ name:"Lakers U14 Boys Copper", abbr:"LAK" },
@@ -255,187 +395,104 @@ const SEASON = {
 /* ================= HELPERS ================= */
 const $ = s => document.querySelector(s);
 const safe = n => Number.isFinite(n) ? n : 0;
+const normalizePlayers = g => (g.players||[]).map(p=>({name:p.name,points:safe(p.points),fouls:safe(p.fouls)}));
 
-function normalizePlayers(game){
-  return (game.players || []).map(p => ({
-    name: p.name,
-    points: safe(p.points),
-    fouls: safe(p.fouls)
-  }));
-}
+/* ================= VIEW ================= */
+const setView = v=>{
+  $("#viewSeason").classList.toggle("active",v==="season");
+  $("#viewGame").classList.toggle("active",v==="game");
+  $("#tabSeason").classList.toggle("active",v==="season");
+  $("#tabGame").classList.toggle("active",v==="game");
+};
+$("#tabSeason").onclick=()=>setView("season");
+$("#tabGame").onclick=()=>setView("game");
 
-/* ================= VIEW SWITCH ================= */
-function setView(v){
-  $("#viewSeason").classList.toggle("active", v === "season");
-  $("#viewGame").classList.toggle("active", v === "game");
-  $("#tabSeason").classList.toggle("active", v === "season");
-  $("#tabGame").classList.toggle("active", v === "game");
-}
-
-$("#tabSeason").onclick = () => setView("season");
-$("#tabGame").onclick   = () => setView("game");
-
-/* ================= GAME SELECT ================= */
+/* ================= SELECT ================= */
 function buildSelect(){
-  const sel = $("#gameSelect");
-  sel.innerHTML = SEASON.games.map(g =>
-    `<option value="${g.gameId}">Game ${g.gameId} — ${g.opponent.name}</option>`
-  ).join("");
-  sel.value = SEASON.games[SEASON.games.length - 1].gameId;
+  $("#gameSelect").innerHTML=SEASON.games.map(g=>`<option value="${g.gameId}">Game ${g.gameId} — ${g.opponent.name}</option>`).join("");
+  $("#gameSelect").value=SEASON.games.at(-1).gameId;
 }
 
-/* ================= SEASON RENDER ================= */
+/* ================= SEASON ================= */
 function renderSeason(){
-  const totals = {};
-  let teamTotal = 0;
-
-  SEASON.games.forEach(g => {
-    teamTotal += g.score.lakers || 0;
-    normalizePlayers(g).forEach(p => {
-      if(!totals[p.name]) totals[p.name] = { pts:0, fouls:0 };
-      totals[p.name].pts += p.points;
-      totals[p.name].fouls += p.fouls;
+  const totals={}; let teamTotal=0;
+  SEASON.games.forEach(g=>{
+    teamTotal+=g.score.lakers||0;
+    normalizePlayers(g).forEach(p=>{
+      totals[p.name]=totals[p.name]||{pts:0,fouls:0};
+      totals[p.name].pts+=p.points;
+      totals[p.name].fouls+=p.fouls;
     });
   });
-
-  const roster = Object.entries(totals)
-    .map(([name,v]) => ({ name, ...v }))
-    .sort((a,b) => b.pts - a.pts);
-
-  $("#seasonHero").innerHTML = `
-    <div class="heroSide">
-      <div class="heroLogo">${SEASON.team.abbr}</div>
-      <div>${SEASON.team.name}</div>
-    </div>
+  const roster=Object.entries(totals).map(([n,v])=>({name:n,...v})).sort((a,b)=>b.pts-a.pts);
+  $("#seasonHero").innerHTML=`
+    <div class="heroSide"><div class="heroLogo">${SEASON.team.abbr}</div><div>${SEASON.team.name}</div></div>
     <div class="heroScore">${teamTotal}</div>
-    <div class="heroSide right">
-      <div class="heroLogo">Σ</div>
-    </div>
-  `;
-
-  $("#leadersTable").innerHTML = `
+    <div class="heroSide right"><div class="heroLogo">Σ</div></div>`;
+  $("#leadersTable").innerHTML=`
     <table class="table">
-      <thead>
-        <tr>
-          <th>Player</th>
-          <th class="num">PTS</th>
-          <th class="num">F</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${roster.map(p => `
-          <tr>
-            <td>${p.name}</td>
-            <td class="num">${p.pts}</td>
-            <td class="num">${p.fouls}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
+      <thead><tr><th>Player</th><th class="num">PTS</th><th class="num">F</th></tr></thead>
+      <tbody>${roster.map(p=>`<tr><td>${p.name}</td><td class="num">${p.pts}</td><td class="num">${p.fouls}</td></tr>`).join("")}</tbody>
+    </table>`;
 }
 
-/* ================= GAME RENDER ================= */
+/* ================= GAME ================= */
 function renderGame(id){
-  const game = SEASON.games.find(g => String(g.gameId) === String(id));
-  if(!game) return;
-
-  const players = normalizePlayers(game);
-  const teamPts = game.score.lakers || players.reduce((s,p)=>s+p.points,0);
-  const teamF   = players.reduce((s,p)=>s+p.fouls,0);
-
-  const sorted = players.slice().sort((a,b)=>b.points-a.points);
-  const top = sorted[0];
-  const share = teamPts ? Math.round((top.points / teamPts) * 100) : 0;
-
-  $("#gameHero").innerHTML = `
-    <div class="heroSide">
-      <div class="heroLogo">${SEASON.team.abbr}</div>
-      <div>${SEASON.team.name}</div>
-    </div>
-    <div class="heroScore">
-      ${teamPts}
-      ${game.score.opponent !== null ? `<span>—</span>${game.score.opponent}` : ""}
-    </div>
-    <div class="heroSide right">
-      <div class="heroLogo">${game.opponent.abbr}</div>
-    </div>
-  `;
-
-  $("#kpiPrimary").textContent = `${top.name} — ${top.points} pts`;
-  $("#kpiPrimaryHint").textContent =
-    share >= 40
-      ? `${share}% share — offense ran through him`
-      : `${share}% of team scoring`;
-
-  const foulLeader = sorted.slice().sort((a,b)=>b.fouls-a.fouls)[0];
-  $("#kpiFoul").textContent = `${foulLeader.name} — ${foulLeader.fouls} fouls`;
-  $("#kpiFoulHint").textContent =
-    foulLeader.fouls >= 4
-      ? "High foul risk — manage rotations"
-      : foulLeader.fouls === 3
-        ? "Monitor foul trouble"
-        : "Discipline looks solid";
-
-  $("#kpiPts").textContent = teamPts;
-  $("#kpiTF").textContent  = teamF;
-
-  $("#boxScoreWrap").innerHTML = `
+  const g=SEASON.games.find(x=>x.gameId==id); if(!g)return;
+  const p=normalizePlayers(g), teamPts=g.score.lakers||p.reduce((s,x)=>s+x.points,0), teamF=p.reduce((s,x)=>s+x.fouls,0);
+  const srt=p.slice().sort((a,b)=>b.points-a.points), top=srt[0], share=teamPts?Math.round(top.points/teamPts*100):0;
+  $("#gameHero").innerHTML=`
+    <div class="heroSide"><div class="heroLogo">${SEASON.team.abbr}</div><div>${SEASON.team.name}</div></div>
+    <div class="heroScore">${teamPts}${g.score.opponent!==null?`<span>—</span>${g.score.opponent}`:""}</div>
+    <div class="heroSide right"><div class="heroLogo">${g.opponent.abbr}</div></div>`;
+  $("#kpiPrimary").textContent=`${top.name} — ${top.points} pts`;
+  $("#kpiPrimaryHint").textContent=share>=40?`${share}% share — offense ran through him`:`${share}% of team scoring`;
+  const fl=srt.slice().sort((a,b)=>b.fouls-a.fouls)[0];
+  $("#kpiFoul").textContent=`${fl.name} — ${fl.fouls} fouls`;
+  $("#kpiFoulHint").textContent=fl.fouls>=4?"High foul risk":fl.fouls===3?"Monitor foul trouble":"Discipline solid";
+  $("#kpiPts").textContent=teamPts;
+  $("#kpiTF").textContent=teamF;
+  $("#boxScoreWrap").innerHTML=`
     <table class="table">
-      <thead>
-        <tr>
-          <th>Player</th>
-          <th class="num">PTS</th>
-          <th class="num">F</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${sorted.map(p=>`
-          <tr>
-            <td>${p.name}</td>
-            <td class="num">${p.points}</td>
-            <td class="num">${p.fouls}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-      <tfoot>
-        <tr>
-          <th>Total</th>
-          <th class="num">${teamPts}</th>
-          <th class="num">${teamF}</th>
-        </tr>
-      </tfoot>
-    </table>
-  `;
+      <thead><tr><th>Player</th><th class="num">PTS</th><th class="num">F</th></tr></thead>
+      <tbody>${srt.map(x=>`<tr><td>${x.name}</td><td class="num">${x.points}</td><td class="num">${x.fouls}</td></tr>`).join("")}</tbody>
+      <tfoot><tr><th>Total</th><th class="num">${teamPts}</th><th class="num">${teamF}</th></tr></tfoot>
+    </table>`;
+  renderSeasonChart(id);
 }
 
-/* ================= EXPORTS ================= */
-function downloadJSON(obj, filename){
-  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
+/* ================= CHART ================= */
+let seasonChart;
+function renderSeasonChart(highlight=null){
+  const ctx=document.getElementById("seasonChart").getContext("2d");
+  if(seasonChart)seasonChart.destroy();
+  seasonChart=new Chart(ctx,{
+    type:"line",
+    data:{
+      labels:SEASON.games.map(g=>`G${g.gameId}`),
+      datasets:[
+        {label:"Lakers",data:SEASON.games.map(g=>g.score.lakers),borderColor:"#4cc9f0",tension:.35,pointRadius:i=>i.dataIndex==SEASON.games.findIndex(g=>g.gameId==highlight)?6:3},
+        {label:"Opponent",data:SEASON.games.map(g=>g.score.opponent),borderColor:"rgba(255,255,255,.6)",borderDash:[6,6],tension:.35},
+        {label:"Fouls",data:SEASON.games.map(g=>normalizePlayers(g).reduce((s,p)=>s+p.fouls,0)),borderColor:"#9b5cff",yAxisID:"yF"}
+      ]
+    },
+    options:{
+      interaction:{mode:"index",intersect:false},
+      plugins:{legend:{labels:{color:"#a6b4d6"}}},
+      scales:{
+        y:{ticks:{color:"#a6b4d6"},grid:{color:"rgba(255,255,255,.05)"}},
+        yF:{position:"right",ticks:{color:"#9b5cff"},grid:{drawOnChartArea:false}}
+      }
+    }
+  });
 }
-
-$("#btnExportSeason").onclick = () =>
-  downloadJSON(SEASON, "season_u14.json");
-
-$("#btnExportGame").onclick = () => {
-  const id = $("#gameSelect").value;
-  const g = SEASON.games.find(x => String(x.gameId) === String(id));
-  if(g) downloadJSON(g, `game_${g.gameId}.json`);
-};
 
 /* ================= INIT ================= */
 buildSelect();
 renderSeason();
+renderSeasonChart();
 renderGame($("#gameSelect").value);
-
-$("#gameSelect").onchange = e => {
-  renderGame(e.target.value);
-  setView("game");
-};
+$("#gameSelect").onchange=e=>{renderGame(e.target.value);setView("game");};
 </script>
+</body>
+</html>
