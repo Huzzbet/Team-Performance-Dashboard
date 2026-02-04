@@ -263,12 +263,7 @@ function normalizePlayers(game){
     fouls:safe(p.fouls)
   }));
 }
-
-function buildSelect(){
-  $("#gameSelect").innerHTML = SEASON.games.map(g=>
-    `<option value="${g.gameId}">Game ${g.gameId} — ${g.opponent.name}</option>`
-  ).join("");
-  $("#gameSelect").value = SEASON.games.at(-1).<script>
+<script>
 /* ================= VIEW SWITCH ================= */
 function setView(v){
   $("#viewSeason").classList.toggle("active", v === "season");
@@ -278,6 +273,15 @@ function setView(v){
 }
 $("#tabSeason").onclick = () => setView("season");
 $("#tabGame").onclick   = () => setView("game");
+
+/* ================= GAME SELECT ================= */
+function buildSelect(){
+  const sel = $("#gameSelect");
+  sel.innerHTML = SEASON.games.map(g =>
+    `<option value="${g.gameId}">Game ${g.gameId} — ${g.opponent.name}</option>`
+  ).join("");
+  sel.value = SEASON.games[SEASON.games.length - 1].gameId;
+}
 
 /* ================= SEASON RENDER ================= */
 function renderSeason(){
@@ -343,24 +347,20 @@ function renderGame(id){
   const top = sorted[0];
   const share = teamPts ? Math.round((top.points / teamPts) * 100) : 0;
 
-  /* ---- HERO ---- */
   $("#gameHero").innerHTML = `
     <div class="heroSide">
       <div class="heroLogo">${SEASON.team.abbr}</div>
       <div>${SEASON.team.name}</div>
     </div>
-
     <div class="heroScore">
       ${teamPts}
       ${game.score.opponent !== null ? `<span>—</span>${game.score.opponent}` : ""}
     </div>
-
     <div class="heroSide right">
       <div class="heroLogo">${game.opponent.abbr}</div>
     </div>
   `;
 
-  /* ---- KPIs ---- */
   $("#kpiPrimary").textContent = `${top.name} — ${top.points} pts`;
   $("#kpiPrimaryHint").textContent =
     share >= 40
@@ -379,7 +379,6 @@ function renderGame(id){
   $("#kpiPts").textContent = teamPts;
   $("#kpiTF").textContent  = teamF;
 
-  /* ---- BOX SCORE ---- */
   $("#boxScoreWrap").innerHTML = `
     <table class="table">
       <thead>
@@ -411,7 +410,7 @@ function renderGame(id){
 
 /* ================= EXPORTS ================= */
 function downloadJSON(obj, filename){
-  const blob = new Blob([JSON.stringify(obj, null, 2)], { type:"application/json" });
+  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -441,4 +440,3 @@ $("#gameSelect").onchange = e => {
 </script>
 </body>
 </html>
-
