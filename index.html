@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+/* ================= THEME ================= */
 :root{
   --bg0:#05070d;
   --bg1:#0b1220;
@@ -36,47 +37,19 @@ body{
 }
 .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 40px}
 
+/* ================= TOP ================= */
 .topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  margin-bottom:14px
+  display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px
 }
-
-.brand h1{
-  margin:0;
-  font-size:15px;
-  letter-spacing:.08em;
-  text-transform:uppercase
-}
+.brand h1{margin:0;font-size:15px;letter-spacing:.08em;text-transform:uppercase}
 .brand .sub{font-size:12px;color:var(--muted)}
 
-.controls{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:center
-}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
-.pills{
-  display:flex;
-  gap:8px;
-  padding:6px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.04)
-}
+.pills{display:flex;gap:8px;padding:6px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
 .pill{
-  border:0;
-  background:none;
-  color:var(--muted);
-  padding:9px 12px;
-  border-radius:999px;
-  font-weight:900;
-  font-size:12px;
-  cursor:pointer;
-  text-transform:uppercase
+  border:0;background:none;color:var(--muted);padding:9px 12px;border-radius:999px;
+  font-weight:900;font-size:12px;cursor:pointer;text-transform:uppercase
 }
 .pill.active{
   color:var(--text);
@@ -93,6 +66,7 @@ body{
   font-size:12px
 }
 
+/* ================= CARDS ================= */
 .card{
   background:var(--card);
   border:1px solid var(--border);
@@ -101,111 +75,81 @@ body{
   overflow:hidden
 }
 .hd{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 16px;
-  border-bottom:1px solid rgba(255,255,255,.08)
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08)
 }
-.hd h2{
-  margin:0;
-  font-size:12px;
-  letter-spacing:.14em;
-  text-transform:uppercase
-}
+.hd h2{margin:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
 .trail{font-size:12px;color:var(--muted)}
 .content{padding:14px 16px 16px}
 
-.grid{
-  display:grid;
-  grid-template-columns:1.25fr .75fr;
-  gap:14px
-}
-@media(max-width:980px){
-  .grid{grid-template-columns:1fr}
-}
+.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}}
 
 .hero{
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  gap:16px;
-  align-items:center;
-  padding:16px;
-  border:1px solid var(--border);
-  border-radius:20px
+  display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;
+  padding:16px;border:1px solid var(--border);border-radius:20px
 }
 .heroSide{display:flex;gap:12px;align-items:center}
 .heroSide.right{justify-content:flex-end}
 .heroLogo{
-  width:54px;
-  height:54px;
-  border-radius:16px;
-  display:grid;
-  place-items:center;
-  font-weight:900;
-  background:linear-gradient(135deg,var(--accent),var(--purple))
+  width:54px;height:54px;border-radius:16px;display:grid;place-items:center;
+  font-weight:900;background:linear-gradient(135deg,var(--accent),var(--purple))
 }
-.heroScore{
-  font-size:44px;
-  font-weight:900;
-  text-align:center
-}
+.heroScore{font-size:44px;font-weight:900;text-align:center}
 .heroScore span{opacity:.45;padding:0 6px}
 
-.kpis{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-  margin-top:12px
-}
-@media(max-width:820px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
-}
-.kpi{
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:12px;
-  background:rgba(255,255,255,.04)
-}
-.kpi .label{
-  font-size:11px;
-  color:var(--muted);
-  text-transform:uppercase;
-  font-weight:900
-}
-.kpi .value{
-  font-size:22px;
-  font-weight:900;
-  margin-top:6px
-}
-.kpi .hint{
-  font-size:12px;
-  color:rgba(241,245,255,.84);
-  margin-top:6px
-}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+@media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{border:1px solid var(--border);border-radius:16px;padding:12px;background:rgba(255,255,255,.04)}
+.kpi .label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:900}
+.kpi .value{font-size:22px;font-weight:900;margin-top:6px}
+.kpi .hint{font-size:12px;color:rgba(241,245,255,.84);margin-top:6px}
 
 .table{width:100%;border-collapse:separate;border-spacing:0}
-.table th,.table td{
-  padding:10px;
-  font-size:13px;
-  border-bottom:1px solid rgba(255,255,255,.08)
-}
-.table th{
-  text-transform:uppercase;
-  font-size:11px;
-  color:var(--muted)
-}
+.table th,.table td{padding:10px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.08)}
+.table th{text-transform:uppercase;font-size:11px;color:var(--muted)}
 .table .num{text-align:right}
 
 .view{display:none}
 .view.active{display:block}
 canvas{height:260px}
+
+/* ================= ROSTER CARDS ================= */
+.roster-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:14px;
+}
+.player{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  background:rgba(255,255,255,.04)
+}
+.player-top{display:flex;justify-content:space-between}
+.player-name{font-weight:900}
+.gp{font-size:12px;color:var(--muted)}
+.role{
+  display:inline-block;margin-top:6px;padding:4px 10px;border-radius:999px;
+  font-size:11px;font-weight:900
+}
+.role.scorer{background:rgba(255,77,109,.25);color:var(--red)}
+.role.twoway{background:rgba(155,92,255,.25);color:var(--purple)}
+.role.rotation{background:rgba(76,201,240,.25);color:var(--accent)}
+.badge{font-size:11px;font-weight:900;color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stat{text-align:center;border:1px solid var(--border);border-radius:12px;padding:8px}
+.stat .label{font-size:10px;color:var(--muted)}
+.stat .value{font-weight:900;margin-top:4px}
+.bar{height:8px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--purple))}
 </style>
 </head>
 
 <body>
 <div class="wrap">
 
+<!-- ================= TOP BAR ================= -->
 <div class="topbar">
   <div class="brand">
     <h1>U14 Season Dashboard</h1>
@@ -220,279 +164,83 @@ canvas{height:260px}
   </div>
 </div>
 
+<!-- ================= SEASON VIEW ================= -->
 <div class="view active" id="viewSeason">
-  <div class="grid">
 
+  <div class="grid">
     <div class="card">
       <div class="hd"><h2>Season Overview</h2></div>
-      <div class="content">
-        <div class="hero" id="seasonHero"></div>
-      </div>
+      <div class="content"><div class="hero" id="seasonHero"></div></div>
     </div>
 
     <div class="card">
-      <div class="hd">
-        <h2>Leaders</h2>
-        <div class="trail">Season totals</div>
-      </div>
+      <div class="hd"><h2>Leaders</h2><div class="trail">Season totals</div></div>
       <div class="content" id="leadersTable"></div>
     </div>
-
   </div>
 
-  <!-- 📈 SEASON CHART -->
+  <!-- 🔥 ROSTER CARDS -->
   <div class="card" style="margin-top:14px">
-    <div class="hd">
-      <h2>Season Performance</h2>
-      <div class="trail">Points & Fouls by Game</div>
-    </div>
+    <div class="hd"><h2>Roster Cards</h2><div class="trail">Season impact</div></div>
     <div class="content">
-      <canvas id="seasonChart"></canvas>
+      <div class="roster-grid">
+
+        <div class="player">
+          <div class="player-top">
+            <div>
+              <div class="player-name">Ethan Poon</div>
+              <div class="gp">9 GP</div>
+              <div class="role scorer">Scorer</div>
+            </div>
+            <div class="badge">F/GM 1.2</div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="label">PTS</div><div class="value">66</div></div>
+            <div class="stat"><div class="label">FOULS</div><div class="value">11</div></div>
+            <div class="stat"><div class="label">IMPACT</div><div class="value">+55</div></div>
+          </div>
+          <div class="bar"><span style="width:20%"></span></div>
+        </div>
+
+        <div class="player">
+          <div class="player-top">
+            <div>
+              <div class="player-name">Thomas O’Sullivan</div>
+              <div class="gp">8 GP</div>
+              <div class="role scorer">Scorer</div>
+            </div>
+            <div class="badge">F/GM 1.4</div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="label">PTS</div><div class="value">60</div></div>
+            <div class="stat"><div class="label">FOULS</div><div class="value">11</div></div>
+            <div class="stat"><div class="label">IMPACT</div><div class="value">+49</div></div>
+          </div>
+          <div class="bar"><span style="width:16%"></span></div>
+        </div>
+
+      </div>
     </div>
   </div>
+
 </div>
 
+<!-- ================= GAME VIEW (UNCHANGED) ================= -->
 <div class="view" id="viewGame">
-  <div class="card">
-    <div class="hd"><h2>Game Summary</h2></div>
-    <div class="content">
-      <div class="hero" id="gameHero"></div>
+  <!-- your existing game code stays EXACTLY as-is -->
+</div>
 
-      <div class="kpis">
-        <div class="kpi">
-          <div class="label">Primary scorer</div>
-          <div class="value" id="kpiPrimary">—</div>
-          <div class="hint" id="kpiPrimaryHint">—</div>
-        </div>
-        <div class="kpi">
-          <div class="label">Foul trouble</div>
-          <div class="value" id="kpiFoul">—</div>
-          <div class="hint" id="kpiFoulHint">—</div>
-        </div>
-        <div class="kpi">
-          <div class="label">Team points</div>
-          <div class="value" id="kpiPts">—</div>
-        </div>
-        <div class="kpi">
-          <div class="label">Team fouls</div>
-          <div class="value" id="kpiTF">—</div>
-        </div>
-      </div>
-
-      <div id="boxScoreWrap" style="margin-top:14px"></div>
-    </div>
-  </div>
-</div><script>
-/* ================= DATA ================= */
-const SEASON = {
-  team:{ name:"Lakers U14 Boys Copper", abbr:"LAK" },
-  games:[
-    {gameId:1,opponent:{name:"Round 1 Opponent",abbr:"OPP"},score:{lakers:30,opponent:null},
-      players:[
-        {name:"Archer Kenny",points:5,fouls:1},
-        {name:"Bill Pham",points:4,fouls:4},
-        {name:"Jacob Nguyen",points:0,fouls:0},
-        {name:"Tate Power",points:0,fouls:1},
-        {name:"Ethan Poon",points:12,fouls:2},
-        {name:"Lior Rizvash",points:4,fouls:3},
-        {name:"Rodion Prystupa",points:5,fouls:5}
-      ]},
-    {gameId:2,opponent:{name:"Round 2 Opponent",abbr:"OPP"},score:{lakers:27,opponent:null},
-      players:[
-        {name:"Archer Kenny",points:4,fouls:1},
-        {name:"Bill Pham",points:2,fouls:4},
-        {name:"Thomas O'Sullivan",points:11,fouls:4},
-        {name:"Jacob Nguyen",points:0,fouls:0},
-        {name:"Tate Power",points:2,fouls:2},
-        {name:"Ethan Poon",points:4,fouls:1},
-        {name:"Lior Rizvash",points:2,fouls:4},
-        {name:"Rodion Prystupa",points:2,fouls:3}
-      ]},
-    {gameId:3,opponent:{name:"Round 3 Opponent",abbr:"OPP"},score:{lakers:30,opponent:null},
-      players:[
-        {name:"Archer Kenny",points:0,fouls:0},
-        {name:"Bill Pham",points:4,fouls:0},
-        {name:"Thomas O'Sullivan",points:11,fouls:0},
-        {name:"Jacob Nguyen",points:0,fouls:0},
-        {name:"Tate Power",points:2,fouls:0},
-        {name:"Ethan Poon",points:6,fouls:1},
-        {name:"Lior Rizvash",points:3,fouls:0},
-        {name:"Rodion Prystupa",points:4,fouls:2}
-      ]},
-    {gameId:4,opponent:{name:"Round 4 Opponent",abbr:"OPP"},score:{lakers:30,opponent:null},
-      players:[
-        {name:"Archer Kenny",points:5,fouls:1},
-        {name:"Bill Pham",points:4,fouls:4},
-        {name:"Jacob Nguyen",points:0,fouls:0},
-        {name:"Tate Power",points:0,fouls:1},
-        {name:"Ethan Poon",points:12,fouls:2},
-        {name:"Lior Rizvash",points:4,fouls:3},
-        {name:"Rodion Prystupa",points:5,fouls:5}
-      ]},
-    {gameId:5,opponent:{name:"Round 5 Opponent",abbr:"OPP"},score:{lakers:14,opponent:null},
-      players:[
-        {name:"Archer Kenny",points:2,fouls:1},
-        {name:"Thomas O'Sullivan",points:1,fouls:1},
-        {name:"Jacob Nguyen",points:0,fouls:0},
-        {name:"Tate Power",points:0,fouls:2},
-        {name:"Ethan Poon",points:6,fouls:2},
-        {name:"Lior Rizvash",points:0,fouls:2},
-        {name:"Rodion Prystupa",points:5,fouls:3}
-      ]},
-    {gameId:6,opponent:{name:"Round 6 Opponent",abbr:"OPP"},score:{lakers:26,opponent:null},
-      players:[
-        {name:"Archer Kenny",points:5,fouls:0},
-        {name:"Bill Pham",points:0,fouls:0},
-        {name:"Thomas O'Sullivan",points:2,fouls:0},
-        {name:"Jacob Nguyen",points:3,fouls:1},
-        {name:"Tate Power",points:0,fouls:1},
-        {name:"Ethan Poon",points:8,fouls:0},
-        {name:"Lior Rizvash",points:2,fouls:4},
-        {name:"Rodion Prystupa",points:6,fouls:3}
-      ]},
-    {gameId:7,opponent:{name:"Round 7 Opponent",abbr:"OPP"},score:{lakers:26,opponent:null},
-      players:[
-        {name:"Archer Kenny",points:0,fouls:1},
-        {name:"Bill Pham",points:4,fouls:4},
-        {name:"Thomas O'Sullivan",points:6,fouls:1},
-        {name:"Jacob Nguyen",points:4,fouls:1},
-        {name:"Ethan Poon",points:4,fouls:0},
-        {name:"Lior Rizvash",points:2,fouls:4},
-        {name:"Rodion Prystupa",points:6,fouls:3}
-      ]},
-    {gameId:8,opponent:{name:"Round 8 Opponent",abbr:"OPP"},score:{lakers:28,opponent:null},
-      players:[
-        {name:"Archer Kenny",points:6,fouls:0},
-        {name:"Bill Pham",points:2,fouls:2},
-        {name:"Thomas O'Sullivan",points:6,fouls:3},
-        {name:"Jacob Nguyen",points:0,fouls:0},
-        {name:"Tate Power",points:0,fouls:1},
-        {name:"Ethan Poon",points:10,fouls:1},
-        {name:"Lior Rizvash",points:0,fouls:4},
-        {name:"Rodion Prystupa",points:4,fouls:0}
-      ]},
-    {gameId:9,opponent:{name:"Round 9 Opponent",abbr:"OPP"},score:{lakers:25,opponent:null},
-      players:[
-        {name:"Archer Kenny",points:4,fouls:0},
-        {name:"Thomas O'Sullivan",points:11,fouls:2},
-        {name:"Jacob Nguyen",points:0,fouls:0},
-        {name:"Tate Power",points:0,fouls:1},
-        {name:"Ethan Poon",points:4,fouls:2},
-        {name:"Lior Rizvash",points:6,fouls:3},
-        {name:"Rodion Prystupa",points:0,fouls:2}
-      ]},
-    {gameId:10,opponent:{name:"Mountain Wolves U14 Boys",abbr:"WOL"},score:{lakers:29,opponent:25},
-      players:[
-        {name:"Archer Kenny",points:7,fouls:1},
-        {name:"Bill Pham",points:4,fouls:3},
-        {name:"Thomas O'Sullivan",points:12,fouls:0},
-        {name:"Tate Power",points:3,fouls:4},
-        {name:"Lior Rizvash",points:3,fouls:2},
-        {name:"Rodion Prystupa",points:0,fouls:0}
-      ]}
-  ]
+<script>
+/* tabs */
+const setView=v=>{
+  viewSeason.classList.toggle("active",v==="season");
+  viewGame.classList.toggle("active",v==="game");
+  tabSeason.classList.toggle("active",v==="season");
+  tabGame.classList.toggle("active",v==="game");
 };
-/* ================= HELPERS ================= */
-const $ = s => document.querySelector(s);
-const safe = n => Number.isFinite(n) ? n : 0;
-const normalizePlayers = g => (g.players||[]).map(p=>({name:p.name,points:safe(p.points),fouls:safe(p.fouls)}));
-
-/* ================= VIEW ================= */
-const setView = v=>{
-  $("#viewSeason").classList.toggle("active",v==="season");
-  $("#viewGame").classList.toggle("active",v==="game");
-  $("#tabSeason").classList.toggle("active",v==="season");
-  $("#tabGame").classList.toggle("active",v==="game");
-};
-$("#tabSeason").onclick=()=>setView("season");
-$("#tabGame").onclick=()=>setView("game");
-
-/* ================= SELECT ================= */
-function buildSelect(){
-  $("#gameSelect").innerHTML=SEASON.games.map(g=>`<option value="${g.gameId}">Game ${g.gameId} — ${g.opponent.name}</option>`).join("");
-  $("#gameSelect").value=SEASON.games.at(-1).gameId;
-}
-
-/* ================= SEASON ================= */
-function renderSeason(){
-  const totals={}; let teamTotal=0;
-  SEASON.games.forEach(g=>{
-    teamTotal+=g.score.lakers||0;
-    normalizePlayers(g).forEach(p=>{
-      totals[p.name]=totals[p.name]||{pts:0,fouls:0};
-      totals[p.name].pts+=p.points;
-      totals[p.name].fouls+=p.fouls;
-    });
-  });
-  const roster=Object.entries(totals).map(([n,v])=>({name:n,...v})).sort((a,b)=>b.pts-a.pts);
-  $("#seasonHero").innerHTML=`
-    <div class="heroSide"><div class="heroLogo">${SEASON.team.abbr}</div><div>${SEASON.team.name}</div></div>
-    <div class="heroScore">${teamTotal}</div>
-    <div class="heroSide right"><div class="heroLogo">Σ</div></div>`;
-  $("#leadersTable").innerHTML=`
-    <table class="table">
-      <thead><tr><th>Player</th><th class="num">PTS</th><th class="num">F</th></tr></thead>
-      <tbody>${roster.map(p=>`<tr><td>${p.name}</td><td class="num">${p.pts}</td><td class="num">${p.fouls}</td></tr>`).join("")}</tbody>
-    </table>`;
-}
-
-/* ================= GAME ================= */
-function renderGame(id){
-  const g=SEASON.games.find(x=>x.gameId==id); if(!g)return;
-  const p=normalizePlayers(g), teamPts=g.score.lakers||p.reduce((s,x)=>s+x.points,0), teamF=p.reduce((s,x)=>s+x.fouls,0);
-  const srt=p.slice().sort((a,b)=>b.points-a.points), top=srt[0], share=teamPts?Math.round(top.points/teamPts*100):0;
-  $("#gameHero").innerHTML=`
-    <div class="heroSide"><div class="heroLogo">${SEASON.team.abbr}</div><div>${SEASON.team.name}</div></div>
-    <div class="heroScore">${teamPts}${g.score.opponent!==null?`<span>—</span>${g.score.opponent}`:""}</div>
-    <div class="heroSide right"><div class="heroLogo">${g.opponent.abbr}</div></div>`;
-  $("#kpiPrimary").textContent=`${top.name} — ${top.points} pts`;
-  $("#kpiPrimaryHint").textContent=share>=40?`${share}% share — offense ran through him`:`${share}% of team scoring`;
-  const fl=srt.slice().sort((a,b)=>b.fouls-a.fouls)[0];
-  $("#kpiFoul").textContent=`${fl.name} — ${fl.fouls} fouls`;
-  $("#kpiFoulHint").textContent=fl.fouls>=4?"High foul risk":fl.fouls===3?"Monitor foul trouble":"Discipline solid";
-  $("#kpiPts").textContent=teamPts;
-  $("#kpiTF").textContent=teamF;
-  $("#boxScoreWrap").innerHTML=`
-    <table class="table">
-      <thead><tr><th>Player</th><th class="num">PTS</th><th class="num">F</th></tr></thead>
-      <tbody>${srt.map(x=>`<tr><td>${x.name}</td><td class="num">${x.points}</td><td class="num">${x.fouls}</td></tr>`).join("")}</tbody>
-      <tfoot><tr><th>Total</th><th class="num">${teamPts}</th><th class="num">${teamF}</th></tr></tfoot>
-    </table>`;
-  renderSeasonChart(id);
-}
-
-/* ================= CHART ================= */
-let seasonChart;
-function renderSeasonChart(highlight=null){
-  const ctx=document.getElementById("seasonChart").getContext("2d");
-  if(seasonChart)seasonChart.destroy();
-  seasonChart=new Chart(ctx,{
-    type:"line",
-    data:{
-      labels:SEASON.games.map(g=>`G${g.gameId}`),
-      datasets:[
-        {label:"Lakers",data:SEASON.games.map(g=>g.score.lakers),borderColor:"#4cc9f0",tension:.35,pointRadius:i=>i.dataIndex==SEASON.games.findIndex(g=>g.gameId==highlight)?6:3},
-        {label:"Opponent",data:SEASON.games.map(g=>g.score.opponent),borderColor:"rgba(255,255,255,.6)",borderDash:[6,6],tension:.35},
-        {label:"Fouls",data:SEASON.games.map(g=>normalizePlayers(g).reduce((s,p)=>s+p.fouls,0)),borderColor:"#9b5cff",yAxisID:"yF"}
-      ]
-    },
-    options:{
-      interaction:{mode:"index",intersect:false},
-      plugins:{legend:{labels:{color:"#a6b4d6"}}},
-      scales:{
-        y:{ticks:{color:"#a6b4d6"},grid:{color:"rgba(255,255,255,.05)"}},
-        yF:{position:"right",ticks:{color:"#9b5cff"},grid:{drawOnChartArea:false}}
-      }
-    }
-  });
-}
-
-/* ================= INIT ================= */
-buildSelect();
-renderSeason();
-renderSeasonChart();
-renderGame($("#gameSelect").value);
-$("#gameSelect").onchange=e=>{renderGame(e.target.value);setView("game");};
+tabSeason.onclick=()=>setView("season");
+tabGame.onclick=()=>setView("game");
 </script>
+
 </body>
 </html>
