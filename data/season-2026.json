@@ -1,25 +1,26 @@
 [
   {
-    "game": 1,
-    "opponent": "St Kilda Warriors BRAVE U14 Boys",
-    "teamScore": 30,
-    "oppScore": 17,
-    "players": [
-      { "name": "Thomas O'Sullivan", "pts": 11, "fouls": 3 },
-      { "name": "Ethan Poon", "pts": 16, "fouls": 2 },
-      { "name": "Archer Kenny", "pts": 3, "fouls": 1 },
-      { "name": "Bill Pham", "pts": 0, "fouls": 4 },
-      { "name": "Lior Rizvash", "pts": 0, "fouls": 3 },
-      { "name": "Rodion Prystupa", "pts": 0, "fouls": 4 },
-      { "name": "Tate Power", "pts": 0, "fouls": 2 },
-      { "name": "Jacob Nguyen", "pts": 0, "fouls": 0 }
-    ]
+    "game": 5,
+    "date": "2025-11-15",
+    "opponent": "Vampire Wolves U14 Boys",
+    "teamScore": 14,
+    "oppScore": 34,
+    "players": []
   },
   {
-    "game": 2,
+    "game": 6,
+    "date": "2025-11-22",
+    "opponent": "Lakers U14 Boys Flame",
+    "teamScore": 26,
+    "oppScore": 29,
+    "players": []
+  },
+  {
+    "game": 7,
+    "date": "2025-11-29",
     "opponent": "Dark Wolves U14 Boys",
-    "teamScore": 27,
-    "oppScore": 33,
+    "teamScore": 26,
+    "oppScore": 28,
     "players": [
       { "name": "Thomas O'Sullivan", "pts": 11, "fouls": 4 },
       { "name": "Ethan Poon", "pts": 4, "fouls": 1 },
@@ -30,5 +31,29 @@
       { "name": "Tate Power", "pts": 2, "fouls": 2 },
       { "name": "Jacob Nguyen", "pts": 0, "fouls": 0 }
     ]
+  },
+  {
+    "game": 8,
+    "date": "2025-12-06",
+    "opponent": "Raptors U14 Boys Orange",
+    "teamScore": 28,
+    "oppScore": 45,
+    "players": []
+  },
+  {
+    "game": 9,
+    "date": "2025-12-13",
+    "opponent": "Carnegie Chargers U14 Boys Bears",
+    "teamScore": 25,
+    "oppScore": 30,
+    "players": []
+  },
+  {
+    "game": 10,
+    "date": "2026-01-31",
+    "opponent": "Mountain Wolves U14 Boys",
+    "teamScore": 29,
+    "oppScore": 25,
+    "players": []
   }
 ]
