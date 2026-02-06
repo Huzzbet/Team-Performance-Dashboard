@@ -1104,15 +1104,11 @@ function renderResultsTable(){
 
 /* ---------------- RENDER: SEASON CHART ---------------- */
 function renderSeasonChart(highlightGame=null){
-  const ctx = $("#seasonChart").getContext("2d");
+  const canvas = $("#seasonChart");
+  if(!canvas) return;
+
+  const ctx = canvas.getContext("2d");
   if(seasonChart) seasonChart.destroy();
-
-  const labels = SEASON.games.map(g=>`G${g.game}`);
-  const pf = SEASON.games.map(g=>g.teamScore);
-  const pa = SEASON.games.map(g=>g.oppScore);
-
-  const highlightIndex = SEASON.games.findIndex(g=>g.game === highlightGame);
-
 
   seasonChart = new Chart(ctx,{
     type:"line",
@@ -1258,8 +1254,6 @@ renderSeasonChart(id);
   `;
 }
 
-  // Keep season chart highlighted
-
 /* ---------------- FULL RENDER ---------------- */
 
 /* ============================================================================
@@ -1270,7 +1264,7 @@ function renderSeason(){
   renderLeaders();
   renderRosterCards();
   renderResultsTable();
-  renderSeasonChart();
+  // chart is rendered via renderGame()
 }
    async function boot(){
   await loadSeasonFromJson();
@@ -1298,7 +1292,8 @@ $("#tabGame").addEventListener("click", ()=>{
 /* ---- select change ---- */
 $("#gameSelect").addEventListener("change", (e)=>{
   const id = Number(e.target.value);
-  renderGame(id);
+  renderGame(id); // chart highlight handled inside renderGame
+});
   // Also re-highlight chart
   renderSeasonChart(id);
 });
