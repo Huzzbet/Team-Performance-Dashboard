@@ -5,389 +5,1087 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>U14 Season Dashboard — 2K Style</title>
 
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+/* ============================================================================
+   U14 SEASON DASHBOARD — 2K STYLE (Single-file)
+   Step 1 build:
+   - Season/Game toggle + Game selector
+   - Season overview tiles
+   - Season line chart (Team vs Opp)
+   - Game bar chart (selected game)
+   - Roster cards V2 with auto badges + per-game averages
+   Data:
+   - Loads: ./data/season-2026.json
+   - Fallback sample data if load fails
+   ============================================================================ */
+
+/* ---- DESIGN TOKENS ---- */
 :root{
   --bg0:#05070d;
   --bg1:#0b1220;
   --card:rgba(16,25,46,.92);
+  --card2:rgba(255,255,255,.04);
   --border:rgba(255,255,255,.14);
   --border2:rgba(255,255,255,.08);
+
   --text:#f1f5ff;
   --muted:#a6b4d6;
+  --muted2:#7e8bb0;
+
   --green:#2dff88;
+  --amber:#ffd166;
   --red:#ff4d6d;
   --accent:#4cc9f0;
+  --purple:#9b5cff;
+
   --radius:18px;
   --shadow:0 30px 80px rgba(0,0,0,.75);
   --font:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  --mono: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 
 *{box-sizing:border-box}
+html,body{height:100%}
 body{
   margin:0;
   font-family:var(--font);
   color:var(--text);
   background:
-    radial-gradient(900px 450px at 12% 8%, rgba(76,201,240,.22), transparent 60%),
-    radial-gradient(900px 520px at 88% 18%, rgba(155,92,255,.18), transparent 60%),
+    radial-gradient(1200px 600px at 20% 10%, rgba(76,201,240,.22), transparent 55%),
+    radial-gradient(1000px 700px at 80% 0%, rgba(155,92,255,.18), transparent 55%),
+    radial-gradient(900px 500px at 50% 90%, rgba(45,255,136,.10), transparent 60%),
     linear-gradient(180deg, var(--bg0), var(--bg1));
 }
 
-.wrap{max-width:1180px;margin:0 auto;padding:18px 14px 60px}
+a{color:inherit}
+.container{
+  width:min(980px, 92vw);
+  margin:22px auto 40px;
+}
 
-.topbar{
+.header{
   display:flex;
+  align-items:flex-start;
   justify-content:space-between;
-  align-items:center;
-  margin-bottom:14px;
+  gap:14px;
+  margin-bottom:16px;
 }
 
-.brand h1{
-  margin:0;
-  font-size:15px;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-}
-
-.brand .sub{font-size:12px;color:var(--muted)}
-
-.controls{display:flex;gap:10px;align-items:center}
-
-.pills{
+.hTitle{
   display:flex;
+  flex-direction:column;
   gap:6px;
-  padding:6px;
-  border-radius:999px;
-  border:1px solid var(--border);
+}
+.hTitle h1{
+  font-size:22px;
+  line-height:1.15;
+  letter-spacing:.02em;
+  margin:0;
+}
+.hTitle .sub{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.controls{
+  display:flex;
+  gap:10px;
+  align-items:center;
 }
 
 .pill{
-  border:0;
-  background:none;
-  color:var(--muted);
-  padding:8px 12px;
+  display:flex;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border2);
   border-radius:999px;
-  font-weight:900;
+  padding:6px;
+  gap:6px;
+  box-shadow:0 10px 28px rgba(0,0,0,.35) inset;
+}
+
+.pill button{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-weight:800;
+  font-size:13px;
+  padding:9px 14px;
+  border-radius:999px;
   cursor:pointer;
 }
-
-.pill.active{
+.pill button.active{
+  background:linear-gradient(180deg, rgba(110,231,255,.22), rgba(110,231,255,.08));
   color:var(--text);
-  background:linear-gradient(135deg, rgba(76,201,240,.22), rgba(155,92,255,.18));
-}
-
-.select{
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.05);
-  color:var(--text);
-  padding:8px 10px;
-  border-radius:12px;
+  border:1px solid rgba(110,231,255,.20);
 }
 
 .iconBtn{
-  width:42px;height:42px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.05);
-  color:var(--text);
-  font-weight:900;
+  width:42px; height:42px;
+  border-radius:14px;
+  border:1px solid var(--border2);
+  background:rgba(255,255,255,.04);
   cursor:pointer;
+  display:grid;
+  place-items:center;
+  color:var(--text);
+  box-shadow:0 18px 40px rgba(0,0,0,.45);
+}
+.iconBtn:active{transform:translateY(1px)}
+
+.toast{
+  margin:12px 0 14px;
+  padding:12px 14px;
+  border-radius:16px;
+  border:1px solid rgba(45,255,136,.28);
+  background:linear-gradient(180deg, rgba(45,255,136,.12), rgba(45,255,136,.06));
+  color:rgba(226,255,240,.95);
+  font-weight:800;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.toast .dot{
+  width:10px;height:10px;border-radius:99px;
+  background:var(--green);
+  box-shadow:0 0 0 4px rgba(45,255,136,.12);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
 }
 
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border:1px solid var(--border2);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
-  margin-bottom:14px;
+  overflow:hidden;
 }
 
-.hd{
+.cardHead{
   display:flex;
+  align-items:center;
   justify-content:space-between;
   padding:14px 16px;
-  border-bottom:1px solid var(--border2);
+  border-bottom:1px solid rgba(255,255,255,.06);
 }
-
-.hd h2{
-  margin:0;
-  font-size:12px;
+.cardHead .title{
   letter-spacing:.14em;
   text-transform:uppercase;
+  font-size:12px;
+  color:rgba(241,245,255,.86);
+  font-weight:900;
+}
+.cardHead .right{
+  display:flex;
+  gap:10px;
+  align-items:center;
 }
 
-.content{padding:16px}
-
-.banner{
-  padding:12px 14px;
-  border-radius:16px;
-  border:1px solid var(--border);
-  margin-bottom:14px;
+select{
+  appearance:none;
+  -webkit-appearance:none;
+  border:1px solid var(--border2);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  padding:9px 12px;
+  border-radius:12px;
+  font-weight:800;
+  font-size:13px;
+  outline:none;
 }
-
-.banner.ok{border-color:rgba(45,255,136,.25);background:rgba(45,255,136,.08)}
-.banner.bad{border-color:rgba(255,77,109,.28);background:rgba(255,77,109,.10)}
 
 .kpis{
+  padding:14px 16px 16px;
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:10px;
+}
+.kpi{
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.18);
+  border-radius:16px;
+  padding:12px 12px;
+}
+.kpi .label{
+  color:var(--muted2);
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  font-size:11px;
+  margin-bottom:8px;
+}
+.kpi .value{
+  font-size:26px;
+  font-weight:950;
+  letter-spacing:.01em;
+}
+.kpi .hint{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+}
+
+.chartWrap{
+  padding:14px 16px 16px;
+}
+canvas{width:100% !important; height:320px !important;}
+
+.roster{
+  padding:14px 14px 16px;
+  display:grid;
+  grid-template-columns:1fr;
   gap:12px;
 }
 
-.kpi{
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:12px;
+.player{
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(800px 140px at 20% 0%, rgba(76,201,240,.10), transparent 65%),
+    radial-gradient(700px 180px at 90% 20%, rgba(155,92,255,.10), transparent 65%),
+    rgba(0,0,0,.18);
+  border-radius:18px;
+  padding:14px 14px 12px;
+  display:grid;
+  gap:10px;
 }
 
-.kpi .label{
-  font-size:11px;
+.playerTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.playerName{
+  font-size:18px;
+  font-weight:950;
+  letter-spacing:.01em;
+}
+.playerMini{
+  display:flex;
+  gap:8px;
+  align-items:center;
   color:var(--muted);
-  text-transform:uppercase;
-  font-weight:900;
+  font-weight:800;
+  font-size:12px;
+}
+.pillStat{
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.03);
 }
 
-.kpi .value{
-  font-size:22px;
-  font-weight:900;
-  margin-top:6px;
+.badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
 }
-
-.table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-.table th,.table td{
-  padding:10px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-
-.num{text-align:right}
-
-.playerCard{
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:14px;
-  cursor:pointer;
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:950;
+  border:1px solid rgba(255,255,255,.10);
   background:rgba(255,255,255,.04);
 }
+.badge .bDot{
+  width:8px;height:8px;border-radius:99px;
+  background:var(--accent);
+  box-shadow:0 0 0 4px rgba(76,201,240,.12);
+}
+.badge.good{border-color:rgba(45,255,136,.22); background:rgba(45,255,136,.08)}
+.badge.good .bDot{background:var(--green); box-shadow:0 0 0 4px rgba(45,255,136,.12)}
+.badge.warn{border-color:rgba(255,209,102,.24); background:rgba(255,209,102,.08)}
+.badge.warn .bDot{background:var(--amber); box-shadow:0 0 0 4px rgba(255,209,102,.12)}
+.badge.risk{border-color:rgba(255,77,109,.26); background:rgba(255,77,109,.08)}
+.badge.risk .bDot{background:var(--red); box-shadow:0 0 0 4px rgba(255,77,109,.12)}
+.badge.info{border-color:rgba(155,92,255,.22); background:rgba(155,92,255,.08)}
+.badge.info .bDot{background:var(--purple); box-shadow:0 0 0 4px rgba(155,92,255,.12)}
 
-.playerCard:hover{border-color:var(--accent)}
+.playerStats{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:10px;
+}
+.stat{
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  border-radius:14px;
+  padding:10px 10px;
+}
+.stat .sLabel{
+  color:var(--muted2);
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  font-size:10px;
+}
+.stat .sValue{
+  margin-top:6px;
+  font-size:18px;
+  font-weight:950;
+}
 
-.playerName{font-weight:900;margin-bottom:6px}
-.playerStat{font-size:13px;color:var(--muted);margin-top:4px}
+.footerNote{
+  margin-top:14px;
+  color:rgba(166,180,214,.9);
+  font-size:12px;
+  line-height:1.5;
+}
 
-canvas{height:260px !important}
+/* Responsive */
+@media (max-width:720px){
+  .kpis{grid-template-columns:repeat(2, minmax(0,1fr));}
+  .playerStats{grid-template-columns:repeat(2, minmax(0,1fr));}
+  canvas{height:280px !important;}
+}
 </style>
 </head>
 
 <body>
-<div class="wrap">
+  <div class="container">
 
-  <div class="topbar">
-    <div class="brand">
-      <h1>U14 Season Dashboard</h1>
-      <div class="sub">2K-style season analytics · Season + Game</div>
-    </div>
-
-    <div class="controls">
-      <div class="pills">
-        <button class="pill active" id="tabSeason">Season</button>
-        <button class="pill" id="tabGame">Game</button>
+    <div class="header">
+      <div class="hTitle">
+        <h1>U14 SEASON DASHBOARD</h1>
+        <div class="sub">2K-style season analytics · Season + Game</div>
       </div>
-      <button class="iconBtn" id="btnReload">↻</button>
-    </div>
-  </div>
 
-  <div id="statusBanner" class="banner">
-    <strong>Loading</strong>
-    <div>Attempting to load season data…</div>
-  </div>
-
-  <div id="viewSeason">
-    <div class="card">
-      <div class="hd"><h2>Season Overview</h2></div>
-      <div class="content">
-        <div class="kpis">
-          <div class="kpi"><div class="label">Record</div><div class="value" id="kpiRecord">—</div></div>
-          <div class="kpi"><div class="label">Avg Margin</div><div class="value" id="kpiAvg">—</div></div>
-          <div class="kpi"><div class="label">Points For</div><div class="value" id="kpiPF">—</div></div>
-          <div class="kpi"><div class="label">Points Against</div><div class="value" id="kpiPA">—</div></div>
+      <div class="controls">
+        <div class="pill" role="tablist" aria-label="Mode toggle">
+          <button id="btnSeason" class="active" type="button">Season</button>
+          <button id="btnGame" type="button">Game</button>
         </div>
+
+        <button id="btnReload" class="iconBtn" type="button" title="Reload data">
+          ↻
+        </button>
       </div>
     </div>
 
-    <div class="card">
-      <div class="hd"><h2>Season Performance</h2></div>
-      <div class="content">
-        <canvas id="seasonChart"></canvas>
+    <div id="toast" class="toast" style="display:none;">
+      <div class="dot"></div>
+      <div id="toastText">Loaded season data</div>
+    </div>
+
+    <div class="grid">
+
+      <!-- Season Overview -->
+      <section class="card">
+        <div class="cardHead">
+          <div class="title">Season Overview</div>
+          <div class="right">
+            <select id="gameSelect" style="display:none;">
+              <option value="">Select game…</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">Record</div>
+            <div class="value" id="kpiRecord">—</div>
+            <div class="hint" id="kpiRecordHint">—</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Avg Margin</div>
+            <div class="value" id="kpiMargin">—</div>
+            <div class="hint" id="kpiMarginHint">—</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Points For</div>
+            <div class="value" id="kpiPF">—</div>
+            <div class="hint" id="kpiPFHint">—</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Points Against</div>
+            <div class="value" id="kpiPA">—</div>
+            <div class="hint" id="kpiPAHint">—</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Performance Chart -->
+      <section class="card">
+        <div class="cardHead">
+          <div class="title" id="chartTitle">Season Performance</div>
+          <div class="right">
+            <span class="playerMini" id="chartHint">Team vs Opp (by game)</span>
+          </div>
+        </div>
+        <div class="chartWrap">
+          <canvas id="perfChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Roster Cards -->
+      <section class="card">
+        <div class="cardHead">
+          <div class="title" id="rosterTitle">Roster Cards</div>
+          <div class="right">
+            <span class="playerMini" id="rosterHint">Auto badges + per-game averages</span>
+          </div>
+        </div>
+
+        <div class="roster" id="roster"></div>
+      </section>
+
+      <div class="footerNote">
+        Tip: Put your live stats in <span style="font-family:var(--mono)">./data/season-2026.json</span>.
+        This build auto-detects common structures and falls back to sample data if loading fails.
       </div>
+
     </div>
+  <script>
+/* ============================================================================
+   DATA + NORMALIZATION
+   We support a few likely JSON structures so you don’t have to be perfect.
 
-    <div class="card">
-      <div class="hd"><h2>Roster Cards</h2></div>
-      <div class="content">
-        <div id="rosterCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px"></div>
-      </div>
-    </div>
-  </div>
+   Supported input shapes (examples):
+   A) { "teamName": "...", "season": { "games": [...] } }
+   B) { "games": [...] }
+   C) [ ...games... ]
 
-  <div id="viewGame" style="display:none">
-    <div class="card">
-      <div class="hd"><h2>Game View</h2></div>
-      <div class="content" id="gameView"></div>
-    </div>
-  </div>
+   Each game can be:
+   - { game: 1, opponent:"...", teamScore:30, oppScore:17, result:"W",
+       players:[ {name:"...", pts:11, fouls:4}, ... ] }
+   - OR { id: 1, ... } etc
 
-</div>
- <script>
-const $ = s => document.querySelector(s);
+   Player stats can be:
+   - players: [{name, pts, fouls}]
+   - playerStats: [{player/name, points/pts, fouls}]
+   ============================================================================ */
 
-let GAMES=[];
-let chart=null;
+const DATA_URL = "./data/season-2026.json";
 
-const FALLBACK=[
-  {
-    game:1,opponent:"St Kilda",teamScore:30,oppScore:17,
-    players:[
-      {name:"Ethan",pts:12,fouls:2},
-      {name:"Tom",pts:11,fouls:4}
+let appState = {
+  mode: "season",           // "season" | "game"
+  raw: null,
+  season: null,             // normalized
+  selectedGameId: null,
+  chart: null
+};
+
+const els = {
+  btnSeason: document.getElementById("btnSeason"),
+  btnGame: document.getElementById("btnGame"),
+  btnReload: document.getElementById("btnReload"),
+  toast: document.getElementById("toast"),
+  toastText: document.getElementById("toastText"),
+
+  gameSelect: document.getElementById("gameSelect"),
+
+  kpiRecord: document.getElementById("kpiRecord"),
+  kpiRecordHint: document.getElementById("kpiRecordHint"),
+  kpiMargin: document.getElementById("kpiMargin"),
+  kpiMarginHint: document.getElementById("kpiMarginHint"),
+  kpiPF: document.getElementById("kpiPF"),
+  kpiPFHint: document.getElementById("kpiPFHint"),
+  kpiPA: document.getElementById("kpiPA"),
+  kpiPAHint: document.getElementById("kpiPAHint"),
+
+  chartTitle: document.getElementById("chartTitle"),
+  chartHint: document.getElementById("chartHint"),
+  perfChart: document.getElementById("perfChart"),
+  roster: document.getElementById("roster"),
+  rosterTitle: document.getElementById("rosterTitle"),
+  rosterHint: document.getElementById("rosterHint"),
+};
+
+// ---------- Fallback sample data ----------
+function sampleData(){
+  return {
+    teamName: "U14 Boys",
+    games: [
+      { game: 5, opponent:"Team A", teamScore: 14, oppScore: 34, result:"L",
+        players:[
+          { name:"Thomas O'Sullivan", pts:11, fouls:4 },
+          { name:"Ethan Poon", pts:4, fouls:1 },
+          { name:"Archer Kenny", pts:4, fouls:1 },
+          { name:"Bill Pham", pts:2, fouls:4 },
+          { name:"Lior Rizvash", pts:2, fouls:4 },
+          { name:"Rodion Prystupa", pts:2, fouls:3 },
+        ]
+      },
+      { game: 6, opponent:"Team B", teamScore: 27, oppScore: 29, result:"L",
+        players:[
+          { name:"Thomas O'Sullivan", pts:6, fouls:2 },
+          { name:"Ethan Poon", pts:7, fouls:1 },
+          { name:"Archer Kenny", pts:2, fouls:2 },
+          { name:"Bill Pham", pts:4, fouls:1 },
+          { name:"Lior Rizvash", pts:3, fouls:2 },
+          { name:"Rodion Prystupa", pts:5, fouls:1 },
+        ]
+      },
+      { game: 7, opponent:"Team C", teamScore: 27, oppScore: 28, result:"L",
+        players:[
+          { name:"Thomas O'Sullivan", pts:8, fouls:3 },
+          { name:"Ethan Poon", pts:6, fouls:1 },
+          { name:"Archer Kenny", pts:4, fouls:2 },
+          { name:"Bill Pham", pts:2, fouls:3 },
+          { name:"Lior Rizvash", pts:3, fouls:2 },
+          { name:"Rodion Prystupa", pts:4, fouls:2 },
+        ]
+      },
+      { game: 8, opponent:"Team D", teamScore: 28, oppScore: 44, result:"L",
+        players:[
+          { name:"Thomas O'Sullivan", pts:9, fouls:4 },
+          { name:"Ethan Poon", pts:4, fouls:2 },
+          { name:"Archer Kenny", pts:5, fouls:1 },
+          { name:"Bill Pham", pts:2, fouls:4 },
+          { name:"Lior Rizvash", pts:3, fouls:3 },
+          { name:"Rodion Prystupa", pts:5, fouls:2 },
+        ]
+      },
+      { game: 9, opponent:"Team E", teamScore: 25, oppScore: 30, result:"L",
+        players:[
+          { name:"Thomas O'Sullivan", pts:7, fouls:2 },
+          { name:"Ethan Poon", pts:3, fouls:1 },
+          { name:"Archer Kenny", pts:6, fouls:1 },
+          { name:"Bill Pham", pts:4, fouls:2 },
+          { name:"Lior Rizvash", pts:2, fouls:2 },
+          { name:"Rodion Prystupa", pts:3, fouls:2 },
+        ]
+      },
+      { game: 10, opponent:"Team F", teamScore: 29, oppScore: 26, result:"W",
+        players:[
+          { name:"Thomas O'Sullivan", pts:10, fouls:3 },
+          { name:"Ethan Poon", pts:5, fouls:1 },
+          { name:"Archer Kenny", pts:4, fouls:1 },
+          { name:"Bill Pham", pts:3, fouls:2 },
+          { name:"Lior Rizvash", pts:2, fouls:2 },
+          { name:"Rodion Prystupa", pts:5, fouls:1 },
+        ]
+      }
     ]
-  },
-  {
-    game:2,opponent:"Dark Wolves",teamScore:27,oppScore:33,
-    players:[
-      {name:"Ethan",pts:4,fouls:1},
-      {name:"Tom",pts:11,fouls:4}
-    ]
+  };
+}
+
+// ---------- Helpers ----------
+const sum = (arr, fn) => arr.reduce((a,x)=>a+(fn?fn(x):x),0);
+const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+const round1 = (n)=>Math.round(n*10)/10;
+
+function showToast(msg){
+  els.toastText.textContent = msg;
+  els.toast.style.display = "flex";
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=> els.toast.style.display="none", 1800);
+}
+
+// ---------- Normalize input ----------
+function normalizeSeason(raw){
+  let root = raw;
+
+  // If it’s an array, assume it’s games
+  if (Array.isArray(root)) {
+    root = { games: root };
   }
-];
 
-async function loadData(){
-  try{
-    const r=await fetch("./data/season-2026.json",{cache:"no-store"});
-    if(!r.ok) throw Error();
-    GAMES=await r.json();
-    setBanner("Loaded season data","ok");
-  }catch{
-    GAMES=FALLBACK;
-    setBanner("Using fallback data","bad");
+  // If it has season.games
+  const gamesRaw = root?.season?.games ?? root?.games ?? [];
+
+  const teamName = root?.teamName ?? root?.team ?? root?.season?.teamName ?? "U14 Team";
+
+  // Normalize games
+  const games = (gamesRaw || []).map((g, idx) => {
+    const id = g.game ?? g.id ?? g.round ?? (idx+1);
+    const opponent = g.opponent ?? g.opp ?? g.vs ?? "Opponent";
+    const teamScore = Number(g.teamScore ?? g.for ?? g.pointsFor ?? g.scoreFor ?? 0);
+    const oppScore = Number(g.oppScore ?? g.against ?? g.pointsAgainst ?? g.scoreAgainst ?? 0);
+    const result = g.result ?? (teamScore>oppScore ? "W" : (teamScore<oppScore ? "L" : "D"));
+
+    // Player stats normalization
+    const pArr = g.players ?? g.playerStats ?? g.stats ?? [];
+    const players = (pArr || []).map(p => {
+      const name = p.name ?? p.player ?? p.playerName ?? "Player";
+      const pts = Number(p.pts ?? p.points ?? p.PTS ?? 0);
+      const fouls = Number(p.fouls ?? p.foul ?? p.F ?? 0);
+      return { name, pts, fouls };
+    });
+
+    return { id, opponent, teamScore, oppScore, result, players };
+  }).sort((a,b)=>Number(a.id)-Number(b.id));
+
+  return { teamName, games };
+}
+
+// ---------- Aggregations ----------
+function buildPlayerTotals(season){
+  const totals = new Map();
+
+  for (const g of season.games){
+    for (const p of (g.players || [])){
+      const key = p.name.trim();
+      if (!totals.has(key)){
+        totals.set(key, { name:key, pts:0, fouls:0, games:0, gamePts:[], gameFouls:[] });
+      }
+      const t = totals.get(key);
+      t.pts += p.pts;
+      t.fouls += p.fouls;
+      t.games += 1;
+      t.gamePts.push({ gameId: g.id, v: p.pts });
+      t.gameFouls.push({ gameId: g.id, v: p.fouls });
+    }
+  }
+
+  return Array.from(totals.values()).map(t => ({
+    ...t,
+    ppg: t.games ? t.pts / t.games : 0,
+    fpg: t.games ? t.fouls / t.games : 0,
+    bestGamePts: t.gamePts.reduce((m,x)=> Math.max(m, x.v), 0),
+  }));
+}
+
+function seasonSummary(season){
+  const games = season.games;
+  const wins = games.filter(g=>String(g.result).toUpperCase()==="W").length;
+  const losses = games.filter(g=>String(g.result).toUpperCase()==="L").length;
+  const draws = games.length - wins - losses;
+
+  const pf = sum(games, g=>g.teamScore);
+  const pa = sum(games, g=>g.oppScore);
+  const margin = games.length ? (pf - pa) / games.length : 0;
+
+  return { wins, losses, draws, pf, pa, avgMargin: margin };
+}
+
+// ---------- Badges ----------
+function computeBadges(player, context){
+  // context: { teamPPGAvg, teamFPGAvg, ppgP75, ppgP25 }
+  const badges = [];
+
+  const ppg = player.ppg;
+  const fpg = player.fpg;
+
+  // Scoring impact
+  if (ppg >= context.ppgP75 && ppg > 0){
+    badges.push({ label:"Scoring Impact", tone:"good" });
+  } else if (ppg <= context.ppgP25){
+    badges.push({ label:"Needs Touches", tone:"warn" });
+  } else {
+    badges.push({ label:"Steady", tone:"info" });
+  }
+
+  // Foul discipline
+  if (player.fouls >= 4 && player.games <= 1){
+    // Single-game sample like your screenshot
+    badges.push({ label:"Foul Risk (Game)", tone:"risk" });
+  } else if (fpg >= Math.max(2.8, context.teamFPGAvg + 0.7)){
+    badges.push({ label:"Foul Risk", tone:"risk" });
+  } else if (fpg <= Math.max(1.2, context.teamFPGAvg - 0.6)){
+    badges.push({ label:"Disciplined", tone:"good" });
+  } else {
+    badges.push({ label:"Physical", tone:"warn" });
+  }
+
+  // Breakout game
+  if (player.bestGamePts >= Math.max(10, context.teamPPGAvg * 1.6)){
+    badges.push({ label:"Breakout Game", tone:"good" });
+  }
+
+  // Two-way style (rough proxy: above avg scoring + below avg fouls)
+  if (ppg >= context.teamPPGAvg && fpg <= context.teamFPGAvg){
+    badges.push({ label:"Two-way", tone:"good" });
+  }
+
+  // Cap to 3 badges for clean UI
+  return badges.slice(0,3);
+}
+
+function percentile(values, p){
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a,b)=>a-b);
+  const idx = (sorted.length - 1) * p;
+  const lo = Math.floor(idx), hi = Math.ceil(idx);
+  if (lo === hi) return sorted[lo];
+  const w = idx - lo;
+  return sorted[lo] * (1-w) + sorted[hi] * w;
+}
+</script><script>
+function setMode(mode){
+  appState.mode = mode;
+
+  els.btnSeason.classList.toggle("active", mode==="season");
+  els.btnGame.classList.toggle("active", mode==="game");
+
+  // Game selector only in game mode
+  els.gameSelect.style.display = (mode==="game") ? "block" : "none";
+
+  // Titles
+  els.chartTitle.textContent = (mode==="season") ? "Season Performance" : "Game Performance";
+  els.chartHint.textContent  = (mode==="season") ? "Team vs Opp (by game)" : "Selected game: Team vs Opp";
+  els.rosterTitle.textContent = (mode==="season") ? "Roster Cards" : "Game Roster Cards";
+  els.rosterHint.textContent  = (mode==="season") ? "Auto badges + per-game averages" : "Auto badges based on this game";
+
+  renderAll();
+}
+
+function buildGameSelect(season){
+  els.gameSelect.innerHTML = "";
+  const opt0 = document.createElement("option");
+  opt0.value = "";
+  opt0.textContent = "Select game…";
+  els.gameSelect.appendChild(opt0);
+
+  for (const g of season.games){
+    const opt = document.createElement("option");
+    opt.value = String(g.id);
+    opt.textContent = `G${g.id} vs ${g.opponent} (${g.teamScore}-${g.oppScore})`;
+    els.gameSelect.appendChild(opt);
+  }
+
+  // Default select latest game if none selected
+  if (!appState.selectedGameId && season.games.length){
+    appState.selectedGameId = String(season.games[season.games.length-1].id);
+  }
+  els.gameSelect.value = appState.selectedGameId ?? "";
+}
+
+function renderKPIs(season){
+  const s = seasonSummary(season);
+
+  const record = `${s.wins}-${s.losses}${s.draws?`-${s.draws}`:""}`;
+  els.kpiRecord.textContent = record;
+  els.kpiRecordHint.textContent = `${season.games.length} games`;
+
+  const avgM = round1(s.avgMargin);
+  els.kpiMargin.textContent = (avgM>=0?`+${avgM}`:`${avgM}`);
+  els.kpiMarginHint.textContent = (avgM>=0 ? "Positive margin" : "Chasing stops");
+
+  els.kpiPF.textContent = String(s.pf);
+  els.kpiPFHint.textContent = `Avg ${round1(s.pf / Math.max(1,season.games.length))} / game`;
+
+  els.kpiPA.textContent = String(s.pa);
+  els.kpiPAHint.textContent = `Avg ${round1(s.pa / Math.max(1,season.games.length))} / game`;
+}
+
+function destroyChart(){
+  if (appState.chart){
+    appState.chart.destroy();
+    appState.chart = null;
   }
 }
 
-function setBanner(txt,type){
-  const b=$("#statusBanner");
-  b.className="banner "+type;
-  b.innerHTML=`<strong>${txt}</strong>`;
-}
+function renderChartSeason(season){
+  const labels = season.games.map(g => `G${g.id}`);
+  const team = season.games.map(g => g.teamScore);
+  const opp  = season.games.map(g => g.oppScore);
 
-function renderSeason(){
-  const wins=GAMES.filter(g=>g.teamScore>g.oppScore).length;
-  const losses=GAMES.length-wins;
-  const pf=GAMES.reduce((s,g)=>s+g.teamScore,0);
-  const pa=GAMES.reduce((s,g)=>s+g.oppScore,0);
+  destroyChart();
 
-  $("#kpiRecord").textContent=`${wins}-${losses}`;
-  $("#kpiAvg").textContent=((pf-pa)/GAMES.length).toFixed(1);
-  $("#kpiPF").textContent=pf;
-  $("#kpiPA").textContent=pa;
-
-  renderChart();
-  renderRoster();
-}
-
-function renderChart(){
-  const ctx=$("#seasonChart").getContext("2d");
-  if(chart) chart.destroy();
-
-  chart=new Chart(ctx,{
+  appState.chart = new Chart(els.perfChart.getContext("2d"), {
     type:"line",
     data:{
-      labels:GAMES.map(g=>"G"+g.game),
+      labels,
       datasets:[
-        {label:"Team",data:GAMES.map(g=>g.teamScore),borderColor:"#4cc9f0"},
-        {label:"Opp",data:GAMES.map(g=>g.oppScore),borderColor:"#aaa",borderDash:[6,6]}
+        {
+          label:"Team",
+          data:team,
+          tension:.35,
+          borderWidth:4,
+          pointRadius:4,
+          pointHoverRadius:6
+        },
+        {
+          label:"Opp",
+          data:opp,
+          tension:.35,
+          borderDash:[6,6],
+          borderWidth:3,
+          pointRadius:4,
+          pointHoverRadius:6
+        }
       ]
     },
-    options:{responsive:true}
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          labels:{ color:"rgba(241,245,255,.75)", font:{weight:"800"} }
+        },
+        tooltip:{
+          backgroundColor:"rgba(10,14,25,.95)",
+          borderColor:"rgba(255,255,255,.12)",
+          borderWidth:1,
+          titleColor:"#fff",
+          bodyColor:"rgba(241,245,255,.85)",
+          displayColors:true
+        }
+      },
+      scales:{
+        x:{
+          ticks:{ color:"rgba(166,180,214,.8)", font:{weight:"800"} },
+          grid:{ color:"rgba(255,255,255,.06)" }
+        },
+        y:{
+          ticks:{ color:"rgba(166,180,214,.8)", font:{weight:"800"} },
+          grid:{ color:"rgba(255,255,255,.06)" }
+        }
+      }
+    }
   });
 }
 
-function renderRoster(){
-  const map={};
+function renderChartGame(season, gameId){
+  const g = season.games.find(x => String(x.id) === String(gameId));
+  if (!g){
+    renderChartSeason(season);
+    return;
+  }
 
-  GAMES.forEach(g=>{
-    (g.players||[]).forEach(p=>{
-      if(!map[p.name]) map[p.name]={name:p.name,pts:0,fouls:0,gp:0};
-      map[p.name].pts+=p.pts;
-      map[p.name].fouls+=p.fouls;
-      map[p.name].gp++;
-    });
-  });
+  destroyChart();
 
-  $("#rosterCards").innerHTML=Object.values(map)
-    .sort((a,b)=>b.pts-a.pts)
-    .map(p=>`
-      <div class="playerCard" data-player="${p.name}">
-        <div class="playerName">${p.name}</div>
-        <div class="playerStat">PTS: ${p.pts}</div>
-        <div class="playerStat">Fouls: ${p.fouls}</div>
-        <div class="playerStat">Games: ${p.gp}</div>
-      </div>
-    `).join("");
-
-  document.querySelectorAll(".playerCard").forEach(c=>{
-    c.onclick=()=>showPlayer(c.dataset.player);
+  appState.chart = new Chart(els.perfChart.getContext("2d"), {
+    type:"bar",
+    data:{
+      labels:["Team", "Opp"],
+      datasets:[
+        {
+          label:`G${g.id} vs ${g.opponent}`,
+          data:[g.teamScore, g.oppScore],
+          borderWidth:1
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          labels:{ color:"rgba(241,245,255,.75)", font:{weight:"800"} }
+        },
+        tooltip:{
+          backgroundColor:"rgba(10,14,25,.95)",
+          borderColor:"rgba(255,255,255,.12)",
+          borderWidth:1,
+          titleColor:"#fff",
+          bodyColor:"rgba(241,245,255,.85)"
+        }
+      },
+      scales:{
+        x:{
+          ticks:{ color:"rgba(166,180,214,.8)", font:{weight:"800"} },
+          grid:{ color:"rgba(255,255,255,.06)" }
+        },
+        y:{
+          beginAtZero:true,
+          ticks:{ color:"rgba(166,180,214,.8)", font:{weight:"800"} },
+          grid:{ color:"rgba(255,255,255,.06)" }
+        }
+      }
+    }
   });
 }
 
-function showPlayer(name){
-  $("#viewSeason").style.display="none";
-  $("#viewGame").style.display="block";
-  $("#tabSeason").classList.remove("active");
-  $("#tabGame").classList.add("active");
+function renderRosterSeason(season){
+  const totals = buildPlayerTotals(season);
 
-  const rows=GAMES.map(g=>{
-    const p=(g.players||[]).find(x=>x.name===name);
-    if(!p) return "";
-    return `<tr>
-      <td>G${g.game}</td>
-      <td>${g.opponent}</td>
-      <td class="num">${p.pts}</td>
-      <td class="num">${p.fouls}</td>
-    </tr>`;
-  }).join("");
+  const ppgs = totals.map(p=>p.ppg);
+  const teamPPGAvg = ppgs.length ? sum(ppgs)/ppgs.length : 0;
+  const fpgs = totals.map(p=>p.fpg);
+  const teamFPGAvg = fpgs.length ? sum(fpgs)/fpgs.length : 0;
 
-  $("#gameView").innerHTML=`
-    <h3>${name}</h3>
-    <table class="table">
-      <thead><tr><th>Game</th><th>Opponent</th><th class="num">PTS</th><th class="num">F</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  const ctx = {
+    teamPPGAvg,
+    teamFPGAvg,
+    ppgP75: percentile(ppgs, .75),
+    ppgP25: percentile(ppgs, .25)
+  };
+
+  // Sort: points desc
+  totals.sort((a,b)=>b.pts - a.pts);
+
+  els.roster.innerHTML = "";
+  for (const p of totals){
+    const badges = computeBadges(p, ctx);
+    els.roster.appendChild(playerCard({
+      name: p.name,
+      mode: "season",
+      stats: {
+        pts: p.pts,
+        fouls: p.fouls,
+        games: p.games,
+        ppg: p.ppg,
+        fpg: p.fpg
+      },
+      badges
+    }));
+  }
 }
 
-$("#tabSeason").onclick=()=>{
-  $("#viewSeason").style.display="block";
-  $("#viewGame").style.display="none";
-  $("#tabSeason").classList.add("active");
-  $("#tabGame").classList.remove("active");
-};
+function renderRosterGame(season, gameId){
+  const g = season.games.find(x => String(x.id) === String(gameId));
+  if (!g){
+    renderRosterSeason(season);
+    return;
+  }
 
-$("#btnReload").onclick=async()=>{
-  setBanner("Reloading…","");
+  // Build simple context from this game only
+  const players = (g.players || []).map(p => ({
+    name: p.name,
+    pts: p.pts,
+    fouls: p.fouls,
+    games: 1,
+    ppg: p.pts,
+    fpg: p.fouls,
+    bestGamePts: p.pts
+  }));
+
+  const ppgs = players.map(p=>p.ppg);
+  const fpgs = players.map(p=>p.fpg);
+  const ctx = {
+    teamPPGAvg: ppgs.length ? sum(ppgs)/ppgs.length : 0,
+    teamFPGAvg: fpgs.length ? sum(fpgs)/fpgs.length : 0,
+    ppgP75: percentile(ppgs, .75),
+    ppgP25: percentile(ppgs, .25)
+  };
+
+  players.sort((a,b)=>b.pts - a.pts);
+
+  els.roster.innerHTML = "";
+  for (const p of players){
+    const badges = computeBadges(p, ctx);
+    els.roster.appendChild(playerCard({
+      name: p.name,
+      mode: "game",
+      stats: {
+        pts: p.pts,
+        fouls: p.fouls,
+        games: 1,
+        ppg: p.ppg,
+        fpg: p.fpg
+      },
+      badges
+    }));
+  }
+}
+
+function playerCard({name, mode, stats, badges}){
+  const wrap = document.createElement("div");
+  wrap.className = "player";
+
+  const top = document.createElement("div");
+  top.className = "playerTop";
+
+  const left = document.createElement("div");
+  const nm = document.createElement("div");
+  nm.className = "playerName";
+  nm.textContent = name;
+  left.appendChild(nm);
+
+  const mini = document.createElement("div");
+  mini.className = "playerMini";
+  mini.innerHTML = `
+    <span class="pillStat">${mode==="season" ? "Season" : "Game"}</span>
+    <span class="pillStat">PPG ${round1(stats.ppg)}</span>
+    <span class="pillStat">FPG ${round1(stats.fpg)}</span>
+  `;
+
+  top.appendChild(left);
+  top.appendChild(mini);
+
+  const bWrap = document.createElement("div");
+  bWrap.className = "badges";
+  for (const b of badges){
+    const el = document.createElement("span");
+    el.className = `badge ${b.tone}`;
+    el.innerHTML = `<span class="bDot"></span><span>${b.label}</span>`;
+    bWrap.appendChild(el);
+  }
+
+  const statGrid = document.createElement("div");
+  statGrid.className = "playerStats";
+  statGrid.innerHTML = `
+    <div class="stat"><div class="sLabel">PTS</div><div class="sValue">${stats.pts}</div></div>
+    <div class="stat"><div class="sLabel">FOULS</div><div class="sValue">${stats.fouls}</div></div>
+    <div class="stat"><div class="sLabel">GAMES</div><div class="sValue">${stats.games}</div></div>
+    <div class="stat"><div class="sLabel">AVG</div><div class="sValue">${round1(stats.ppg)} PPG</div></div>
+  `;
+
+  wrap.appendChild(top);
+  wrap.appendChild(bWrap);
+  wrap.appendChild(statGrid);
+  return wrap;
+}
+
+function renderAll(){
+  const season = appState.season;
+  if (!season) return;
+
+  renderKPIs(season);
+
+  if (appState.mode === "season"){
+    renderChartSeason(season);
+    renderRosterSeason(season);
+  } else {
+    buildGameSelect(season);
+    renderChartGame(season, appState.selectedGameId);
+    renderRosterGame(season, appState.selectedGameId);
+  }
+}
+
+// ---------- Load data ----------
+async function loadData(){
+  try{
+    const res = await fetch(DATA_URL, { cache:"no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const raw = await res.json();
+    appState.raw = raw;
+    appState.season = normalizeSeason(raw);
+
+    // If no games, fallback
+    if (!appState.season.games || !appState.season.games.length){
+      appState.season = normalizeSeason(sampleData());
+      showToast("Loaded fallback sample data (empty file).");
+    } else {
+      showToast("Loaded season data");
+    }
+
+  } catch(err){
+    appState.raw = null;
+    appState.season = normalizeSeason(sampleData());
+    showToast("Loaded fallback sample data (fetch failed).");
+  }
+
+  // Default selected game
+  if (appState.season.games.length){
+    appState.selectedGameId = String(appState.season.games[appState.season.games.length-1].id);
+  }
+  renderAll();
+}
+
+// ---------- Events ----------
+els.btnSeason.addEventListener("click", ()=> setMode("season"));
+els.btnGame.addEventListener("click", ()=> setMode("game"));
+
+els.btnReload.addEventListener("click", async ()=>{
   await loadData();
-  renderSeason();
-};
+});
 
-async function boot(){
-  await loadData();
-  renderSeason();
-}
+els.gameSelect.addEventListener("change", (e)=>{
+  appState.selectedGameId = e.target.value || null;
+  if (appState.mode==="game"){
+    renderAll();
+  }
+});
 
-document.addEventListener("DOMContentLoaded",boot);
+// ---------- Boot ----------
+setMode("season");
+loadData();
 </script>
+
 </body>
 </html>
