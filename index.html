@@ -5,51 +5,28 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>U14 Season Dashboard — 2K Style</title>
 
-<!-- Chart.js (CDN) -->
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-/* ============================================================================
-   U14 SEASON DASHBOARD — 2K STYLE (Single-file)
-   - Works on GitHub Pages
-   - Pulls JSON from: ./data/season-2026.json
-   - Has fallback sample data if JSON fails to load
-   ============================================================================ */
-
-/* ---- DESIGN TOKENS ---- */
 :root{
   --bg0:#05070d;
   --bg1:#0b1220;
-
   --card:rgba(16,25,46,.92);
-  --card2:rgba(255,255,255,.04);
-
   --border:rgba(255,255,255,.14);
   --border2:rgba(255,255,255,.08);
-
   --text:#f1f5ff;
   --muted:#a6b4d6;
-
   --green:#2dff88;
-  --amber:#ffd166;
   --red:#ff4d6d;
-
   --accent:#4cc9f0;
   --purple:#9b5cff;
-
   --radius:18px;
-  --radiusSm:14px;
-
   --shadow:0 30px 80px rgba(0,0,0,.75);
-  --shadow2:0 18px 40px rgba(0,0,0,.55);
-
   --font:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 
-/* ---- BASE ---- */
 *{box-sizing:border-box}
-html,body{height:100%}
 body{
   margin:0;
   font-family:var(--font);
@@ -60,21 +37,12 @@ body{
     linear-gradient(180deg, var(--bg0), var(--bg1));
 }
 
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 14px 60px}
 
-.wrap{
-  max-width:1180px;
-  margin:0 auto;
-  padding:18px 14px 60px;
-}
-
-/* ---- TOP BAR ---- */
 .topbar{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:12px;
   margin-bottom:14px;
 }
 
@@ -84,40 +52,27 @@ a:hover{text-decoration:underline}
   letter-spacing:.08em;
   text-transform:uppercase;
 }
-.brand .sub{
-  font-size:12px;
-  color:var(--muted);
-  margin-top:2px;
-}
 
-/* ---- CONTROLS ---- */
-.controls{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:center;
-}
+.brand .sub{font-size:12px;color:var(--muted)}
+
+.controls{display:flex;gap:10px;align-items:center}
 
 .pills{
   display:flex;
-  gap:8px;
+  gap:6px;
   padding:6px;
   border-radius:999px;
   border:1px solid var(--border);
-  background:rgba(255,255,255,.04);
 }
 
 .pill{
   border:0;
   background:none;
   color:var(--muted);
-  padding:9px 12px;
+  padding:8px 12px;
   border-radius:999px;
   font-weight:900;
-  font-size:12px;
   cursor:pointer;
-  text-transform:uppercase;
-  letter-spacing:.02em;
 }
 
 .pill.active{
@@ -129,38 +84,31 @@ a:hover{text-decoration:underline}
   border:1px solid var(--border);
   background:rgba(255,255,255,.05);
   color:var(--text);
-  padding:10px 12px;
-  border-radius:14px;
-  font-weight:900;
-  font-size:12px;
-  outline:none;
+  padding:8px 10px;
+  border-radius:12px;
 }
 
 .iconBtn{
-  width:44px;height:44px;
-  border-radius:14px;
+  width:42px;height:42px;
+  border-radius:12px;
   border:1px solid var(--border);
   background:rgba(255,255,255,.05);
   color:var(--text);
   font-weight:900;
   cursor:pointer;
-  display:grid;
-  place-items:center;
 }
 
-/* ---- CARDS ---- */
 .card{
   background:var(--card);
   border:1px solid var(--border);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
-  overflow:hidden;
+  margin-bottom:14px;
 }
 
 .hd{
   display:flex;
   justify-content:space-between;
-  align-items:center;
   padding:14px 16px;
   border-bottom:1px solid var(--border2);
 }
@@ -172,1147 +120,194 @@ a:hover{text-decoration:underline}
   text-transform:uppercase;
 }
 
-.trail{
-  font-size:12px;
-  color:var(--muted);
-}
+.content{padding:16px}
 
-.content{
-  padding:14px 16px 16px;
-}
-
-/* ---- GRID (TOP ROW) ---- */
-.grid{
-  display:grid;
-  grid-template-columns:1.25fr .75fr;
-  gap:14px;
-}
-@media(max-width:980px){
-  .grid{grid-template-columns:1fr}
-}
-
-/* ---- HERO ---- */
-.hero{
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  gap:16px;
-  align-items:center;
-  padding:16px;
-  border:1px solid var(--border);
-  border-radius:20px;
-  background:rgba(255,255,255,.03);
-}
-
-.heroSide{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-
-.heroSide.right{
-  justify-content:flex-end;
-}
-
-.heroLogo{
-  width:54px;
-  height:54px;
+.banner{
+  padding:12px 14px;
   border-radius:16px;
-  display:grid;
-  place-items:center;
-  font-weight:900;
-  background:linear-gradient(135deg,var(--accent),var(--purple));
-  box-shadow:var(--shadow2);
+  border:1px solid var(--border);
+  margin-bottom:14px;
 }
 
-.heroMeta{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
+.banner.ok{border-color:rgba(45,255,136,.25);background:rgba(45,255,136,.08)}
+.banner.bad{border-color:rgba(255,77,109,.28);background:rgba(255,77,109,.10)}
 
-.heroName{
-  font-weight:900;
-  letter-spacing:.02em;
-}
-
-.heroSmall{
-  font-size:12px;
-  color:var(--muted);
-}
-
-.heroScore{
-  font-size:44px;
-  font-weight:900;
-  text-align:center;
-  letter-spacing:.02em;
-}
-
-.heroScore span{
-  opacity:.45;
-  padding:0 6px;
-}
-
-/* ---- KPIs ---- */
 .kpis{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:12px;
-  margin-top:12px;
 }
-@media(max-width:820px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
-}
+
 .kpi{
   border:1px solid var(--border);
   border-radius:16px;
   padding:12px;
-  background:rgba(255,255,255,.04);
 }
+
 .kpi .label{
   font-size:11px;
   color:var(--muted);
   text-transform:uppercase;
   font-weight:900;
-  letter-spacing:.06em;
 }
+
 .kpi .value{
   font-size:22px;
   font-weight:900;
   margin-top:6px;
 }
-.kpi .hint{
-  font-size:12px;
-  color:rgba(241,245,255,.84);
-  margin-top:6px;
-}
 
-/* ---- TABLES ---- */
 .table{
   width:100%;
-  border-collapse:separate;
-  border-spacing:0;
+  border-collapse:collapse;
 }
+
 .table th,.table td{
   padding:10px;
-  font-size:13px;
   border-bottom:1px solid rgba(255,255,255,.08);
 }
-.table th{
-  text-transform:uppercase;
-  font-size:11px;
-  letter-spacing:.08em;
-  color:var(--muted);
-}
-.table .num{text-align:right}
+
+.num{text-align:right}
 .pos{color:var(--green)}
 .neg{color:var(--red)}
 
-/* ---- VIEWS ---- */
-.view{display:none}
-.view.active{display:block}
-
-/* ---- CHART ---- */
 canvas{height:260px !important}
-
-/* ---- ROSTER CARDS ---- */
-.rosterWrap{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:14px;
-}
-
-.playerCard{
-  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:18px;
-  padding:14px;
-  box-shadow:var(--shadow2);
-  position:relative;
-  overflow:hidden;
-}
-
-.playerTop{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
-  margin-bottom:8px;
-}
-
-.playerName{
-  font-weight:900;
-  font-size:15px;
-  letter-spacing:.01em;
-}
-
-.playerGP{
-  font-size:12px;
-  color:var(--muted);
-  margin-top:4px;
-}
-
-.badgeRow{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-wrap:wrap;
-  margin:10px 0 10px;
-}
-
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:7px 10px;
-  border-radius:999px;
-  font-weight:900;
-  font-size:11px;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(255,255,255,.03);
-  color:var(--muted);
-}
-
-.badge.role-scorer{
-  background:rgba(255,77,109,.20);
-  color:#ffd6df;
-  border-color:rgba(255,77,109,.28);
-}
-.badge.role-twoway{
-  background:rgba(45,255,136,.14);
-  color:#c9ffe3;
-  border-color:rgba(45,255,136,.25);
-}
-.badge.role-rotation{
-  background:rgba(76,201,240,.16);
-  color:#cfefff;
-  border-color:rgba(76,201,240,.26);
-}
-
-.badge.fgm{
-  color:var(--green);
-  border-color:rgba(45,255,136,.20);
-}
-
-.miniKpis{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin-top:10px;
-}
-
-.mini{
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:14px;
-  padding:10px;
-  background:rgba(0,0,0,.18);
-  text-align:center;
-}
-
-.mini .ml{
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:.10em;
-  color:var(--muted);
-  font-weight:900;
-}
-.mini .mv{
-  margin-top:6px;
-  font-size:18px;
-  font-weight:900;
-}
-
-.takeoverRow{
-  margin-top:12px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  color:var(--muted);
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-}
-
-.bar{
-  height:7px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  margin-top:8px;
-  overflow:hidden;
-}
-.bar > div{
-  height:100%;
-  width:0%;
-  border-radius:999px;
-  background:linear-gradient(90deg,var(--accent),var(--purple));
-}
-
-/* ---- STATUS / ERROR BANNER ---- */
-.banner{
-  margin:0 0 14px 0;
-  padding:12px 14px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.04);
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-}
-.banner strong{letter-spacing:.06em;text-transform:uppercase;font-size:12px}
-.banner p{margin:4px 0 0 0;color:var(--muted);font-size:12px;line-height:1.45}
-.banner.ok{border-color:rgba(45,255,136,.25);background:rgba(45,255,136,.08)}
-.banner.bad{border-color:rgba(255,77,109,.28);background:rgba(255,77,109,.10)}
-.banner .mono{font-family:var(--mono);font-size:11px;color:rgba(241,245,255,.85)}
 </style>
 </head>
-
 <body>
 <div class="wrap">
 
-  <!-- =========================================================
-       TOP BAR
-       ========================================================= -->
   <div class="topbar">
     <div class="brand">
       <h1>U14 Season Dashboard</h1>
-      <div class="sub">2K-style season analytics · Season + Game view</div>
+      <div class="sub">2K-style season analytics · Season + Game</div>
     </div>
 
     <div class="controls">
       <div class="pills">
-        <button class="pill active" id="tabSeason" type="button">Season</button>
-        <button class="pill" id="tabGame" type="button">Game</button>
+        <button class="pill active" id="tabSeason">Season</button>
+        <button class="pill" id="tabGame">Game</button>
       </div>
-
-      <select id="gameSelect" class="select" title="Select a game"></select>
-
-      <button class="iconBtn" id="btnReload" type="button" title="Reload data">↻</button>
+      <select id="gameSelect" class="select"></select>
+      <button class="iconBtn" id="btnReload">↻</button>
     </div>
   </div>
 
-  <!-- =========================================================
-       STATUS BANNER (shows data load results)
-       ========================================================= -->
   <div id="statusBanner" class="banner">
-    <div>
-      <strong>Loading</strong>
-      <p>Attempting to load season data…</p>
-    </div>
-    <div class="mono" id="statusPath">—</div>
+    <strong>Loading</strong>
+    <div>Attempting to load season data…</div>
   </div>
 
-  <!-- =========================================================
-       SEASON VIEW
-       ========================================================= -->
-  <div class="view active" id="viewSeason">
-
-    <!-- TOP ROW -->
-    <div class="grid">
-
-      <div class="card">
-        <div class="hd">
-          <h2>Season Overview</h2>
-          <div class="trail" id="seasonTrail">—</div>
-        </div>
-        <div class="content">
-          <div class="hero" id="seasonHero">
-            <!-- filled by JS -->
-          </div>
-
-          <div class="kpis">
-            <div class="kpi">
-              <div class="label">Record</div>
-              <div class="value" id="kpiRecord">—</div>
-              <div class="hint" id="kpiRecordHint">—</div>
-            </div>
-            <div class="kpi">
-              <div class="label">Avg Margin</div>
-              <div class="value" id="kpiAvgMargin">—</div>
-              <div class="hint" id="kpiAvgHint">—</div>
-            </div>
-            <div class="kpi">
-              <div class="label">Points For</div>
-              <div class="value" id="kpiPF">—</div>
-              <div class="hint" id="kpiPFHint">—</div>
-            </div>
-            <div class="kpi">
-              <div class="label">Points Against</div>
-              <div class="value" id="kpiPA">—</div>
-              <div class="hint" id="kpiPAHint">—</div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="hd">
-          <h2>Leaders</h2>
-          <div class="trail">Season totals</div>
-        </div>
-        <div class="content" id="leadersTable">
-          <!-- filled by JS -->
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ROSTER CARDS -->
-    <div class="card" style="margin-top:14px">
-      <div class="hd">
-        <h2>Roster Cards</h2>
-        <div class="trail">Click a card to jump to Game view + filter</div>
-      </div>
+  <div id="viewSeason">
+    <div class="card">
+      <div class="hd"><h2>Season Overview</h2></div>
       <div class="content">
-        <div class="rosterWrap" id="rosterCards">
-          <!-- filled by JS -->
+        <div class="kpis">
+          <div class="kpi"><div class="label">Record</div><div class="value" id="kpiRecord">—</div></div>
+          <div class="kpi"><div class="label">Avg Margin</div><div class="value" id="kpiAvg">—</div></div>
+          <div class="kpi"><div class="label">Points For</div><div class="value" id="kpiPF">—</div></div>
+          <div class="kpi"><div class="label">Points Against</div><div class="value" id="kpiPA">—</div></div>
         </div>
       </div>
     </div>
 
-    <!-- SEASON CHART -->
-    <div class="card" style="margin-top:14px">
-      <div class="hd">
-        <h2>Season Performance</h2>
-        <div class="trail">Points For / Against · highlight selected game</div>
-      </div>
+    <div class="card">
+      <div class="hd"><h2>Season Performance</h2></div>
       <div class="content">
         <canvas id="seasonChart"></canvas>
       </div>
     </div>
 
-    <!-- GAME RESULTS TABLE -->
-    <div class="card" style="margin-top:14px">
-      <div class="hd">
-        <h2>Game Results</h2>
-        <div class="trail">Season schedule</div>
-      </div>
-      <div class="content" id="resultsTableWrap">
-        <!-- filled by JS -->
-      </div>
+    <div class="card">
+      <div class="hd"><h2>Game Results</h2></div>
+      <div class="content" id="resultsTable"></div>
     </div>
-
   </div>
 
-  <!-- =========================================================
-       GAME VIEW
-       ========================================================= -->
-  <div class="view" id="viewGame">
-
+  <div id="viewGame" style="display:none">
     <div class="card">
-      <div class="hd">
-        <h2>Game Summary</h2>
-        <div class="trail" id="gameTrail">—</div>
-      </div>
-
-      <div class="content">
-        <div class="hero" id="gameHero">
-          <!-- filled by JS -->
-        </div>
-
-        <div class="kpis">
-          <div class="kpi">
-            <div class="label">Primary scorer</div>
-            <div class="value" id="kpiPrimary">—</div>
-            <div class="hint" id="kpiPrimaryHint">—</div>
-          </div>
-          <div class="kpi">
-            <div class="label">Foul trouble</div>
-            <div class="value" id="kpiFoul">—</div>
-            <div class="hint" id="kpiFoulHint">—</div>
-          </div>
-          <div class="kpi">
-            <div class="label">Team points</div>
-            <div class="value" id="kpiGamePts">—</div>
-            <div class="hint" id="kpiGamePtsHint">—</div>
-          </div>
-          <div class="kpi">
-            <div class="label">Team fouls</div>
-            <div class="value" id="kpiTeamFouls">—</div>
-            <div class="hint" id="kpiTeamFoulsHint">—</div>
-          </div>
-        </div>
-
-        <div id="boxScoreWrap" style="margin-top:14px">
-          <!-- filled by JS -->
-        </div>
-
-      </div>
+      <div class="hd"><h2>Game View</h2></div>
+      <div class="content" id="gameView"></div>
     </div>
-
   </div>
 
 </div>
-
 <script>
-/* ============================================================================
-   DATA + ENGINE
-   - Loads ./data/season-2026.json
-   - If load fails, uses fallback sample data
-   - JSON expected format (minimum):
-     [
-       { "game": 1, "opponent": "Name", "teamScore": 30, "oppScore": 17, "result":"W",
-         "players":[ { "name":"Ethan Poon", "pts":12, "fouls":2 }, ... ]
-       },
-       ...
-     ]
-   ============================================================================ */
+const $ = s => document.querySelector(s);
 
-/* ---------------- DOM HELPERS ---------------- */
-const $  = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const safeNum = v => Number.isFinite(Number(v)) ? Number(v) : 0;
-const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
+let seasonChart=null;
+let GAMES=[];
 
-/* ---------------- STATE ---------------- */
-let SEASON = {
-  team: { name:"Lakers U14 Boys Copper", abbr:"LAK" },
-  games: []
-};
-
-let seasonChart = null;
-
-/* ---------------- FALLBACK (if JSON fails) ---------------- */
-const FALLBACK_JSON = [
-  { game: 1, opponent: "St Kilda Warriors BRAVE U14 Boys", teamScore: 30, oppScore: 17, result:"W",
-    players:[
-      {name:"Ethan Poon", pts:12, fouls:2},
-      {name:"Thomas O'Sullivan", pts:11, fouls:4},
-      {name:"Archer Kenny", pts:5, fouls:1},
-      {name:"Bill Pham", pts:4, fouls:4},
-      {name:"Lior Rizvash", pts:4, fouls:3},
-      {name:"Rodion Prystupa", pts:5, fouls:5},
-      {name:"Jacob Nguyen", pts:0, fouls:0},
-      {name:"Tate Power", pts:0, fouls:1}
-    ]
-  },
-  { game: 2, opponent: "Dark Wolves U14 Boys", teamScore: 27, oppScore: 33, result:"L",
-    players:[
-      {name:"Thomas O'Sullivan", pts:11, fouls:4},
-      {name:"Ethan Poon", pts:4, fouls:1},
-      {name:"Archer Kenny", pts:4, fouls:1},
-      {name:"Bill Pham", pts:2, fouls:4},
-      {name:"Lior Rizvash", pts:2, fouls:4},
-      {name:"Rodion Prystupa", pts:2, fouls:3},
-      {name:"Tate Power", pts:2, fouls:2},
-      {name:"Jacob Nguyen", pts:0, fouls:0}
-    ]
-  }
+const FALLBACK=[
+  {game:1,opponent:"St Kilda",teamScore:30,oppScore:17},
+  {game:2,opponent:"Dark Wolves",teamScore:27,oppScore:33}
 ];
 
-/* ---------------- PATH FIX (GitHub Pages) ----------------
-   This handles BOTH:
-   - local preview (http://localhost) where base is "./"
-   - GitHub Pages under repo (https://user.github.io/RepoName/)
-*/
-function computeBasePath(){
-  // If your site is: https://huzzbet.github.io/Team-Performance-Dashboard/
-  // then pathname is: /Team-Performance-Dashboard/
-  // We want base to be that folder (or deeper).
-  const p = window.location.pathname;
-
-  // If the page is /Team-Performance-Dashboard/index.html
-  // we want /Team-Performance-Dashboard/
-  const base = p.endsWith("/") ? p : p.substring(0, p.lastIndexOf("/") + 1);
-  return base;
-}
-
-/* ---------------- LOAD JSON ---------------- */
-async function loadSeasonFromJson(){
-  const base = computeBasePath();
-
-  // IMPORTANT:
-  // - JSON must be in repo at /data/season-2026.json
-  // - This fetch will work on GitHub Pages
-  const url = base + "data/season-2026.json";
-
-  $("#statusPath").textContent = url;
-
+async function loadData(){
   try{
-    const res = await fetch(url, { cache: "no-store" });
-    if(!res.ok) throw new Error("HTTP " + res.status);
-
-    const raw = await res.json();
-    if(!Array.isArray(raw)) throw new Error("JSON is not an array");
-
-    SEASON.games = normalizeGames(raw);
-
-    setBannerOk("Loaded season data from GitHub.", "Games: " + SEASON.games.length);
-    return true;
-  }catch(err){
-    console.error("DATA LOAD ERROR:", err);
-    SEASON.games = normalizeGames(FALLBACK_JSON);
-
-    setBannerBad(
-      "Could not load ./data/season-2026.json (using fallback).",
-      "Open DevTools → Console to see the error. Then click Reload ↻ after fixing path/JSON."
-    );
-    return false;
+    const res=await fetch("./data/season-2026.json",{cache:"no-store"});
+    if(!res.ok) throw Error();
+    GAMES=await res.json();
+    setBanner("Loaded season data","ok");
+  }catch{
+    GAMES=FALLBACK;
+    setBanner("Using fallback data","bad");
   }
 }
 
-/* ---------------- NORMALIZE JSON ---------------- */
-function normalizeGames(rawGames){
-  return rawGames.map(g=>{
-    const game = safeNum(g.game ?? g.round ?? g.gameId);
-    const opponent = String(g.opponent ?? (g.opponent?.name ?? "Opponent")).trim();
-
-    const teamScore = safeNum(g.teamScore ?? g.score?.lakers ?? g.score?.team ?? g.score);
-    const oppScore  = safeNum(g.oppScore ?? g.score?.opponent ?? g.score?.opp);
-
-    const result = (g.result || (teamScore > oppScore ? "W" : "L"));
-
-    // players array: allow {pts} or {points}
-    const players = Array.isArray(g.players) ? g.players.map(p=>({
-      name: String(p.name ?? "").trim() || "Player",
-      pts: safeNum(p.pts ?? p.points),
-      fouls: safeNum(p.fouls ?? p.f)
-    })) : [];
-
-    return {
-      game,
-      opponent,
-      teamScore,
-      oppScore,
-      result,
-      players
-    };
-  }).sort((a,b)=>a.game-b.game);
+function setBanner(txt,type){
+  const b=$("#statusBanner");
+  b.className="banner "+type;
+  b.innerHTML=`<strong>${txt}</strong>`;
 }
 
-/* ---------------- BANNER UI ---------------- */
-function setBannerOk(title, detail){
-  const el = $("#statusBanner");
-  el.className = "banner ok";
-  el.querySelector("strong").textContent = title;
-  el.querySelector("p").textContent = detail;
-}
+function renderSeason(){
+  const wins=GAMES.filter(g=>g.teamScore>g.oppScore).length;
+  const losses=GAMES.length-wins;
+  const pf=GAMES.reduce((s,g)=>s+g.teamScore,0);
+  const pa=GAMES.reduce((s,g)=>s+g.oppScore,0);
 
-function setBannerBad(title, detail){
-  const el = $("#statusBanner");
-  el.className = "banner bad";
-  el.querySelector("strong").textContent = title;
-  el.querySelector("p").textContent = detail;
-}
+  $("#kpiRecord").textContent=`${wins}-${losses}`;
+  $("#kpiAvg").textContent=((pf-pa)/GAMES.length).toFixed(1);
+  $("#kpiPF").textContent=pf;
+  $("#kpiPA").textContent=pa;
 
-/* ============================================================================
-   RENDER — SEASON / GAME
-   ============================================================================ */
-
-/* ---------------- VIEW SWITCH ---------------- */
-function setView(which){
-  $("#viewSeason").classList.toggle("active", which==="season");
-  $("#viewGame").classList.toggle("active", which==="game");
-  $("#tabSeason").classList.toggle("active", which==="season");
-  $("#tabGame").classList.toggle("active", which==="game");
-}
-
-/* ---------------- SELECT ---------------- */
-function buildSelect(){
-  const opts = SEASON.games.map(g=>{
-    const opp = g.opponent || "Opponent";
-    return `<option value="${g.game}">Game ${g.game} — ${escapeHtml(opp)}</option>`;
-  }).join("");
-
-  $("#gameSelect").innerHTML = opts || `<option value="1">No games</option>`;
-
-  // default to last game
-  if(SEASON.games.length){
-    $("#gameSelect").value = SEASON.games[SEASON.games.length-1].game;
-  }
-}
-
-/* ---------------- SEASON AGGREGATES ---------------- */
-function seasonTotals(){
-  let wins=0, losses=0, pf=0, pa=0;
-
-  for(const g of SEASON.games){
-    pf += g.teamScore;
-    pa += g.oppScore;
-    if(g.teamScore > g.oppScore) wins++;
-    else if(g.teamScore < g.oppScore) losses++;
-  }
-
-  const avgMargin = SEASON.games.length ? ((pf - pa)/SEASON.games.length) : 0;
-
-  return { wins, losses, pf, pa, avgMargin };
-}
-
-/* ---------------- PLAYER TOTALS ---------------- */
-function playerTotals(){
-  const map = new Map();
-
-  for(const game of SEASON.games){
-    for(const p of (game.players || [])){
-      const key = p.name;
-      if(!map.has(key)){
-        map.set(key, { name:key, gp:0, pts:0, fouls:0 });
-      }
-      const row = map.get(key);
-      row.gp += 1;
-      row.pts += p.pts;
-      row.fouls += p.fouls;
-    }
-  }
-
-  // Derived metrics:
-  // - impact: pts - (fouls * 2) (simple proxy)
-  // - fgm: fouls per game (since we don't have shots made)
-  // You can replace later with real metrics.
-  const arr = Array.from(map.values()).map(r=>{
-    const fgm = r.gp ? (r.fouls / r.gp) : 0;
-    const impact = r.pts - (r.fouls * 2);
-    return { ...r, fgm, impact };
-  });
-
-  // sort by points
-  arr.sort((a,b)=>b.pts - a.pts);
-
-  return arr;
-}
-
-/* ---------------- ROLE LABEL (simple heuristic) ---------------- */
-function roleFor(player){
-  // Scorer: high points
-  if(player.pts >= 45) return { key:"scorer", label:"Scorer" };
-  // Two-way: decent points + good discipline
-  if(player.pts >= 20 && player.fgm <= 1.2) return { key:"twoway", label:"Two-Way" };
-  // Rotation otherwise
-  return { key:"rotation", label:"Rotation" };
-}
-
-/* ---------------- ESCAPE HTML ---------------- */
-function escapeHtml(s){
-  return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-/* ---------------- RENDER: SEASON OVERVIEW ---------------- */
-function renderSeasonHeader(){
-  const t = seasonTotals();
-
-  $("#seasonTrail").textContent = SEASON.games.length
-    ? `Games: ${SEASON.games.length} · PF ${t.pf} / PA ${t.pa}`
-    : "No games loaded";
-
-  // Hero (center is total PF)
-  $("#seasonHero").innerHTML = `
-    <div class="heroSide">
-      <div class="heroLogo">${escapeHtml(SEASON.team.abbr)}</div>
-      <div class="heroMeta">
-        <div class="heroName">${escapeHtml(SEASON.team.name)}</div>
-        <div class="heroSmall">Season totals</div>
-      </div>
-    </div>
-
-    <div class="heroScore">${t.pf}</div>
-
-    <div class="heroSide right">
-      <div class="heroMeta" style="text-align:right">
-        <div class="heroName">${t.wins}-${t.losses}</div>
-        <div class="heroSmall">Record</div>
-      </div>
-      <div class="heroLogo">Σ</div>
-    </div>
-  `;
-
-  // KPIs
-  $("#kpiRecord").textContent = `${t.wins}-${t.losses}`;
-  $("#kpiRecordHint").textContent = t.wins > t.losses ? "Positive season trend" : "Development season";
-
-  const avg = Number(t.avgMargin.toFixed(1));
-  $("#kpiAvgMargin").textContent = (avg > 0 ? "+" : "") + avg;
-  $("#kpiAvgHint").textContent = "Average margin per game";
-
-  $("#kpiPF").textContent = t.pf;
-  $("#kpiPFHint").textContent = "Total points scored";
-
-  $("#kpiPA").textContent = t.pa;
-  $("#kpiPAHint").textContent = "Total points conceded";
-}
-
-/* ---------------- RENDER: LEADERS ---------------- */
-function renderLeaders(){
-  const players = playerTotals().slice(0, 8);
-
-  $("#leadersTable").innerHTML = `
+  $("#resultsTable").innerHTML=`
     <table class="table">
-      <thead>
+      ${GAMES.map(g=>`
         <tr>
-          <th>Player</th>
-          <th class="num">PTS</th>
-          <th class="num">F</th>
-          <th class="num">GP</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${players.map(p=>`
-          <tr>
-            <td>${escapeHtml(p.name)}</td>
-            <td class="num">${p.pts}</td>
-            <td class="num">${p.fouls}</td>
-            <td class="num">${p.gp}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
+          <td>G${g.game}</td>
+          <td>${g.opponent}</td>
+          <td class="num">${g.teamScore}-${g.oppScore}</td>
+        </tr>`).join("")}
+    </table>`;
+
+  renderChart();
 }
 
-/* ---------------- RENDER: ROSTER CARDS ---------------- */
-function renderRosterCards(){
-  const players = playerTotals();
-
-  // Team total points (for takeover % calc)
-  const teamPts = seasonTotals().pf || 1;
-
-  // Impact range for bar scaling
-  const impacts = players.map(p=>p.impact);
-  const minImp = Math.min(...impacts, 0);
-  const maxImp = Math.max(...impacts, 1);
-
-  const html = players.map(p=>{
-    const r = roleFor(p);
-    const takeover = clamp(Math.round((p.pts / teamPts) * 100), 0, 100);
-
-    // Scale bar by takeover
-    const takeoverWidth = takeover + "%";
-
-    // F/GM is fouls per game (proxy; you can replace later)
-    const fgmTxt = `F/GM ${p.fgm.toFixed(1)}`;
-
-    // Impact style
-    const impClass = p.impact >= 0 ? "pos" : "neg";
-    const impTxt = (p.impact >= 0 ? "+" : "") + p.impact;
-
-    return `
-      <div class="playerCard" data-player="${escapeHtml(p.name)}" role="button" tabindex="0" title="Click to open Game view">
-        <div class="playerTop">
-          <div>
-            <div class="playerName">${escapeHtml(p.name)}</div>
-            <div class="playerGP">${p.gp} GP</div>
-          </div>
-          <div class="trail" style="font-weight:900;color:var(--green)">${fgmTxt}</div>
-        </div>
-
-        <div class="badgeRow">
-          <span class="badge role-${r.key}">${r.label}</span>
-          <span class="badge fgm">${fgmTxt}</span>
-        </div>
-
-        <div class="miniKpis">
-          <div class="mini">
-            <div class="ml">PTS</div>
-            <div class="mv">${p.pts}</div>
-          </div>
-          <div class="mini">
-            <div class="ml">FOULS</div>
-            <div class="mv">${p.fouls}</div>
-          </div>
-          <div class="mini">
-            <div class="ml">IMPACT</div>
-            <div class="mv ${impClass}">${impTxt}</div>
-          </div>
-        </div>
-
-        <div class="takeoverRow">
-          <span>TAKEOVER</span>
-          <span>${takeover}%</span>
-        </div>
-
-        <div class="bar">
-          <div style="width:${takeoverWidth}"></div>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  $("#rosterCards").innerHTML = html || `<div class="trail">No players found in JSON.</div>`;
-
-  // Click behavior: go to Game view and set game to last game (or keep)
-  $$("#rosterCards .playerCard").forEach(card=>{
-    const open = ()=>{
-      setView("game");
-      // Keep currently selected game; you can later filter box score by player if you want.
-      renderGame(Number($("#gameSelect").value));
-    };
-    card.addEventListener("click", open);
-    card.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        open();
-      }
-    });
-  });
-}
-
-/* ---------------- RENDER: RESULTS TABLE ---------------- */
-function renderResultsTable(){
-  const rows = SEASON.games.map(g=>{
-    const m = g.teamScore - g.oppScore;
-    const cls = m >= 0 ? "pos" : "neg";
-    const mm = (m >= 0 ? "+" : "") + m;
-    const scoreTxt = `${g.teamScore}–${g.oppScore}`;
-    const res = (g.teamScore > g.oppScore) ? "W" : (g.teamScore < g.oppScore ? "L" : "D");
-
-    return `
-      <tr data-game="${g.game}">
-        <td><strong>G${g.game}</strong></td>
-        <td>${escapeHtml(g.opponent)}</td>
-        <td class="num">${scoreTxt}</td>
-        <td class="num ${cls}">${mm}</td>
-        <td class="num">${res}</td>
-      </tr>
-    `;
-  }).join("");
-
-  $("#resultsTableWrap").innerHTML = `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Game</th>
-          <th>Opponent</th>
-          <th class="num">Score</th>
-          <th class="num">Margin</th>
-          <th class="num">W/L</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>
-  `;
-
-  // click row => set game select and jump to game view
-  $$("#resultsTableWrap tbody tr").forEach(tr=>{
-    tr.style.cursor = "pointer";
-    tr.addEventListener("click", ()=>{
-      const id = Number(tr.getAttribute("data-game"));
-      $("#gameSelect").value = String(id);
-      setView("game");
-      renderGame(id);
-      
-
-    });
-  });
-}
-
-/* ---------------- RENDER: SEASON CHART ---------------- */
-function renderSeasonChart(highlightGame=null){
-  const canvas = $("#seasonChart");
-  if(!canvas) return;
-
-  const ctx = canvas.getContext("2d");
+function renderChart(){
+  const ctx=$("#seasonChart").getContext("2d");
   if(seasonChart) seasonChart.destroy();
 
-  seasonChart = new Chart(ctx,{
+  seasonChart=new Chart(ctx,{
     type:"line",
     data:{
-      labels,
+      labels:GAMES.map(g=>"G"+g.game),
       datasets:[
-        {
-          label:"Lakers",
-          data:pf,
-          borderColor:"#4cc9f0",
-          backgroundColor:"rgba(76,201,240,.12)",
-          borderWidth:3,
-          tension:.35,
-          pointRadius:(c)=>{
-            const i = c.dataIndex;
-            return (i === highlightIndex) ? 6 : 3;
-          }
-        },
-        {
-          label:"Opponent",
-          data:pa,
-          borderColor:"rgba(255,255,255,.6)",
-          borderDash:[6,6],
-          borderWidth:2,
-          tension:.35,
-          pointRadius:3
-        }
+        {label:"Team",data:GAMES.map(g=>g.teamScore),borderColor:"#4cc9f0"},
+        {label:"Opp",data:GAMES.map(g=>g.oppScore),borderColor:"#aaa",borderDash:[6,6]}
       ]
     },
-    options:{
-      responsive:true,
-      interaction:{mode:"index",intersect:false},
-      plugins:{
-        legend:{labels:{color:"#a6b4d6"}},
-        tooltip:{mode:"index",intersect:false}
-      },
-      scales:{
-        x:{ticks:{color:"#a6b4d6"},grid:{color:"rgba(255,255,255,.05)"}},
-        y:{ticks:{color:"#a6b4d6"},grid:{color:"rgba(255,255,255,.05)"},beginAtZero:true}
-      }
-    }
+    options:{responsive:true}
   });
 }
 
-/* ---------------- RENDER: GAME ---------------- */
-function renderGame(id){
-renderSeasonChart(id);
-
-  const g = SEASON.games.find(x=>x.game === Number(id));
-  if(!g){
-    $("#gameTrail").textContent = "Game not found";
-    $("#gameHero").innerHTML = `<div class="trail">No game selected.</div>`;
-    $("#boxScoreWrap").innerHTML = "";
-    return;
-  }
-
-  $("#gameTrail").textContent = `Game ${g.game} · vs ${g.opponent}`;
-
-  // Team totals (use players if missing)
-  const players = (g.players || []).map(p=>({
-    name:p.name,
-    pts:safeNum(p.pts),
-    fouls:safeNum(p.fouls)
-  }));
-
-  const teamPts = safeNum(g.teamScore) || players.reduce((s,p)=>s+p.pts,0);
-  const oppPts  = safeNum(g.oppScore);
-
-  const teamFouls = players.reduce((s,p)=>s+p.fouls,0);
-
-  // Sort players
-  const byPts = players.slice().sort((a,b)=>b.pts-a.pts);
-  const byFouls = players.slice().sort((a,b)=>b.fouls-a.fouls);
-
-  const top = byPts[0] || {name:"—", pts:0, fouls:0};
-  const foulGuy = byFouls[0] || {name:"—", pts:0, fouls:0};
-
-  const share = teamPts ? Math.round((top.pts / teamPts)*100) : 0;
-
-  // Game hero
-  $("#gameHero").innerHTML = `
-    <div class="heroSide">
-      <div class="heroLogo">${escapeHtml(SEASON.team.abbr)}</div>
-      <div class="heroMeta">
-        <div class="heroName">${escapeHtml(SEASON.team.name)}</div>
-        <div class="heroSmall">Game ${g.game}</div>
-      </div>
-    </div>
-
-    <div class="heroScore">
-      ${teamPts}${Number.isFinite(oppPts) ? `<span>—</span>${oppPts}` : ""}
-    </div>
-
-    <div class="heroSide right">
-      <div class="heroMeta" style="text-align:right">
-        <div class="heroName">${escapeHtml(g.opponent)}</div>
-        <div class="heroSmall">Opponent</div>
-      </div>
-      <div class="heroLogo">${escapeHtml((g.opponent||"OPP").slice(0,3).toUpperCase())}</div>
-    </div>
-  `;
-
-  // KPIs
-  $("#kpiPrimary").textContent = `${top.name} — ${top.pts} pts`;
-  $("#kpiPrimaryHint").textContent = share >= 40 ? `${share}% share — offense ran through him` : `${share}% of team scoring`;
-
-  $("#kpiFoul").textContent = `${foulGuy.name} — ${foulGuy.fouls} fouls`;
-  $("#kpiFoulHint").textContent = foulGuy.fouls >= 4 ? "High foul risk" : (foulGuy.fouls === 3 ? "Monitor foul trouble" : "Discipline solid");
-
-  $("#kpiGamePts").textContent = teamPts;
-  $("#kpiGamePtsHint").textContent = "Total team points";
-
-  $("#kpiTeamFouls").textContent = teamFouls;
-  $("#kpiTeamFoulsHint").textContent = "Total team fouls";
-
-  // Box score
-  $("#boxScoreWrap").innerHTML = `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Player</th>
-          <th class="num">PTS</th>
-          <th class="num">F</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${byPts.map(p=>`
-          <tr>
-            <td>${escapeHtml(p.name)}</td>
-            <td class="num">${p.pts}</td>
-            <td class="num">${p.fouls}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-      <tfoot>
-        <tr>
-          <th>Total</th>
-          <th class="num">${teamPts}</th>
-          <th class="num">${teamFouls}</th>
-        </tr>
-      </tfoot>
-    </table>
-  `;
-}
-
-/* ---------------- FULL RENDER ---------------- */
-
-/* ============================================================================
-   INIT / EVENTS
-   ============================================================================ */
-function renderSeason(){
-  renderSeasonHeader();
-  renderLeaders();
-  renderRosterCards();
-  renderResultsTable();
-  // chart is rendered via renderGame()
-}
-   async function boot(){
-  await loadSeasonFromJson();
-
-  // Build select now that games exist
-  buildSelect();
-
-  // Render season view
+async function boot(){
+  await loadData();
   renderSeason();
-
-  // Render current game (selected)
-  renderGame(Number($("#gameSelect").value));
 }
 
-/* ---- tabs ---- */
-$("#tabSeason").addEventListener("click", ()=>{
-  setView("season");
-});
-
-$("#tabGame").addEventListener("click", ()=>{
-  setView("game");
-  renderGame(Number($("#gameSelect").value));
-});
-
-/* ---- select change ---- */
-$("#gameSelect").addEventListener("change", (e)=>{
-  const id = Number(e.target.value);
-  renderGame(id); // chart highlight handled inside renderGame
-});
-  // Also re-highlight chart
-  renderSeasonChart(id);
-});
-
-/* ---- reload ---- */
-$("#btnReload").addEventListener("click", async ()=>{
-  $("#statusBanner").className = "banner";
-  $("#statusBanner").querySelector("strong").textContent = "Loading";
-  $("#statusBanner").querySelector("p").textContent = "Reloading season data…";
-
-  await loadSeasonFromJson();
-  buildSelect();
-  renderSeason();
-  renderGame(Number($("#gameSelect").value));
-});
-
-/* ---- start ---- */
-document.addEventListener("DOMContentLoaded", boot);
+document.addEventListener("DOMContentLoaded",boot);
 </script>
-
 </body>
 </html>
