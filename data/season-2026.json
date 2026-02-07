@@ -141,4 +141,82 @@
       "players": []
     }
   ]
+{
+  "round": 9,
+  "date": "2025-12-13",
+  "opponent": "Carnegie Chargers U14 Boys Bears",
+  "homeAway": "away",
+  "venue": "McKinnon Secondary College – Court 1 (Main Campus)",
+  "result": "L",
+  "score": {
+    "lakers": 25,
+    "opponent": 30
+  },
+  "margin": -5,
+  "halves": {
+    "lakers": [4, 21],
+    "opponent": [13, 17]
+  },
+  "statsLevel": "full",
+  "playerStats": [
+    { "name": "Archer Kenny", "points": 4, "fouls": 0 },
+    { "name": "Thomas O'Sullivan", "points": 11, "fouls": 2 },
+    { "name": "Jacob Nguyen", "points": 0, "fouls": 0 },
+    { "name": "Tate Power", "points": 0, "fouls": 1 },
+    { "name": "Ethan Poon", "points": 4, "fouls": 2 },
+    { "name": "Lior Rizvash", "points": 6, "fouls": 3 },
+    { "name": "Rodion Prystupa", "points": 0, "fouls": 2 }
+  ]
+},
+{
+  "round": 10,
+  "date": "2026-01-31",
+  "opponent": "Mountain Wolves U14 Boys",
+  "homeAway": "home",
+  "venue": "Bentleigh Secondary College – Court 2",
+  "result": "W",
+  "score": {
+    "lakers": 29,
+    "opponent": 25
+  },
+  "margin": 4,
+  "halves": {
+    "lakers": [9, 20],
+    "opponent": [7, 18]
+  },
+  "statsLevel": "full",
+  "playerStats": [
+    { "name": "Archer Kenny", "points": 7, "fouls": 1 },
+    { "name": "Bill Pham", "points": 4, "fouls": 3 },
+    { "name": "Thomas O'Sullivan", "points": 12, "fouls": 0 },
+    { "name": "Tate Power", "points": 3, "fouls": 4 },
+    { "name": "Lior Rizvash", "points": 3, "fouls": 2 },
+    { "name": "Rodion Prystupa", "points": 0, "fouls": 0 }
+  ]
+},
+{
+  "round": 11,
+  "date": "2026-02-07",
+  "opponent": "Vampire Wolves U14 Boys",
+  "homeAway": "away",
+  "venue": "Glen Eira Sports & Aquatic Centre – Court 1",
+  "result": "L",
+  "score": {
+    "lakers": 29,
+    "opponent": 32
+  },
+  "margin": -3,
+  "halves": {
+    "lakers": [13, 16],
+    "opponent": [7, 25]
+  },
+  "statsLevel": "full",
+  "playerStats": [
+    { "name": "Thomas O'Sullivan", "points": 9, "fouls": 1 },
+    { "name": "Jacob Nguyen", "points": 0, "fouls": 1 },
+    { "name": "Tate Power", "points": 4, "fouls": 0 },
+    { "name": "Ethan Poon", "points": 7, "fouls": 3 },
+    { "name": "Lior Rizvash", "points": 1, "fouls": 3 },
+    { "name": "Rodion Prystupa", "points": 8, "fouls": 4 }
+  ]
 }
