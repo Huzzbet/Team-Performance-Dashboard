@@ -362,25 +362,6 @@ canvas{width:100% !important; height:320px !important;}
         <div class="sub">2K-style season analytics · Season + Game</div>
       </div>
 
-      <div class="controls">
-        <div class="pill" role="tablist" aria-label="Mode toggle">
-          <button id="btnSeason" class="active" type="button">Season</button>
-          <button id="btnGame" type="button">Game</button>
-        </div>
-
-        <button id="btnReload" class="iconBtn" type="button" title="Reload data">
-          ↻
-        </button>
-      </div>
-    </div>
-
-    <div id="toast" class="toast" style="display:none;">
-      <div class="dot"></div>
-      <div id="toastText">Loaded season data</div>
-    </div>
-
-    <div class="grid">
-
       <!-- Season Overview -->
       <section class="card">
         <div class="cardHead">
@@ -470,13 +451,13 @@ canvas{width:100% !important; height:320px !important;}
 const DATA_URL = "./data/season-2026.json";
 
 let appState = {
-  mode: "season",           // "season" | "game"
+  mode: "season",
+  team: "A",   // ← NEW
   raw: null,
-  season: null,             // normalized
+  season: null,
   selectedGameId: null,
   chart: null
 };
-
 const els = {
   btnSeason: document.getElementById("btnSeason"),
   btnGame: document.getElementById("btnGame"),
